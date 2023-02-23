@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:13
+    command: postgres -c log_statement=all
+    ports:
+      - ${DATABASE_PORT}:5432
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  worker:
+    tty: true
+    stdin_open: true
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      - PIP_DEFAULT_TIMEOUT=100
+      - DATABASE=postgres
+    env_file:
+      - ./.envrc
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./mo_services:/mo_services/mo_services
+      - ./django_project:/mo_services/django_project
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:

@@ -1,0 +1,22 @@
+[
+    {
+        "model": "core.Currency",
+        "pk": "1",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "code": "COP",
+            "description": "Peso (Colombia)"
+        }
+    },
+    {
+        "model": "core.Currency",
+        "pk": "2",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "code": "USD",
+            "description": "Dollar (USA)"
+        }
+    }
+]

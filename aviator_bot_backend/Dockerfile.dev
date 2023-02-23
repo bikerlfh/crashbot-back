@@ -1,0 +1,40 @@
+FROM python:3.10-slim-buster as intermediate
+
+FROM python:3.10-slim-buster
+
+# Keeps Python from generating .pyc files in the container
+ENV PYTHONUNBUFFERED=1
+
+# Turns off buffering for easier container logging
+ENV PYTHONDONTWRITEBYTECODE=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    libcurl4-openssl-dev \
+    netcat \
+&& rm -rf /var/lib/apt/lists/*
+
+COPY requirements /tmp/requirements
+
+RUN pip install -Ur /tmp/requirements/development.txt
+
+ENV APP_HOME=/app
+
+WORKDIR $APP_HOME
+
+COPY postgres-healthy.sh /tmp/postgres-healthy.sh
+COPY . /app/
+COPY fixtures/* /app/fixtures/
+
+RUN groupadd user && useradd --create-home --home-dir /home/user -g user user
+RUN mkdir -p $APP_HOME && chown user:user $APP_HOME
+
+USER user
+
+ENTRYPOINT ["bash", "/tmp/postgres-healthy.sh"]
+
+# CMD python manage.py migrate --mv && python manage.py runserver 0:8000
+CMD python manage.py runserver 0:8000
