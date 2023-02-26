@@ -1,27 +1,14 @@
-import playwright from "playwright";
-import fs from "fs";
-
+import {URL_AVIATOR_DEMO, URL_BETPLAY} from "./src/constants";
+import {Game} from './src/game/Game';
+import {AviatorPage} from "./src/aviator/Aviator"
+import {Control} from "./src/aviator/BetControl"
 
 (async () => {
-    const browser = await playwright.chromium.launch({headless:false});
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    //page.on('domcontentloaded', (p) => console.log(`Loaded ${p.url()}`));
-    await page.goto('https://betplay.com.co/slots');
-    await page.waitForURL("**/slots/launchGame?gameCode=SPB_aviator**", {timeout: 50000})
-    console.log("estamos en aviator")
-    try {
-        await page.locator('.game-logo').waitFor({
-            timeout: 50000
-        });
-        //await page.waitForFunction(() => document.title === 'Aviator')
-        console.log("encontramos el logo")
-      } catch (e) {
-        if (e instanceof playwright.errors.TimeoutError) {
-          console.log("error timeout")
-        }
-      }
-    await page.screenshot({ path: 'example.png' });
-    console.log("screenshot")
-    //await browser.close();
+	const aviatorPage = new AviatorPage(URL_AVIATOR_DEMO, true)
+	await aviatorPage.open()
+	await aviatorPage.bet(5, 1.4, Control.Control2)
+	// await aviatorPage._controls?.setAutoCashOut(2, Control.Control1)
+	// await new_page.screenshot({ path: 'example.png' });
+	// console.log("screenshot")
+	//await browser.close();
   })();
