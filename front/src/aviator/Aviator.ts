@@ -66,7 +66,7 @@ export class AviatorPage{
             return
         }
         await menu.click()
-        await this._page.waitForTimeout(1000);
+        await this._page.waitForTimeout(400);
         const appUserMenu = await this._page.$("app-user-menu-dropdown")
         if(appUserMenu == null){
             console.log("appusermenu is null")
@@ -75,14 +75,17 @@ export class AviatorPage{
         const listMenu = (await appUserMenu.$$(".list-menu")).slice(-1)[0]
         const menuLimits = (await listMenu.$$(".list-menu-item")).slice(-1)[0]
         await menuLimits.click()
-        await this._page.waitForTimeout(1000);
+        await this._page.waitForTimeout(400);
         const limits = await this._page.$$("app-game-limits ul>li>span")
         this.minimumBet = parseFloat((await limits[0].textContent())?.split(" ")[0] || "0")
         this.maximumBet = parseFloat((await limits[1].textContent())?.split(" ")[0] || "0")
         this.maximumWinForOneBet =  parseFloat((await limits[2].textContent())?.split(" ")[0] || "0")
+        const buttonClose = await this._page.$("ngb-modal-window")
+        await buttonClose?.click()
         console.log("minimumBet: ", this.minimumBet)
         console.log("maximumBet: ", this.maximumBet)
         console.log("maximumWinForOneBet: ", this.maximumWinForOneBet)
+        
     }
 
     async readBalance(): Promise<number | null>{
@@ -113,11 +116,12 @@ export class AviatorPage{
     }
 
     async bet(amount: number, multiplier: number, control: Control){
+        console.log("bet control: ", control)
         if(this._controls == null){
             console.log("AviatorPage :: no _controls")
             return
         }
-        this._controls.bet(amount, control, true, multiplier)
+        this._controls.bet(amount, control, multiplier)
     }
 
     async waitNextGame(){
