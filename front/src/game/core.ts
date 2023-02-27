@@ -58,9 +58,9 @@ export class Average{
 
     evaluate(lastMultiplier: number): number{
         if(lastMultiplier >= this.multiplier){
-            this.profit = this.amount * (this.multiplier - 1)
+            this.profit += this.amount * (this.multiplier - 1)
         }else{
-            this.profit = this.amount * -1   
+            this.profit -= this.amount
         }
         return parseFloat(this.profit.toFixed(2))
     }

@@ -30,17 +30,18 @@ export class Game {
         this.minimumBet = minimumBet
         this.maximumBet = maximumBet
         this.maximumWinForOneBet = maximumWinForOneBet
+        this.calculateMinMaxBet()
     }
 
     calculateMinMaxBet(){
         const numMinBets = this.balance / this.minimumBet
         if(numMinBets <= 50){
             this._minBet = this.minimumBet
-            this._maxBet = parseFloat((this.minimumBet * (numMinBets * 30 / 100)).toFixed(0))
+            this._maxBet = parseFloat((this.minimumBet * (numMinBets * 3)).toFixed(0))
             return
         }
-        this._minBet = parseFloat((this.minimumBet * (numMinBets * 3 / 100)).toFixed(0))
-        this._maxBet = parseFloat((this.minimumBet * (numMinBets * 8 / 100)).toFixed(0))
+        this._minBet = parseFloat((this.minimumBet * (numMinBets * 0.003)).toFixed(0))
+        this._maxBet = parseFloat((this.minimumBet * (numMinBets * 0.008)).toFixed(0))
     }
 
     evaluateBets(multiplier: number){
@@ -113,7 +114,6 @@ export class Game {
         this.calculateMinMaxBet()
         const amounts: number[] = []
         let profit = this.balance - this.initialBalance
-        const lenAverage = betsAverage.length
         betsAverage.forEach(average => {
             let amount = 0
             if(profit < 0){
@@ -121,10 +121,11 @@ export class Game {
             }else if(profit > 0) {
                 const _profit = (profit / 3)
                 profit -= _profit
-                amount = parseFloat(((this._maxBet / 3) + _profit).toFixed(0))
+                amount = (this._maxBet / 3) + _profit
             }else{
-                amount = parseFloat(((this._maxBet / 3)).toFixed(0))
+                amount = (this._maxBet / 3)
             }
+            amount = parseFloat(amount.toFixed(0))
             amounts.push(amount)
         })
         return amounts

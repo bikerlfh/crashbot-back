@@ -50,11 +50,11 @@ export class AviatorPage{
         }
         this._historyGame = await this._page.$('.result-history');
         console.log("result history found")
+        this._controls = new BetControl(this._page);
+        await this._controls.init()
         await this.readBalance()
         await this.readMultipliers()
         await this.readGameLimits()
-        this._controls = new BetControl(this._page);
-        await this._controls.init()
     }
     
     async readGameLimits(){
@@ -121,7 +121,7 @@ export class AviatorPage{
             console.log("AviatorPage :: no _controls")
             return
         }
-        this._controls.bet(amount, control, multiplier)
+        this._controls.bet(amount, multiplier, control)
     }
 
     async waitNextGame(){

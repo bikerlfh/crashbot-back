@@ -25,6 +25,8 @@ import {Control} from "./src/aviator/BetControl"
 				const control = index == 0? Control.Control1: Control.Control2
 				await aviatorPage.bet(bet.amount, bet.multiplier, control)
 			}
+			/*const bet = bets[0];
+			await aviatorPage.bet(bet.amount, bet.multiplier, Control.Control1)*/
 		}
 	}
 	// const average = game.getAverage(1)

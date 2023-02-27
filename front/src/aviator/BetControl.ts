@@ -19,8 +19,8 @@ export class BetControl{
     _autoCashOutSwitcher_2: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
     _autoCashOutMultiplier_1: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
     _autoCashOutMultiplier_2: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
-    _betButton_1: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
-    _betButton_2: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
+    _betButton_1: playwright.Locator|null = null
+    _betButton_2: playwright.Locator|null = null
 
     isActiveAutoCashOutControl_1: boolean = false
     isActiveAutoCashOutControl_2: boolean = false
@@ -88,44 +88,30 @@ export class BetControl{
         }
         this._autoCashOutMultiplier_1 = await cashOutSpinner_1.$("input") 
         this._autoCashOutMultiplier_2 = await cachOutSpinner_2.$("input") 
-        this._betButton_1 = await this._betControl_1.$(".buttons-block>button")
-        this._betButton_2 = await this._betControl_2.$(".buttons-block>button")
+        
+        // this._betButton_1 = await this._betControl_1.$(".buttons-block>button")
+        //this._betButton_2 = await this._betControl_2.$(".buttons-block>button")
+        // app-bet-control.buttons-block>button
+        const betButtons = this.aviatorPage.locator("button", {hasText: /\B\E\T/})
+        this._betButton_1 = betButtons.first()
+        this._betButton_2 = betButtons.last()
         this.wasLoad = true
     }
 
     async setAutoCashOut(multiplier: number, control:Control){
         console.log("setAutoCashOut control: ", control)
-        let autoSwitcherButton = this._autoSwitcherButton_1
-        let autoCashOutSwitcher = this._autoCashOutSwitcher_1
         let autoCashOutMultiplier = this._autoCashOutMultiplier_1
-        if(control === Control.Control2){
-            autoSwitcherButton = this._autoSwitcherButton_2
-            autoCashOutSwitcher = this._autoCashOutSwitcher_2
+        if(control == Control.Control2){
             autoCashOutMultiplier = this._autoCashOutMultiplier_2
         }
-        if(autoSwitcherButton == null){
-            console.log("buttons null autoSwitcherButton")
-            return
-        }
-        if(autoCashOutSwitcher == null){
-            console.log("buttons null autoCashOutSwitcher")
-            return
-        }
-        if(autoCashOutMultiplier==null){
+        if(autoCashOutMultiplier == null){
             console.log("buttons null autoCashOutMultiplier")
             return
         }
-        /*const isActive = control == Control.Control1? this.isActiveAutoCashOutControl_1 : this.isActiveAutoCashOutControl_2
-        if(!isActive){
-            await autoSwitcherButton.click({delay: this._randomDelay()})
-            await this.aviatorPage.waitForTimeout(500);
-            await autoCashOutSwitcher.click({delay: this._randomDelay()})
-            await this.aviatorPage.waitForTimeout(400);
-            this.isActiveAutoCashOutControl_1 = control == Control.Control1
-            this.isActiveAutoCashOutControl_2 = control == Control.Control2
-        }*/
         await autoCashOutMultiplier.fill("")
+        await this.aviatorPage.waitForTimeout(500);
         await autoCashOutMultiplier.type(multiplier.toString(), {delay: this._randomDelay()})
+        await this.aviatorPage.waitForTimeout(500);
     }
     
     async updateAmount(amount: number, control:Control){
@@ -143,19 +129,20 @@ export class BetControl{
 
     async bet(
         amount: number,
+        multiplier: number,
         control:Control, 
-        multiplier: number
     ){
         await this.setAutoCashOut(multiplier, control)
         await this.updateAmount(amount, control)
-        if(this._betButton_1 === null){
+        if(this._betButton_1 == null || this._betButton_2 == null){
             console.log("bet: bet button null. control: ", control)
             return
         }
         if(control === Control.Control1){
-            await this._betButton_1.click({delay: this._randomDelay()})
+            await this._betButton_1.click();({delay: this._randomDelay()})
             return
         }
-        await this._betButton_2?.click({delay: this._randomDelay()})
+        await this._betButton_2.click({delay: this._randomDelay()})
+        await this.aviatorPage.waitForTimeout(1000)
     }
 }
