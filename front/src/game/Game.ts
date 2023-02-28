@@ -109,19 +109,19 @@ export class Game {
         return result
     }
     calculateAmountBet(betsAverage: number[]){
-        this.calculateMinMaxBet()
         const amounts: number[] = []
         let profit = this.balance - this.initialBalance
         betsAverage.forEach(average => {
-            let amount = 0
+            let amount = this._minBet
             if(profit < 0){
-                amount = (Math.abs(profit) / average) * 2
-            }else if(profit > 0) {
-                const _profit = (profit / 3)
-                profit -= _profit
-                amount = this._minBet + _profit
-            }else{
-                amount = this._minBet
+                amount = (Math.abs(profit) / (average -1))
+                // console.log("PROFIT NEGATIVE: profit:", profit, "; average: ", average, "; amount: ", amount)
+            }else if(amounts.length > 0){
+                amount = this._minBet / 3
+            }
+            amount = amount > this.minimumBet? amount: this.minimumBet;
+            if(amount > this.balance){
+                amount = this.balance
             }
             amount = parseFloat(amount.toFixed(0))
             amounts.push(amount)
