@@ -54,8 +54,6 @@ export class Game {
             this.historyBets.push(bet)
         })
         this.bets = []
-        console.log("evaluateBets Balance: ", this.balance)
-        console.log("history bets: ", this.historyBets)
     }
 
     addMultiplier(multiplier: number){

@@ -14,6 +14,7 @@ import {Control} from "./src/aviator/BetControl"
 		aviatorPage.maximumBet,
 		aviatorPage.maximumWinForOneBet
 	)
+	const sleepNow = (delay: number) => new Promise((resolve) =>setTimeout(resolve, delay))
 	while(true){
 		await aviatorPage.waitNextGame()
 		game.addMultiplier(aviatorPage.multipliers.slice(-1)[0])
@@ -22,11 +23,11 @@ import {Control} from "./src/aviator/BetControl"
 			console.log("bets:", bets)
 			for (let index = 0; index < bets.length; index++) {
 				const bet = bets[index];
-				const control = index == 0? Control.Control2: Control.Control1
+				const control = index == 0? Control.Control1: Control.Control2
 				await aviatorPage.bet(bet.amount, bet.multiplier, control)
+				await sleepNow(2000)
 			}
-			/*const bet = bets[0];
-			await aviatorPage.bet(bet.amount, bet.multiplier, Control.Control1)*/
+		
 		}
 	}
 	// const average = game.getAverage(1)

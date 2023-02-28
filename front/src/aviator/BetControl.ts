@@ -1,4 +1,5 @@
 import playwright from "playwright";
+import { mainModule } from "process";
 
 export enum Control{
     Control1=1,
@@ -7,18 +8,18 @@ export enum Control{
 
 export class BetControl{
     aviatorPage: playwright.Page
-    _betControl_1: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
-    _betControl_2: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
-    _amountInput_1: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
-    _amountInput_2: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
-    _betSwitcherButton_1: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
-    _autoSwitcherButton_1: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
-    _betSwitcherButton_2: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
-    _autoSwitcherButton_2: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
-    _autoCashOutSwitcher_1: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
-    _autoCashOutSwitcher_2: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
-    _autoCashOutMultiplier_1: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
-    _autoCashOutMultiplier_2: playwright.ElementHandle<SVGElement|HTMLElement>|null = null
+    _betControl_1: playwright.Locator|null = null
+    _betControl_2: playwright.Locator|null = null
+    _amountInput_1: playwright.Locator|null = null
+    _amountInput_2: playwright.Locator|null = null
+    _betSwitcherButton_1: playwright.Locator|null = null
+    _autoSwitcherButton_1: playwright.Locator|null = null
+    _betSwitcherButton_2: playwright.Locator|null = null
+    _autoSwitcherButton_2: playwright.Locator|null = null
+    _autoCashOutSwitcher_1: playwright.Locator|null = null
+    _autoCashOutSwitcher_2: playwright.Locator|null = null
+    _autoCashOutMultiplier_1: playwright.Locator|null = null
+    _autoCashOutMultiplier_2: playwright.Locator|null = null
     _betButton_1: playwright.Locator|null = null
     _betButton_2: playwright.Locator|null = null
 
@@ -38,56 +39,56 @@ export class BetControl{
     }
 
     async init(){
-        const bet_controls = await this.aviatorPage.$$("app-bet-control");
+        const bet_controls = this.aviatorPage.locator("app-bet-control");
         // app-navigation-switcher
-	    this._betControl_1 = bet_controls[0]
-	    this._betControl_2 = bet_controls[1]
+	    this._betControl_1 = bet_controls.first()
+	    this._betControl_2 = bet_controls.last()
         if(this._betControl_1 == null || this._betControl_2 == null){
-            console.log("no bet controls")
-            return
+            throw "no bet controls"
         }
-        const inputAppSpinner_1 = await this._betControl_1.$("app-spinner")
-        const inputAppSpinner_2 = await this._betControl_2.$("app-spinner")
+        const inputAppSpinner_1 = this._betControl_1.locator("app-spinner").first()
+        const inputAppSpinner_2 = this._betControl_2.locator("app-spinner").first()
         if(inputAppSpinner_1 == null || inputAppSpinner_2 == null){
-            console.log("no inputAppSpinner_1 or inputAppSpinner_2")
-            return
+            throw "no inputAppSpinner_1 or inputAppSpinner_2"
         }
-        this._amountInput_1 = await inputAppSpinner_1.$("input")
-        this._amountInput_2 = await inputAppSpinner_2.$("input")
-        const appNavigationSwitcher_1 = await this._betControl_1.$("app-navigation-switcher")
-        const appNavigationSwitcher_2 = await this._betControl_2.$("app-navigation-switcher")
+        this._amountInput_1 = inputAppSpinner_1.locator("input").first()
+        this._amountInput_2 = inputAppSpinner_2.locator("input").first()
+        const appNavigationSwitcher_1 = this._betControl_1.locator("app-navigation-switcher").first()
+        const appNavigationSwitcher_2 = this._betControl_2.locator("app-navigation-switcher").first()
         if(appNavigationSwitcher_1 == null){
-            console.log("no appNavigationSwitcher_1")
-            return
+            throw "no appNavigationSwitcher_1"
         }
         if(appNavigationSwitcher_2 == null){
-            console.log("no appNavigationSwitcher_2")
-            return
+            throw "no appNavigationSwitcher_2"
         }
-        const buttons_1 = await appNavigationSwitcher_1.$$("button")
-        const buttons_2 = await appNavigationSwitcher_2.$$("button")
-        this._betSwitcherButton_1 = buttons_1[0]
-        this._autoSwitcherButton_1 = buttons_1[1]
-        this._betSwitcherButton_2 = buttons_2[0]
-        this._autoSwitcherButton_2 = buttons_2[1]
-        this._autoCashOutSwitcher_1 = await this._betControl_1.$("app-ui-switcher")
-        this._autoCashOutSwitcher_2 = await this._betControl_2.$("app-ui-switcher")
+        const buttons_1 = appNavigationSwitcher_1.locator("button")
+        const buttons_2 = appNavigationSwitcher_2.locator("button")
+        this._betSwitcherButton_1 = buttons_1.first()
+        this._autoSwitcherButton_1 = buttons_1.last()
+        this._betSwitcherButton_2 = buttons_2.first()
+        this._autoSwitcherButton_2 = buttons_2.last()
+        this._autoCashOutSwitcher_1 = this._betControl_1.locator("app-ui-switcher").first()
+        this._autoCashOutSwitcher_2 = this._betControl_2.locator("app-ui-switcher").first()
         await this._autoSwitcherButton_1.click({delay: this._randomDelay()})
         await this._autoSwitcherButton_2.click({delay: this._randomDelay()})
         await this._autoCashOutSwitcher_1?.click({delay: this._randomDelay()})
         await this._autoCashOutSwitcher_2?.click({delay: this._randomDelay()})
-        const cashOutSpinner_1 = await this._betControl_1.$(".cashout-spinner-wrapper")
-        const cachOutSpinner_2 = await this._betControl_2.$(".cashout-spinner-wrapper")
+        const cashOutSpinner_1 = this._betControl_1.locator(".cashout-spinner-wrapper").first()
+        const cachOutSpinner_2 = this._betControl_2.locator(".cashout-spinner-wrapper").first()
         if(cashOutSpinner_1 == null){
-            console.log("no cashOutSpinner_1")
-            return
+            throw "no cashOutSpinner_1"
         }
         if(cachOutSpinner_2 == null){
-            console.log("no cachOutSpinner_2")
-            return
+            throw "no cachOutSpinner_2"
         }
-        this._autoCashOutMultiplier_1 = await cashOutSpinner_1.$("input") 
-        this._autoCashOutMultiplier_2 = await cachOutSpinner_2.$("input") 
+        this._autoCashOutMultiplier_1 = cashOutSpinner_1.locator("input").first()
+        this._autoCashOutMultiplier_2 = cachOutSpinner_2.locator("input").first()
+        if(!this._autoCashOutMultiplier_1){
+            throw "no _autoCashOutMultiplier_1"
+        }
+        if(!this._autoCashOutMultiplier_2){
+            throw "no _autoCashOutMultiplier_2"
+        }
         
         // this._betButton_1 = await this._betControl_1.$(".buttons-block>button")
         //this._betButton_2 = await this._betControl_2.$(".buttons-block>button")
@@ -99,21 +100,15 @@ export class BetControl{
     }
 
     async setAutoCashOut(multiplier: number, control:Control){
-        console.log("setAutoCashOut multiplier:", multiplier, " control: ", control)
         let autoCashOutMultiplier = this._autoCashOutMultiplier_1
-        if(control == Control.Control2){
+        if(control === Control.Control2){
             autoCashOutMultiplier = this._autoCashOutMultiplier_2
         }
-        if(autoCashOutMultiplier == null){
-            console.log("buttons null autoCashOutMultiplier")
-            return
+        if(!autoCashOutMultiplier){
+            throw "buttons null autoCashOutMultiplier"
         }
-        await autoCashOutMultiplier.fill("")
-        await this.aviatorPage.waitForTimeout(500);
-        await autoCashOutMultiplier.type(multiplier.toString(), {delay: this._randomDelay()})
-        //const _multi = multiplier.toString()
-         //await autoCashOutMultiplier.evaluate(node => node.setAttribute("value", _multi), {delay: this._randomDelay()})
-        await this.aviatorPage.waitForTimeout(500);
+        await autoCashOutMultiplier.fill("", {timeout: 500})
+        await autoCashOutMultiplier.type(multiplier.toString(), {delay: 50})
     }
     
     async updateAmount(amount: number, control:Control){
@@ -122,30 +117,29 @@ export class BetControl{
             input = this._amountInput_2
         }
         if(input == null){
-            console.log("updateAmount :: input null")
-            return
+            throw "updateAmount :: input null"
         }
-        await input.fill("")
-        await input.type(amount.toString(), {delay: this._randomDelay()})
+        await input.fill("", {timeout: 500})
+        await input.type(amount.toString(), {delay: 50})
+        await this.aviatorPage.waitForTimeout(500);
     }
 
     async bet(
         amount: number,
         multiplier: number,
-        control:Control, 
+        control: Control, 
     ){
         if(multiplier == null || amount == null){
-            console.log("bet :: no multiplier or amount")
-            return
+            throw "bet :: no multiplier or amount"
         }
         await this.setAutoCashOut(multiplier, control)
         await this.updateAmount(amount, control)
         if(this._betButton_1 == null || this._betButton_2 == null){
-            console.log("bet: bet button null. control: ", control)
-            return
+            throw "bet: bet button null. control"
         }
         if(control === Control.Control1){
             await this._betButton_1.click();({delay: this._randomDelay()})
+            await this.aviatorPage.waitForTimeout(1000)
             return
         }
         await this._betButton_2.click({delay: this._randomDelay()})

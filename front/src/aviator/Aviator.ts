@@ -55,22 +55,22 @@ export class AviatorPage{
         await this.readBalance()
         await this.readMultipliers()
         await this.readGameLimits()
+        console.log("aviator loaded")
     }
     
     async readGameLimits(){
         if(this._page == null){
-            return
+            throw "no page"
         }
         const menu = await this._page.$(".dropdown-toggle.user")
         if(menu == null){
-            return
+            throw "no menu"
         }
         await menu.click()
         await this._page.waitForTimeout(400);
         const appUserMenu = await this._page.$("app-user-menu-dropdown")
         if(appUserMenu == null){
-            console.log("appusermenu is null")
-            return
+            throw "appusermenu is null"
         }
         const listMenu = (await appUserMenu.$$(".list-menu")).slice(-1)[0]
         const menuLimits = (await listMenu.$$(".list-menu-item")).slice(-1)[0]
@@ -90,8 +90,7 @@ export class AviatorPage{
 
     async readBalance(): Promise<number | null>{
         if(this._page == null){
-            console.log("readBalance :: page is null")
-            return null
+            throw "readBalance :: page is null"
         }
         this._balanceElement = await this._page.$(".balance>.amount");
         if(this._balanceElement != null){
@@ -116,10 +115,8 @@ export class AviatorPage{
     }
 
     async bet(amount: number, multiplier: number, control: Control){
-        console.log("bet control: ", control)
         if(this._controls == null){
-            console.log("AviatorPage :: no _controls")
-            return
+            throw "AviatorPage :: no _controls"
         }
         this._controls.bet(amount, multiplier, control)
     }
@@ -141,13 +138,12 @@ export class AviatorPage{
                 }
                 if(this.multipliers[len_multipliers] != last_multiplier){
                     this.multipliers.push(last_multiplier)
-                    console.log("last multiplier", last_multiplier)
                     return
                 }
             }
             catch (e) {
                 if (e instanceof playwright.errors.TimeoutError) {
-                console.log("error timeout")
+                    console.log("error timeout")
                 }
             }
         }
