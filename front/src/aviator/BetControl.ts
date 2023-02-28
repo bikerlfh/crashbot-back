@@ -99,7 +99,7 @@ export class BetControl{
     }
 
     async setAutoCashOut(multiplier: number, control:Control){
-        console.log("setAutoCashOut control: ", control)
+        console.log("setAutoCashOut multiplier:", multiplier, " control: ", control)
         let autoCashOutMultiplier = this._autoCashOutMultiplier_1
         if(control == Control.Control2){
             autoCashOutMultiplier = this._autoCashOutMultiplier_2
@@ -111,6 +111,8 @@ export class BetControl{
         await autoCashOutMultiplier.fill("")
         await this.aviatorPage.waitForTimeout(500);
         await autoCashOutMultiplier.type(multiplier.toString(), {delay: this._randomDelay()})
+        //const _multi = multiplier.toString()
+         //await autoCashOutMultiplier.evaluate(node => node.setAttribute("value", _multi), {delay: this._randomDelay()})
         await this.aviatorPage.waitForTimeout(500);
     }
     
@@ -132,6 +134,10 @@ export class BetControl{
         multiplier: number,
         control:Control, 
     ){
+        if(multiplier == null || amount == null){
+            console.log("bet :: no multiplier or amount")
+            return
+        }
         await this.setAutoCashOut(multiplier, control)
         await this.updateAmount(amount, control)
         if(this._betButton_1 == null || this._betButton_2 == null){

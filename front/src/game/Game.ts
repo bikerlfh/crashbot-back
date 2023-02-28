@@ -117,13 +117,13 @@ export class Game {
         betsAverage.forEach(average => {
             let amount = 0
             if(profit < 0){
-                amount = Math.abs(profit) / average
+                amount = (Math.abs(profit) / average) * 2
             }else if(profit > 0) {
                 const _profit = (profit / 3)
                 profit -= _profit
-                amount = (this._maxBet / 3) + _profit
+                amount = this._minBet + _profit
             }else{
-                amount = (this._maxBet / 3)
+                amount = this._minBet
             }
             amount = parseFloat(amount.toFixed(0))
             amounts.push(amount)

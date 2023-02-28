@@ -22,7 +22,7 @@ import {Control} from "./src/aviator/BetControl"
 			console.log("bets:", bets)
 			for (let index = 0; index < bets.length; index++) {
 				const bet = bets[index];
-				const control = index == 0? Control.Control1: Control.Control2
+				const control = index == 0? Control.Control2: Control.Control1
 				await aviatorPage.bet(bet.amount, bet.multiplier, control)
 			}
 			/*const bet = bets[0];
