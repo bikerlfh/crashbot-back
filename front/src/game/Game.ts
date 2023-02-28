@@ -1,3 +1,4 @@
+import { clearScreenDown } from "readline"
 import {Multiplier, Average, Player, Bet} from "./core"
 
 export class Game {
@@ -51,7 +52,7 @@ export class Game {
         this.bets.forEach(bet=>{
             const profit = bet.evaluate(multiplier)
             this.balance += profit
-            this.historyBets.push(bet)
+            // this.historyBets.push(bet)
         })
         this.bets = []
     }
@@ -60,32 +61,6 @@ export class Game {
         this.evaluateBets(multiplier)
         this.multipliers.push(new Multiplier(multiplier))
     }
-    
-    /* 
-    getAverage(
-        category: number,
-        numLastMultiplier: number|null = null
-    ): number{
-        let games = this.multipliers
-        if(numLastMultiplier != null){
-            games = this.multipliers.slice(numLastMultiplier * -1)
-        }
-        const multipliers: number[] = []
-        games.forEach(game => {
-            if(game.category == category){
-                multipliers.push(game.multiplier)
-            }
-        })
-        let average = multipliers.reduce((a, b) => a + b) / multipliers.length
-        average =  parseFloat(average.toFixed(2))
-        console.log("average (", category, "):", average)
-        return average
-    }
-    */
-
-    /*getLastMultipliers(numLastMultiplier: number): Multiplier[]{
-        return this.multipliers.slice(numLastMultiplier * -1)
-    }*/
 
     getTotalAverage(numLastMultiplier: number): Average[]{
         let result: Average[] = []
@@ -128,21 +103,45 @@ export class Game {
         })
         return amounts
     }
+    
+    _randomMultiplier(min: number, max: number): number{
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
     getNextBet(): Bet[]{
         this.bets = []
-        const averages = this.getTotalAverage(10)
+        const numLastMultiplier = 10
+        const averages = this.getTotalAverage(numLastMultiplier)
         const averageCat_1 = averages.find(item => item.category == 1) || new Average(1)
         const averageCat_2 = averages.find(item => item.category == 2) || new Average(2)
         const averageCat_3 = averages.find(item => item.category == 3) || new Average(3)
-
-        if(averageCat_1.count < (averageCat_2.count + averageCat_3.count)){
-            const amounts = this.calculateAmountBet([2, averageCat_2.average])
+        const percentage = ((averageCat_2.count + averageCat_3.count) / numLastMultiplier) * 100
+        const percentageCat1 = 100 - percentage
+        const profit = this.balance - this.initialBalance
+        console.log("getNextBet: percentage: ", percentage)
+        let amounts: number[] = []
+        if(percentage >= 60 && profit > 0){
+            this.bets.push(new Bet(profit, 2))
+        }else if(percentage >= 50){
+            if(profit >0){
+                const multiplier_2 = this._randomMultiplier(2, 5)
+                amounts = this.calculateAmountBet([2])
+                const amount2 = parseFloat((amounts[0]/3).toFixed(0))
+                this.bets.push(new Bet(amounts[0], 2))
+                this.bets.push(new Bet(amount2, multiplier_2))
+            }else{
+                amounts = this.calculateAmountBet([2])
+                this.bets.push(new Bet(amounts[0], 2))
+            }
+        }else if(percentage >= 40 && profit >= 0){
+            amounts = this.calculateAmountBet([2])
             this.bets.push(new Bet(amounts[0], 2))
-            this.bets.push(new Bet(amounts[1], averageCat_2.average))
-        }else if(averageCat_1.percentage < 60){
-            const amounts = this.calculateAmountBet([averageCat_1.average])
+        }else if(profit > 0){
+            amounts = this.calculateAmountBet([averageCat_1.average])
             this.bets.push(new Bet(amounts[0], averageCat_1.average))
+        }else if(percentageCat1 >= 90){
+            const amount = parseFloat((this.balance * 0.3).toFixed(0))
+            this.bets.push(new Bet(amount, 1.95))
         }
         return this.bets
     } 
