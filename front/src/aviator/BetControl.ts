@@ -7,7 +7,7 @@ export enum Control{
 }
 
 export class BetControl{
-    aviatorPage: playwright.Page
+    aviatorPage: playwright.Locator
     _betControl_1: playwright.Locator|null = null
     _betControl_2: playwright.Locator|null = null
     _amountInput_1: playwright.Locator|null = null
@@ -27,7 +27,7 @@ export class BetControl{
     isActiveAutoCashOutControl_2: boolean = false
     wasLoad: boolean
 
-    constructor(aviatorPage: playwright.Page){
+    constructor(aviatorPage: playwright.Locator){
         this.aviatorPage = aviatorPage
         this.wasLoad = false
     }
@@ -89,11 +89,9 @@ export class BetControl{
         if(!this._autoCashOutMultiplier_2){
             throw "no _autoCashOutMultiplier_2"
         }
-        
-        // this._betButton_1 = await this._betControl_1.$(".buttons-block>button")
-        //this._betButton_2 = await this._betControl_2.$(".buttons-block>button")
         // app-bet-control.buttons-block>button
-        const betButtons = this.aviatorPage.locator("button", {hasText: /\B\E\T/})
+        // const betButtons = this.aviatorPage.locator("button", {hasText: /\B\E\T/})
+        const betButtons = this.aviatorPage.locator("button.bet")
         this._betButton_1 = betButtons.first()
         this._betButton_2 = betButtons.last()
         this.wasLoad = true
@@ -127,7 +125,7 @@ export class BetControl{
             await input.fill("", {timeout: 500})
             await input.type(amount.toString(), {delay: 100})
         }
-        await this.aviatorPage.waitForTimeout(500);
+       // await this.aviatorPage.waitForTimeout(500);
     }
 
     async bet(
@@ -145,10 +143,10 @@ export class BetControl{
         }
         if(control === Control.Control1){
             await this._betButton_1.click();({delay: this._randomDelay()})
-            await this.aviatorPage.waitForTimeout(1000)
+            //await this.aviatorPage.waitForTimeout(1000)
             return
         }
         await this._betButton_2.click({delay: this._randomDelay()})
-        await this.aviatorPage.waitForTimeout(1000)
+        //await this.aviatorPage.waitForTimeout(1000)
     }
 }

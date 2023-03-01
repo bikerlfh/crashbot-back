@@ -1,10 +1,11 @@
-import {URL_AVIATOR_DEMO, URL_BETPLAY} from "./src/constants";
-import {Game} from './src/game/Game';
+import {HomeBet} from "./src/constants"
+import {Game} from './src/game/Game'
 import {AviatorPage} from "./src/aviator/Aviator"
+import { AviatorBetPlay } from "./src/aviator/AviatorBetPlay"
 import {Control} from "./src/aviator/BetControl"
 
 (async () => {
-	const aviatorPage = new AviatorPage(URL_AVIATOR_DEMO, true)
+	const aviatorPage = new AviatorBetPlay(HomeBet.betplay.url)
 	await aviatorPage.open()
 	const game = new Game(
 		"demo", 

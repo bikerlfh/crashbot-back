@@ -1,3 +1,4 @@
+import { loadavg } from "os";
 import playwright from "playwright";
 import {BetControl, Control} from "./BetControl"
 
@@ -5,7 +6,7 @@ export class AviatorPage{
     _browser: playwright.Browser|null = null
     _context: playwright.BrowserContext|null = null
     _page: playwright.Page|null = null
-    _historyGame: playwright.ElementHandle<SVGElement | HTMLElement>|null = null
+    _historyGame: playwright.Locator|null = null
     _balanceElement: playwright.ElementHandle<SVGElement | HTMLElement>|null = null
     _controls: BetControl|null = null
     isDemo: boolean = false
@@ -16,7 +17,7 @@ export class AviatorPage{
     multipliers: number[] = []
     balance: number
 
-    constructor(url: string, isDemo: boolean){
+    constructor(url: string, isDemo: boolean = false){
         this.url = url
         this.isDemo = isDemo
         this.balance = 0
@@ -36,8 +37,9 @@ export class AviatorPage{
         }
         while(true){
             try {
-                await this._page.locator('.result-history').waitFor({
-                    timeout: 50000
+                
+                await this._page.locator(".result-history").waitFor({
+                    timeout: 30000
                 });
                 break;
             } catch (e) {
@@ -45,12 +47,12 @@ export class AviatorPage{
                     console.log("error timeout")
                     continue
                 }
-                return
+                throw e
             }
         }
-        this._historyGame = await this._page.$('.result-history');
+        this._historyGame = this._page.locator(".result-history");
         console.log("result history found")
-        this._controls = new BetControl(this._page);
+        this._controls = new BetControl(this._page.locator("body"));
         await this._controls.init()
         await this.readBalance()
         await this.readMultipliers()
@@ -68,7 +70,9 @@ export class AviatorPage{
         }
         await menu.click()
         await this._page.waitForTimeout(400);
-        const appUserMenu = await this._page.$("app-user-menu-dropdown")
+        // app-settings-menu
+        // app-user-menu-dropdown
+        const appUserMenu = await this._page.$("app-settings-menu")
         if(appUserMenu == null){
             throw "appusermenu is null"
         }
@@ -92,21 +96,28 @@ export class AviatorPage{
         if(this._page == null){
             throw "readBalance :: page is null"
         }
-        this._balanceElement = await this._page.$(".balance>.amount");
-        if(this._balanceElement != null){
-            this.balance = parseFloat(await this._balanceElement.textContent() || "0")
-            console.log("balance: ", this.balance)
+        this._balanceElement = await this._page.$(".balance>div>.amount");
+        if(this._balanceElement == null){
+            throw "balance element is null"
         }
+        this.balance = parseFloat(await this._balanceElement.textContent() || "0")
+        console.log("balance: ", this.balance)
         return this.balance
+    }
+
+    _formatMultiplier(multiplier: string): number{
+        return parseFloat(multiplier.replace(/\s/g, '').replace("x", ""))
     }
 
     async readMultipliers(){
         if (this._page && this._historyGame){
-            let items = await this._historyGame.$$('app-payout-item');
+            // app-bubble-multiplier
+            // app-payout-item
+            let items = await this._historyGame.locator('app-bubble-multiplier').all();
             items.slice().reverse().forEach(async (item) => {
                 const multiplier = await item.textContent();
                 if(multiplier !== null){
-                    const value = parseFloat(multiplier.replace(/\s/g, '').replace("x", ""))
+                    const value = this._formatMultiplier(multiplier)
                     this.multipliers.push(value);
                 }
             })
@@ -128,22 +139,25 @@ export class AviatorPage{
         while(true){
             try{
                 const len_multipliers: number = this.multipliers.length - 1
-                let locator =  await this._historyGame.$('app-payout-item')
+                let locator = this._historyGame.locator('app-bubble-multiplier').first()
                 if(locator == null){
                     continue
                 }
-                const last_multiplier = parseFloat(await locator.textContent() || "0")
-                if(last_multiplier == null){
+                let lastMultiplierContent = await locator.textContent({timeout:1000})
+                if(!lastMultiplierContent){
+                    console.log("waitNextGame :: lastMultiplierContent not exists")
                     continue
                 }
-                if(this.multipliers[len_multipliers] != last_multiplier){
-                    this.multipliers.push(last_multiplier)
+                const lastMultiplier = this._formatMultiplier(lastMultiplierContent)
+                if(this.multipliers[len_multipliers] != lastMultiplier){
+                    this.multipliers.push(lastMultiplier)
+                    console.log("waitNextGame :: new multiplier:", lastMultiplier)
                     return
                 }
             }
             catch (e) {
                 if (e instanceof playwright.errors.TimeoutError) {
-                    console.log("error timeout")
+                    console.log("waitNextGame :: error timeout")
                 }
             }
         }
