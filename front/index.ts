@@ -1,12 +1,16 @@
-import {HomeBet} from "./src/constants"
+import * as dotenv from 'dotenv';
+dotenv.config()
 import {Game} from './src/game/Game'
-import {AviatorPage} from "./src/aviator/Aviator"
+// import {AviatorPage} from "./src/aviator/Aviator"
 import { AviatorBetPlay } from "./src/aviator/AviatorBetPlay"
+import { AviatorDemo } from "./src/aviator/AviatorDemo"
 import {Control} from "./src/aviator/BetControl"
 
+
+
 (async () => {
-	const aviatorPage = new AviatorPage(HomeBet.demo.url, true)
-	// const aviatorPage = new AviatorBetPlay()
+	// const aviatorPage = new AviatorDemo()
+	const aviatorPage = new AviatorBetPlay()
 	await aviatorPage.open()
 	const game = new Game(
 		"demo", 
@@ -21,7 +25,7 @@ import {Control} from "./src/aviator/BetControl"
 		await aviatorPage.waitNextGame()
 		game.addMultiplier(aviatorPage.multipliers.slice(-1)[0])
 		const bets = game.getNextBet()
-		if(bets.length){
+		/*if(bets.length){
 			console.log("bets:", bets)
 			for (let index = 0; index < bets.length; index++) {
 				const bet = bets[index];
@@ -30,7 +34,7 @@ import {Control} from "./src/aviator/BetControl"
 				await sleepNow(2000)
 			}
 		
-		}
+		}*/
 	}
 	// const average = game.getAverage(1)
 	// await aviatorPage.bet(5, average, Control.Control2)

@@ -10,7 +10,7 @@ export class AviatorPage{
     _historyGame: playwright.Locator|null = null
     _balanceElement: playwright.Locator|null = null
     _controls: BetControl|null = null
-    isDemo: boolean = false
+    autoPlay: boolean = false
     minimumBet: number = 0
     maximumBet: number = 0
     maximumWinForOneBet: number = 0
@@ -18,9 +18,9 @@ export class AviatorPage{
     multipliers: number[] = []
     balance: number
 
-    constructor(url: string, isDemo: boolean = false){
+    constructor(url: string, autoPlay: boolean){
         this.url = url
-        this.isDemo = isDemo
+        this.autoPlay = autoPlay
         this.balance = 0
     }
 
@@ -30,29 +30,27 @@ export class AviatorPage{
             console.log("_click :: box or page does't exists")
             return
         }
+        // await this._page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {steps: 5})
         await this._page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
     }
+    
+    async _login(): Promise<void>{
+        /* implement the login */
+        return
+    }
 
-    async open(){
-        this._browser = await playwright.chromium.launch({headless:false});
-        this._context = await this._browser.newContext();
-        this._page = await this._context.newPage();
-        await this._page.goto(this.url);
-        if(this.isDemo){
-            await this._page.getByRole('button', { name: 'Play Demo' }).click();
-	        await this._page.getByRole('button', { name: "Yes I’m over 18" }).click();
-	        await this._page.waitForTimeout(2000);
-            let pages = this._context.pages();
-	        this._page =pages[1]
+    async _getAppGame(): Promise<playwright.Locator>{
+        if(!this._page ){
+            throw "_getAppGame :: page is null"
         }
         while(true){
             try {
                 // this._appGame = this._page.locator("app-game").first()
-                this._appGame = this._page.locator("app-game").first()
-                await this._appGame.locator(".result-history").waitFor({
+                const _appGame = this._page.locator("app-game").first()
+                await _appGame.locator(".result-history").waitFor({
                     timeout: 30000
                 });
-                break;
+                return _appGame
             } catch (e) {
                 if (e instanceof playwright.errors.TimeoutError) {
                     console.log("error timeout")
@@ -61,13 +59,22 @@ export class AviatorPage{
                 throw e
             }
         }
+    }
+
+    async open(){
+        this._browser = await playwright.chromium.launch({headless:false});
+        this._context = await this._browser.newContext();
+        this._page = await this._context.newPage();
+        await this._page.goto(this.url);
+        await this._login()
+        this._appGame = await this._getAppGame()
         this._historyGame = this._appGame.locator(".result-history");
         console.log("result history found")
-        this._controls = new BetControl(this._appGame);
-        await this._controls.init()
         await this.readBalance()
         await this.readMultipliers()
         await this.readGameLimits()
+        this._controls = new BetControl(this._appGame);
+        await this._controls.init()
         console.log("aviator loaded")
     }
     
@@ -121,19 +128,21 @@ export class AviatorPage{
     }
 
     async readMultipliers(){
-        if (this._page && this._historyGame){
-            // app-bubble-multiplier
-            // app-payout-item
-            let items = await this._historyGame.locator('app-bubble-multiplier').all();
-            items.slice().reverse().forEach(async (item) => {
-                const multiplier = await item.textContent();
-                if(multiplier !== null){
-                    const value = this._formatMultiplier(multiplier)
-                    this.multipliers.push(value);
-                }
-            })
-            await this._page.waitForTimeout(2000);
+        if (!this._page || !this._historyGame){
+            throw "readMultipliers :: the page or the history game not exists"
         }
+        // app-bubble-multiplier
+        // app-payout-item
+        let items = await this._historyGame.locator('app-bubble-multiplier').all();
+        items.slice().reverse().forEach(async (item) => {
+            const multiplier = await item.textContent();
+            if(multiplier !== null){
+                const value = this._formatMultiplier(multiplier)
+                this.multipliers.push(value);
+            }
+        })
+        await this._page.waitForTimeout(2000);
+        console.log("multiplier:", this.multipliers)
     }
 
     async bet(amount: number, multiplier: number, control: Control){

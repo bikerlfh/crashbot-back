@@ -9,6 +9,9 @@ export let HomeBet = {
         url: "https://www.spribe.co/games/aviator"
     },
     betplay: {
-        url:  "https://betplay.com.co/slots"
+        url:  "https://betplay.com.co/slots",
+        aviatorUrl: "https://betplay.com.co/slots/launchGame?gameCode=SPB_aviator&flashClient=true&additionalParam=&integrationChannelCode=PARIPLAY",
+        username: process.env.BET_PLAY_USERNAME,
+        password: process.env.BET_PLAY_PASSWORD
     }
 }

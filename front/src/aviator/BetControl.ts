@@ -52,22 +52,20 @@ export class BetControl{
         }
         this._amountInput_1 = inputAppSpinner_1.locator("input").first()
         this._amountInput_2 = inputAppSpinner_2.locator("input").first()
-        const appNavigationSwitcher_1 = this._betControl_1.locator("app-navigation-switcher").first()
-        const appNavigationSwitcher_2 = this._betControl_2.locator("app-navigation-switcher").first()
-        if(appNavigationSwitcher_1 == null){
-            throw "no appNavigationSwitcher_1"
+        const buttonsSwitcher_1 = await this._betControl_1.locator("app-navigation-switcher>div>button").all()
+        const buttonsSwitcher_2 = await this._betControl_2.locator("app-navigation-switcher>div>button").all()
+        if(!buttonsSwitcher_1){
+            throw "no buttonsSwitcher_1"
         }
-        if(appNavigationSwitcher_2 == null){
-            throw "no appNavigationSwitcher_2"
+        if(!buttonsSwitcher_2){
+            throw "no buttonsSwitcher_2"
         }
-        const buttons_1 = appNavigationSwitcher_1.locator("button")
-        const buttons_2 = appNavigationSwitcher_2.locator("button")
-        this._betSwitcherButton_1 = buttons_1.first()
-        this._autoSwitcherButton_1 = buttons_1.last()
-        this._betSwitcherButton_2 = buttons_2.first()
-        this._autoSwitcherButton_2 = buttons_2.last()
-        this._autoCashOutSwitcher_1 = this._betControl_1.locator("app-ui-switcher").first()
-        this._autoCashOutSwitcher_2 = this._betControl_2.locator("app-ui-switcher").first()
+        this._betSwitcherButton_1 = buttonsSwitcher_1[0]
+        this._autoSwitcherButton_1 = buttonsSwitcher_1[1]
+        this._betSwitcherButton_2 = buttonsSwitcher_2[0]
+        this._autoSwitcherButton_2 = buttonsSwitcher_2[1]
+        this._autoCashOutSwitcher_1 = this._betControl_1.locator("app-ui-switcher").last()
+        this._autoCashOutSwitcher_2 = this._betControl_2.locator("app-ui-switcher").last()
         await this._autoSwitcherButton_1.click({delay: this._randomDelay()})
         await this._autoSwitcherButton_2.click({delay: this._randomDelay()})
         await this._autoCashOutSwitcher_1.click({delay: this._randomDelay()})

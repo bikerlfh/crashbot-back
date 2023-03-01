@@ -7,25 +7,38 @@ export class AviatorBetPlay extends AviatorPage{
     _frame: playwright.FrameLocator| null = null
 
     constructor(){
-        super(HomeBet.betplay.url, false)
+        super(HomeBet.betplay.url, true)
     }
 
-    async open(){
-        this._browser = await playwright.chromium.launch({headless:false});
-        this._context = await this._browser.newContext();
-        this._page = await this._context.newPage();
-        await this._page.goto(this.url);
+    async _login(): Promise<void> {
+        if(!this._page){
+            throw "_login :: page is null"
+        }
+        const userNameInput = this._page.locator("input#userName")
+        const passwordInput = this._page.locator("input#password")
+        const loginButton = this._page.locator("button#btnLoginPrimary")
+        await userNameInput.type(HomeBet.betplay.username || "", {delay: 100})
+        await passwordInput.type(HomeBet.betplay.password || "", {delay: 100})
+        this._click(loginButton)
+        await this._page.locator("#spanUser").waitFor({timeout: 50000})
+        this._page.goto(HomeBet.betplay.aviatorUrl)
+    }
+
+    async _getAppGame(): Promise<playwright.Locator> {
+        if(!this._page){
+            throw "_getAppGame :: page is null"
+        }
         await this._page.waitForURL("**/slots/launchGame?gameCode=SPB_aviator**", {timeout: 50000})
         while(true){
             try {
                 // gameFrame
                 // spribe-game
                 this._frame = this._page.frameLocator("#gameFrame").frameLocator("#spribe-game")
-                this._appGame = this._frame.locator("body").first()
+                this._appGame = this._frame.locator("app-game").first()
                 await this._appGame.locator(".result-history").waitFor({
                     timeout: 5000
                 });
-                break;
+                return this._appGame
             } catch (e) {
                 if (e instanceof playwright.errors.TimeoutError) {
                     console.log("error timeout")
@@ -34,14 +47,6 @@ export class AviatorBetPlay extends AviatorPage{
                 throw e
             }
         }
-        this._historyGame = this._appGame.locator(".result-history");
-        console.log("result history found")
-        this._controls = new BetControl(this._appGame);
-        await this._controls.init()
-        await this.readBalance()
-        await this.readMultipliers()
-        await this.readGameLimits()
-        console.log("aviator loaded")
     }
     
     async readGameLimits(){
