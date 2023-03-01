@@ -21,7 +21,11 @@ export class AviatorBetPlay extends AviatorPage{
         await passwordInput.type(HomeBet.betplay.password || "", {delay: 100})
         this._click(loginButton)
         await this._page.locator("#spanUser").waitFor({timeout: 50000})
-        this._page.goto(HomeBet.betplay.aviatorUrl)
+        const searchButton = this._page.locator("input.inputSearch")
+        await searchButton.type("aviator", {delay: 150})
+        await this._page.waitForTimeout(2000)
+        this._click(this._page.locator("button.btnSlot"))
+        // this._page.goto(HomeBet.betplay.aviatorUrl)
     }
 
     async _getAppGame(): Promise<playwright.Locator> {

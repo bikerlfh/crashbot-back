@@ -28,7 +28,7 @@ export class AviatorPage{
             return
         }
         // await this._page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {steps: 5})
-        await this._page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+        await this._page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, {delay: 50});
     }
     
     async _login(): Promise<void>{

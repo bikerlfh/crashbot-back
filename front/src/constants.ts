@@ -10,7 +10,7 @@ export let HomeBet = {
     },
     betplay: {
         url:  "https://betplay.com.co/slots",
-        aviatorUrl: "https://betplay.com.co/slots/launchGame?gameCode=SPB_aviator&flashClient=true&additionalParam=&integrationChannelCode=PARIPLAY",
+        // aviatorUrl: "https://betplay.com.co/slots/launchGame?gameCode=SPB_aviator&flashClient=true&additionalParam=&integrationChannelCode=PARIPLAY",
         username: process.env.BET_PLAY_USERNAME,
         password: process.env.BET_PLAY_PASSWORD
     }
