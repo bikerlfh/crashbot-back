@@ -1,9 +1,14 @@
 import playwright from 'playwright'
 import {AviatorPage} from './Aviator'
 import {BetControl} from "./BetControl"
-
+import { HomeBet } from '../constants'
 
 export class AviatorBetPlay extends AviatorPage{
+    _frame: playwright.FrameLocator| null = null
+
+    constructor(){
+        super(HomeBet.betplay.url, false)
+    }
 
     async open(){
         this._browser = await playwright.chromium.launch({headless:false});
@@ -11,15 +16,13 @@ export class AviatorBetPlay extends AviatorPage{
         this._page = await this._context.newPage();
         await this._page.goto(this.url);
         await this._page.waitForURL("**/slots/launchGame?gameCode=SPB_aviator**", {timeout: 50000})
-        let _frame = null
-        let main = null
         while(true){
             try {
                 // gameFrame
                 // spribe-game
-                _frame = this._page.frameLocator("#gameFrame").frameLocator("#spribe-game")
-                main = _frame.locator("app-game").first()
-                await main.locator(".result-history").waitFor({
+                this._frame = this._page.frameLocator("#gameFrame").frameLocator("#spribe-game")
+                this._appGame = this._frame.locator("body").first()
+                await this._appGame.locator(".result-history").waitFor({
                     timeout: 5000
                 });
                 break;
@@ -31,14 +34,47 @@ export class AviatorBetPlay extends AviatorPage{
                 throw e
             }
         }
-        this._historyGame = main.locator(".result-history");
+        this._historyGame = this._appGame.locator(".result-history");
         console.log("result history found")
-        this._controls = new BetControl(main);
+        this._controls = new BetControl(this._appGame);
         await this._controls.init()
         await this.readBalance()
         await this.readMultipliers()
         await this.readGameLimits()
         console.log("aviator loaded")
     }
-
+    
+    async readGameLimits(){
+        if(this._frame == null){
+            throw "readGameLimits :: _frame is null"
+        }
+        if(this._appGame == null || this._page == null){
+            throw "readGameLimits :: _appGame is null"
+        }
+        const menu = this._appGame.locator(".dropdown-toggle.user")
+        if(menu == null){
+            throw "readGameLimits :: menu is null"
+        }
+        await menu.click()
+        await this._page.waitForTimeout(400);
+        // app-settings-menu
+        // app-user-menu-dropdown
+        const appUserMenu = this._appGame.locator("app-settings-menu")
+        if(appUserMenu == null){
+            throw "readGameLimits :: appusermenu is null"
+        }
+        const listMenu = appUserMenu.locator(".list-menu").last()
+        const menuLimits = listMenu.locator(".list-menu-item").last()
+        await menuLimits.click()
+        await this._page.waitForTimeout(400);
+        const limits = await this._frame.locator("app-game-limits ul>li>span").all()
+        this.minimumBet = parseFloat((await limits[0].textContent())?.split(" ")[0] || "0")
+        this.maximumBet = parseFloat((await limits[1].textContent())?.split(" ")[0] || "0")
+        this.maximumWinForOneBet =  parseFloat((await limits[2].textContent())?.split(" ")[0] || "0")
+        console.log("minimumBet: ", this.minimumBet)
+        console.log("maximumBet: ", this.maximumBet)
+        console.log("maximumWinForOneBet: ", this.maximumWinForOneBet)
+        const buttonClose = this._frame.locator("ngb-modal-window")
+        await buttonClose.click()
+    }
 }

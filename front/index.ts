@@ -5,7 +5,8 @@ import { AviatorBetPlay } from "./src/aviator/AviatorBetPlay"
 import {Control} from "./src/aviator/BetControl"
 
 (async () => {
-	const aviatorPage = new AviatorBetPlay(HomeBet.betplay.url)
+	const aviatorPage = new AviatorPage(HomeBet.demo.url, true)
+	// const aviatorPage = new AviatorBetPlay()
 	await aviatorPage.open()
 	const game = new Game(
 		"demo", 

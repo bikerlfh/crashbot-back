@@ -6,8 +6,9 @@ export class AviatorPage{
     _browser: playwright.Browser|null = null
     _context: playwright.BrowserContext|null = null
     _page: playwright.Page|null = null
+    _appGame: playwright.Locator| null = null
     _historyGame: playwright.Locator|null = null
-    _balanceElement: playwright.ElementHandle<SVGElement | HTMLElement>|null = null
+    _balanceElement: playwright.Locator|null = null
     _controls: BetControl|null = null
     isDemo: boolean = false
     minimumBet: number = 0
@@ -21,6 +22,15 @@ export class AviatorPage{
         this.url = url
         this.isDemo = isDemo
         this.balance = 0
+    }
+
+    async _click(element: playwright.Locator){
+        const box = await element.boundingBox();
+        if(!box || !this._page){
+            console.log("_click :: box or page does't exists")
+            return
+        }
+        await this._page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
     }
 
     async open(){
@@ -37,8 +47,9 @@ export class AviatorPage{
         }
         while(true){
             try {
-                
-                await this._page.locator(".result-history").waitFor({
+                // this._appGame = this._page.locator("app-game").first()
+                this._appGame = this._page.locator("app-game").first()
+                await this._appGame.locator(".result-history").waitFor({
                     timeout: 30000
                 });
                 break;
@@ -50,9 +61,9 @@ export class AviatorPage{
                 throw e
             }
         }
-        this._historyGame = this._page.locator(".result-history");
+        this._historyGame = this._appGame.locator(".result-history");
         console.log("result history found")
-        this._controls = new BetControl(this._page.locator("body"));
+        this._controls = new BetControl(this._appGame);
         await this._controls.init()
         await this.readBalance()
         await this.readMultipliers()
@@ -61,31 +72,31 @@ export class AviatorPage{
     }
     
     async readGameLimits(){
-        if(this._page == null){
-            throw "no page"
+        if(this._appGame == null || this._page == null){
+            throw "readGameLimits :: _appGame is null"
         }
-        const menu = await this._page.$(".dropdown-toggle.user")
+        const menu = this._appGame.locator(".dropdown-toggle.user")
         if(menu == null){
-            throw "no menu"
+            throw "readGameLimits :: menu is null"
         }
         await menu.click()
         await this._page.waitForTimeout(400);
         // app-settings-menu
         // app-user-menu-dropdown
-        const appUserMenu = await this._page.$("app-settings-menu")
+        const appUserMenu = this._appGame.locator("app-settings-menu")
         if(appUserMenu == null){
-            throw "appusermenu is null"
+            throw "readGameLimits :: appusermenu is null"
         }
-        const listMenu = (await appUserMenu.$$(".list-menu")).slice(-1)[0]
-        const menuLimits = (await listMenu.$$(".list-menu-item")).slice(-1)[0]
+        const listMenu = appUserMenu.locator(".list-menu").last()
+        const menuLimits = listMenu.locator(".list-menu-item").last()
         await menuLimits.click()
         await this._page.waitForTimeout(400);
-        const limits = await this._page.$$("app-game-limits ul>li>span")
+        const limits = await this._page.locator("app-game-limits ul>li>span").all()
         this.minimumBet = parseFloat((await limits[0].textContent())?.split(" ")[0] || "0")
         this.maximumBet = parseFloat((await limits[1].textContent())?.split(" ")[0] || "0")
         this.maximumWinForOneBet =  parseFloat((await limits[2].textContent())?.split(" ")[0] || "0")
-        const buttonClose = await this._page.$("ngb-modal-window")
-        await buttonClose?.click()
+        const buttonClose = this._page.locator("ngb-modal-window")
+        await buttonClose.click()
         console.log("minimumBet: ", this.minimumBet)
         console.log("maximumBet: ", this.maximumBet)
         console.log("maximumWinForOneBet: ", this.maximumWinForOneBet)
@@ -93,10 +104,10 @@ export class AviatorPage{
     }
 
     async readBalance(): Promise<number | null>{
-        if(this._page == null){
-            throw "readBalance :: page is null"
+        if(this._appGame == null){
+            throw "readBalance :: _appGame is null"
         }
-        this._balanceElement = await this._page.$(".balance>div>.amount");
+        this._balanceElement = this._appGame.locator(".balance>div>.amount")
         if(this._balanceElement == null){
             throw "balance element is null"
         }

@@ -1,5 +1,4 @@
 import playwright from "playwright";
-import { mainModule } from "process";
 
 export enum Control{
     Control1=1,
@@ -71,8 +70,8 @@ export class BetControl{
         this._autoCashOutSwitcher_2 = this._betControl_2.locator("app-ui-switcher").first()
         await this._autoSwitcherButton_1.click({delay: this._randomDelay()})
         await this._autoSwitcherButton_2.click({delay: this._randomDelay()})
-        await this._autoCashOutSwitcher_1?.click({delay: this._randomDelay()})
-        await this._autoCashOutSwitcher_2?.click({delay: this._randomDelay()})
+        await this._autoCashOutSwitcher_1.click({delay: this._randomDelay()})
+        await this._autoCashOutSwitcher_2.click({delay: this._randomDelay()})
         const cashOutSpinner_1 = this._betControl_1.locator(".cashout-spinner-wrapper").first()
         const cachOutSpinner_2 = this._betControl_2.locator(".cashout-spinner-wrapper").first()
         if(cashOutSpinner_1 == null){
