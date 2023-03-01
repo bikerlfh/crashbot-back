@@ -7,7 +7,7 @@ export class AviatorBetPlay extends AviatorPage{
     _frame: playwright.FrameLocator| null = null
 
     constructor(){
-        super(HomeBet.betplay.url, true)
+        super(HomeBet.betplay.url)
     }
 
     async _login(): Promise<void> {

@@ -1,4 +1,3 @@
-import { loadavg } from "os";
 import playwright from "playwright";
 import {BetControl, Control} from "./BetControl"
 
@@ -10,7 +9,6 @@ export class AviatorPage{
     _historyGame: playwright.Locator|null = null
     _balanceElement: playwright.Locator|null = null
     _controls: BetControl|null = null
-    autoPlay: boolean = false
     minimumBet: number = 0
     maximumBet: number = 0
     maximumWinForOneBet: number = 0
@@ -18,9 +16,8 @@ export class AviatorPage{
     multipliers: number[] = []
     balance: number
 
-    constructor(url: string, autoPlay: boolean){
+    constructor(url: string){
         this.url = url
-        this.autoPlay = autoPlay
         this.balance = 0
     }
 
