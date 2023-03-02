@@ -1,6 +1,5 @@
 import playwright from 'playwright'
 import {AviatorPage} from './Aviator'
-import {BetControl} from "./BetControl"
 import { HomeBet } from '../constants'
 
 export class AviatorBetPlay extends AviatorPage{

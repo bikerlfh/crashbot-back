@@ -63,6 +63,7 @@ export let APIRest = {
        url =  APIUrl + url;
        return fetch(url, config)
            .then(response => {
+            console.log("response:", response.body)
                return response.json().then(res =>({ 
                        ok: response.ok, 
                        status: response.status, 

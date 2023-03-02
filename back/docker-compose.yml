@@ -27,8 +27,7 @@ services:
     ports:
       - '8000:8000'
     volumes:
-      - ./mo_services:/mo_services/mo_services
-      - ./django_project:/mo_services/django_project
+      - ./:/app/
     depends_on:
       - postgres
 

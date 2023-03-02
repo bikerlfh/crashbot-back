@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.core'
+    'apps.core',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -104,6 +105,12 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": (
+        "apps.utils.django.views.handlers.exception_errors_format_handler"
+    ),
+}
 
 
 # Internationalization

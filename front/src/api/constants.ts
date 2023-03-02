@@ -2,8 +2,8 @@
  * Url de la api
  * @type {string}
  */
-export const APIUrl: string = "http://201.244.226.121:8081/";
-//export const APIUrl = "http://127.0.0.1:8000/";
+// export const APIUrl: string = "http://201.244.226.121:8081/";
+export const APIUrl = "http://localhost:8000";
 export const APIKey: string = "edd19a46ed105cf8fb22056328072bec";
 
 export enum HTTPStatus {

@@ -10,7 +10,7 @@ from apps.core import views
 urlpatterns: list[Any] = [
     path(
         "homebet/multiplier/add/",
-        views.AddHomeBetResult.as_view(),
+        views.HomeBetMultiplierView.as_view(),
         name="add-multipliers",
     ),
 ]

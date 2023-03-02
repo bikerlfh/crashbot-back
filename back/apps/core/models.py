@@ -42,13 +42,13 @@ class HomeBetMultiplier(BaseModel):
     )
     number_of_players = models.SmallIntegerField(null=True)
     multiplier = models.DecimalField(
-        max_digits=18,
+        max_digits=10,
         decimal_places=2
     )
     multiplier_dt = models.DateTimeField()
 
     class Meta:
-        db_table = "homebet_multilier"
+        db_table = "homebet_multiplier"
 
 
 class Customer(BaseModel):
