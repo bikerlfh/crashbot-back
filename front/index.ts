@@ -4,11 +4,11 @@ import {Game} from './src/game/Game'
 // import {AviatorPage} from "./src/aviator/Aviator"
 import { AviatorBetPlay } from "./src/aviator/AviatorBetPlay"
 import { AviatorDemo } from "./src/aviator/AviatorDemo"
+import { AviatorOneWin } from "./src/aviator/AviatorOneWin"
 
 
 (async () => {
-	//const aviatorPage = new AviatorDemo()
-	const aviatorPage = new AviatorBetPlay()
+	const aviatorPage = new AviatorOneWin()
 	await aviatorPage.open()
 	const game = new Game(
 		"demo", 

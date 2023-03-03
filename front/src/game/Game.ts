@@ -33,7 +33,7 @@ export class Game {
         this.maximumBet = maximumBet
         this.maximumWinForOneBet = maximumWinForOneBet
         this.calculateMinMaxBet()
-        AviatorBotAPI.save_multipliers(1, multipliers)
+        // AviatorBotAPI.save_multipliers(1, multipliers)
     }
 
     calculateMinMaxBet(){

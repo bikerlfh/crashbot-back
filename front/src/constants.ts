@@ -13,5 +13,10 @@ export let HomeBet = {
         // aviatorUrl: "https://betplay.com.co/slots/launchGame?gameCode=SPB_aviator&flashClient=true&additionalParam=&integrationChannelCode=PARIPLAY",
         username: process.env.BET_PLAY_USERNAME,
         password: process.env.BET_PLAY_PASSWORD
+    },
+    oneWin: {
+        url: "https://1wslue.top/casino/",
+        username: process.env.ONE_WIN_USERNAME,
+        password: process.env.ONE_WIN_PASSWORD
     }
 }
