@@ -35,35 +35,24 @@ class MultiplierSaveStrategy:
         )
 
     def get_new_multipliers(self) -> list[Decimal]:
-        if not self.last_multipliers or \
-                len(self.last_multipliers) != len(self.multipliers):
+        if not self.last_multipliers:
             return self.multipliers
-        len_index = len(self.multipliers) - 1
-        index = 0
-        index_2 = 5
-        exist = False
-        while index < len_index - 5:
-            i = 0
-            while i <= len_index:
-                i_2 = i + 5
-                if i_2 > len_index:
-                    i_2 = len_index
-                is_same = self._compare_multipliers(
-                    last_multipliers=self.last_multipliers[index: index_2],
-                    multipliers=self.multipliers[i:i_2]
-                )
-                if is_same:
-                    exist = True
-                    i += 5
-                    index += 5
-                    index_2 += 5
-                    if index_2 > len_index:
-                        index_2 = len_index
-                    continue
-                elif exist:
-                    return self.multipliers[i:]
+        a = self.last_multipliers
+        b = self.multipliers
+        matches = []
+        i = 0
+        j = 0
+        while i < len(a) and j < len(b):
+            if a[i] == b[j]:
+                matches.append(a[i])
                 i += 1
-        if exist:
-            return []
-        return self.multipliers
-
+                j += 1
+                continue
+            i += 1
+            len_matches = len(matches)
+            if 3 <= len_matches == a.index(matches[-1]):
+                break
+            matches = []
+        if len(matches) > 0:
+            return b[j:]
+        return b

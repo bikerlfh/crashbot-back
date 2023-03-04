@@ -6,15 +6,17 @@
 
 export let HomeBet = {
     demo: {
+        id: 1,
         url: "https://www.spribe.co/games/aviator"
     },
     betplay: {
+        id: 2,
         url:  "https://betplay.com.co/slots",
-        // aviatorUrl: "https://betplay.com.co/slots/launchGame?gameCode=SPB_aviator&flashClient=true&additionalParam=&integrationChannelCode=PARIPLAY",
         username: process.env.BET_PLAY_USERNAME,
         password: process.env.BET_PLAY_PASSWORD
     },
     oneWin: {
+        id: 3,
         url: "https://1wslue.top/casino/",
         username: process.env.ONE_WIN_USERNAME,
         password: process.env.ONE_WIN_PASSWORD

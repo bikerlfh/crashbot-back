@@ -1,3 +1,4 @@
+from typing import Optional
 from rest_framework.views import APIView
 
 from rest_framework import serializers, status
@@ -5,22 +6,96 @@ from rest_framework.response import Response
 
 from apps.core import services
 from apps.utils.django.mixin import APIErrorsMixin
+from apps.utils.rest.serializers import inline_serializer
+
+
+class HomeBetView(
+    APIErrorsMixin,
+    APIView,
+):
+    class InputSerializer(serializers.Serializer):
+        home_bet_id = serializers.IntegerField(
+            required=False
+        )
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField(
+            required=False
+        )
+        url = serializers.URLField()
+        min_bet = serializers.DecimalField(
+            max_digits=10,
+            decimal_places=2
+        )
+        max_bet = serializers.DecimalField(
+            max_digits=10,
+            decimal_places=2
+        )
+        count_multipliers = serializers.IntegerField(
+            default=0
+        )
+        currencies = serializers.ListSerializer(
+            child=serializers.CharField(max_length=3)
+        )
+
+    def get(self, request):
+        in_serializer = self.InputSerializer(data=request.GET)
+        in_serializer.is_valid(raise_exception=True)
+        data = services.get_home_bet(
+            home_bet_id=in_serializer.data.get('home_bet_id', None)
+        )
+        out_serializer = self.OutputSerializer(
+            data=data,
+            many=isinstance(data, list)
+        )
+        out_serializer.is_valid()
+        return Response(data=out_serializer.data)
 
 
 class HomeBetMultiplierView(
     APIErrorsMixin,
     APIView,
 ):
-    class InputSerializer(serializers.Serializer):
+    class InputGetSerializer(serializers.Serializer):
+        home_bet_id = serializers.IntegerField()
+        count = serializers.IntegerField(
+            required=False
+        )
+
+    class InputPostSerializer(serializers.Serializer):
         home_bet_id = serializers.IntegerField()
         multipliers = serializers.ListSerializer(
             child=serializers.IntegerField()
         )
 
-    def post(self, request):
-        in_serializer = self.InputSerializer(data=request.data)
+    class OutputSerializer(serializers.Serializer):
+        multipliers = serializers.ListSerializer(
+            child=serializers.IntegerField()
+        )
+
+    def get(self, request):
+        in_serializer = self.InputGetSerializer(data=request.GET)
         in_serializer.is_valid(raise_exception=True)
-        services.save_multipliers(
+        multipliers = services.get_home_bet_multipliers(
             **in_serializer.validated_data
         )
-        return Response(data={}, status=status.HTTP_201_CREATED)
+        out_serializer = self.OutputSerializer(
+            data=dict(multipliers=multipliers)
+        )
+        out_serializer.is_valid(raise_exception=True)
+        return Response(data=out_serializer.data)
+
+    def post(self, request):
+        in_serializer = self.InputPostSerializer(data=request.data)
+        in_serializer.is_valid(raise_exception=True)
+        multipliers = services.save_multipliers(
+            **in_serializer.validated_data
+        )
+        out_serializer = self.OutputSerializer(
+            data=dict(multipliers=multipliers)
+        )
+        out_serializer.is_valid(raise_exception=True)
+        return Response(
+            data=out_serializer.data,
+            status=status.HTTP_201_CREATED
+        )

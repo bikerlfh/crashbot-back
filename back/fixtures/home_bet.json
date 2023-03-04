@@ -5,6 +5,45 @@
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
+            "name": "demo",
+            "url": "https://www.spribe.co/games/aviator",
+            "min_bet": 5000,
+            "max_bet": 50000,
+            "currencies": [1]
+        }
+    },
+    {
+        "model": "core.HomeBet",
+        "pk": "2",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "name": "BetPlay",
+            "url": "https://www.betplay.com.co",
+            "min_bet": 5000,
+            "max_bet": 50000,
+            "currencies": [1]
+        }
+    },
+    {
+        "model": "core.HomeBet",
+        "pk": "3",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "name": "1win",
+            "url": "https://1wslue.top/casino/",
+            "min_bet": 5000,
+            "max_bet": 500000,
+            "currencies": [1]
+        }
+    },
+    {
+        "model": "core.HomeBet",
+        "pk": "4",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
             "name": "Rivalo",
             "url": "https://www.rivalo.com",
             "min_bet": 5000,

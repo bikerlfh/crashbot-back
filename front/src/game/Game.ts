@@ -64,9 +64,18 @@ export class Game {
         this.multipliers.push(new Multiplier(multiplier))
     }
 
+    // return an array with categories
+    getPositionCategories(averages: Average[]){
+        const result: number[] = []
+        averages.forEach(average => {
+            result.push(average.category)
+        })
+        return result
+    }
+
     getTotalAverage(numLastMultiplier: number): Average[]{
         let result: Average[] = []
-        let games = this.multipliers.slice(numLastMultiplier * -1)
+        let games = this.multipliers.slice(numLastMultiplier * -1).reverse()
         games.forEach(item => {
             const average = result.find(a => a.category == item.category) || new Average(
                 item.category
@@ -88,19 +97,23 @@ export class Game {
     calculateAmountBet(betsAverage: number[]){
         const amounts: number[] = []
         let profit = this.balance - this.initialBalance
+        let balance = this.balance
         betsAverage.forEach(average => {
             let amount = this._minBet
             if(profit < 0){
                 amount = (Math.abs(profit) / (average -1))
-                // console.log("PROFIT NEGATIVE: profit:", profit, "; average: ", average, "; amount: ", amount)
             }else if(amounts.length > 0){
-                amount = this._minBet / 3
+                amount = amounts.slice(-1)[0] / 3
             }
             amount = amount > this.minimumBet? amount: this.minimumBet;
-            if(amount > this.balance){
-                amount = this.balance
+            if(amount > balance){
+                amount = balance
+            }
+            if(amount > this.maximumBet){
+                amount = this.maximumBet
             }
             amount = parseFloat(amount.toFixed(0))
+            balance -= amount
             amounts.push(amount)
         })
         return amounts
@@ -112,25 +125,29 @@ export class Game {
 
     getNextBet(): Bet[]{
         this.bets = []
-        const numLastMultiplier = 10
+        const numLastMultiplier = 15
         const averages = this.getTotalAverage(numLastMultiplier)
+        const positionCategories = this.getPositionCategories(averages)
         const averageCat_1 = averages.find(item => item.category == 1) || new Average(1)
         const averageCat_2 = averages.find(item => item.category == 2) || new Average(2)
         const averageCat_3 = averages.find(item => item.category == 3) || new Average(3)
         const percentage = ((averageCat_2.count + averageCat_3.count) / numLastMultiplier) * 100
         const percentageCat1 = 100 - percentage
         const profit = this.balance - this.initialBalance
+        console.log("average 1: ", averageCat_1.average)
+        console.log("average 2: ", averageCat_2.average)
+        console.log("average 3: ", averageCat_3.average)
+        // const averagePosition = averageCat_1.positions
+        // const positionSum = averagePosition.reduce((a, b) => b - a, 0);
+        // if(averagePosition.length == numLastMultiplier && positionSum)
         console.log("getNextBet: percentage: ", percentage)
         let amounts: number[] = []
-        if(percentage >= 60 && profit > 0){
-            this.bets.push(new Bet(profit, 2))
-        }else if(percentage >= 50){
+        if(percentage >= 50){
             if(profit >0){
-                const multiplier_2 = this._randomMultiplier(2, 5)
-                amounts = this.calculateAmountBet([2])
-                const amount2 = parseFloat((amounts[0]/3).toFixed(0))
+                const multiplier_2 = this._randomMultiplier(2, 3.5)
+                amounts = this.calculateAmountBet([2, multiplier_2])
                 this.bets.push(new Bet(amounts[0], 2))
-                this.bets.push(new Bet(amount2, multiplier_2))
+                this.bets.push(new Bet(amounts[1], multiplier_2))
             }else{
                 amounts = this.calculateAmountBet([2])
                 this.bets.push(new Bet(amounts[0], 2))
@@ -146,5 +163,5 @@ export class Game {
             this.bets.push(new Bet(amount, 1.95))
         }
         return this.bets
-    } 
+    }
 }

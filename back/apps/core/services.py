@@ -1,3 +1,4 @@
+from typing import Any, Optional
 from apps.core import selectors
 from rest_framework.exceptions import ValidationError
 from datetime import datetime
@@ -6,14 +7,49 @@ from decimal import Decimal
 from apps.core.strategies import multiplier_save
 
 
+def get_home_bet(
+    *,
+    home_bet_id: Optional[int] = None
+) -> dict[str, Any] | list[dict[str, Any]]:
+    home_bet_qry = selectors.filter_home_bet(
+        home_bet_id=home_bet_id
+    )
+    if not home_bet_qry.exists():
+        raise ValidationError("home bet does not exists")
+    data = []
+    for home_bet in home_bet_qry:
+        currencies = home_bet.currencies.all().values_list('code', flat=True)
+        data.append(dict(
+            id=home_bet.id,
+            url=home_bet.url,
+            min_bet=home_bet.min_bet,
+            max_bet=home_bet.max_bet,
+            count_multipliers=home_bet.multipliers.count(),
+            currencies=list(currencies),
+        ))
+    return data if not home_bet_id else data[0]
+
+
+def get_home_bet_multipliers(
+    *,
+    home_bet_id: int,
+    count: Optional[int] = 10
+) -> list[Decimal]:
+    multipliers = selectors.get_last_multipliers(
+        home_bet_id=home_bet_id,
+        count=count
+    )
+    return multipliers
+
+
 def save_multipliers(
     *,
     home_bet_id: int,
     multipliers: list[Decimal]
-) -> None:
-    home_bet = selectors.get_home_bet_by_id(
+) -> list[Decimal]:
+    home_bet = selectors.filter_home_bet(
         home_bet_id=home_bet_id
-    )
+    ).first()
     if not home_bet:
         raise ValidationError("Home bet does not exists")
     last_multipliers = []
@@ -39,3 +75,4 @@ def save_multipliers(
             multiplier_dt=now,
         ))
     HomeBetMultiplier.objects.bulk_create(_list_multipliers)
+    return multipliers
