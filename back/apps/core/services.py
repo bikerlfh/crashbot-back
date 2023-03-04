@@ -21,6 +21,7 @@ def get_home_bet(
         currencies = home_bet.currencies.all().values_list('code', flat=True)
         data.append(dict(
             id=home_bet.id,
+            name=home_bet.name,
             url=home_bet.url,
             min_bet=home_bet.min_bet,
             max_bet=home_bet.max_bet,

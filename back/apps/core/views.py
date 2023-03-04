@@ -1,3 +1,4 @@
+import pdb
 from typing import Optional
 from rest_framework.views import APIView
 
@@ -22,6 +23,7 @@ class HomeBetView(
         id = serializers.IntegerField(
             required=False
         )
+        name = serializers.CharField()
         url = serializers.URLField()
         min_bet = serializers.DecimalField(
             max_digits=10,
@@ -48,8 +50,8 @@ class HomeBetView(
             data=data,
             many=isinstance(data, list)
         )
-        out_serializer.is_valid()
-        return Response(data=out_serializer.data)
+        out_serializer.is_valid(raise_exception=True)
+        return Response(data=out_serializer.validated_data)
 
 
 class HomeBetMultiplierView(
@@ -65,12 +67,18 @@ class HomeBetMultiplierView(
     class InputPostSerializer(serializers.Serializer):
         home_bet_id = serializers.IntegerField()
         multipliers = serializers.ListSerializer(
-            child=serializers.IntegerField()
+            child=serializers.DecimalField(
+                max_digits=10,
+                decimal_places=2
+            )
         )
 
     class OutputSerializer(serializers.Serializer):
         multipliers = serializers.ListSerializer(
-            child=serializers.IntegerField()
+            child=serializers.DecimalField(
+                max_digits=10,
+                decimal_places=2
+            )
         )
 
     def get(self, request):

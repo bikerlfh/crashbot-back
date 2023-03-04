@@ -1,9 +1,9 @@
 import {Multiplier, Average, Player, Bet} from "./core"
 import {AviatorBotAPI} from "../api/AviatorBotAPI"
-
+import { HomeBet } from "../constants"
 
 export class Game {
-    betHome: string = ""
+    homeBet: HomeBet
     balance: number
     initialBalance: number
     multipliers: Multiplier[] = []
@@ -16,24 +16,26 @@ export class Game {
     _maxBet: number = 0
     
     constructor(
-        betHome: string,
+        homeBet: HomeBet,
         multipliers: number[] = [],
-        balance: number,
-        minimumBet: number,
-        maximumBet: number,
-        maximumWinForOneBet: number
+        balance: number
     ){
-        this.betHome = betHome
+        this.homeBet = homeBet
         multipliers.forEach(item => {
             this.addMultiplier(item)
         })
         this.balance = balance
         this.initialBalance = balance
-        this.minimumBet = minimumBet
-        this.maximumBet = maximumBet
-        this.maximumWinForOneBet = maximumWinForOneBet
+        this.minimumBet = homeBet.minBet
+        this.maximumBet = homeBet.maxBet
+        this.maximumWinForOneBet = this.maximumBet * 100
         this.calculateMinMaxBet()
-        // AviatorBotAPI.save_multipliers(1, multipliers)
+        this.requestSaveMultipliers(multipliers)
+    }
+
+    private async requestSaveMultipliers(multipliers: number[]){
+        AviatorBotAPI.requestSaveMultipliers(this.homeBet.id, multipliers)
+        
     }
 
     calculateMinMaxBet(){
@@ -62,6 +64,7 @@ export class Game {
     addMultiplier(multiplier: number){
         this.evaluateBets(multiplier)
         this.multipliers.push(new Multiplier(multiplier))
+        this.requestSaveMultipliers([multiplier])
     }
 
     // return an array with categories

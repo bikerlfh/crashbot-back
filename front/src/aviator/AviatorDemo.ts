@@ -1,12 +1,12 @@
 import playwright from 'playwright'
 import {AviatorPage} from './Aviator'
-import { HomeBet } from '../constants'
+import { HomeBets } from '../constants'
 
 export class AviatorDemo extends AviatorPage{
     _frame: playwright.FrameLocator| null = null
 
     constructor(){
-        super(HomeBet.demo.url)
+        super(HomeBets.demo.url)
     }
     async _login(): Promise<void> {
         if(!this._page || !this._context){

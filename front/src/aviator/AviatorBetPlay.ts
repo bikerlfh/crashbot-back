@@ -1,12 +1,12 @@
 import playwright from 'playwright'
 import {AviatorPage} from './Aviator'
-import { HomeBet } from '../constants'
+import { HomeBets } from '../constants'
 
 export class AviatorBetPlay extends AviatorPage{
     _frame: playwright.FrameLocator| null = null
 
     constructor(){
-        super(HomeBet.betplay.url)
+        super(HomeBets.betplay.url)
     }
 
     async _login(): Promise<void> {
@@ -16,8 +16,8 @@ export class AviatorBetPlay extends AviatorPage{
         const userNameInput = this._page.locator("input#userName")
         const passwordInput = this._page.locator("input#password")
         const loginButton = this._page.locator("button#btnLoginPrimary")
-        await userNameInput.type(HomeBet.betplay.username || "", {delay: 100})
-        await passwordInput.type(HomeBet.betplay.password || "", {delay: 100})
+        await userNameInput.type(HomeBets.betplay.username || "", {delay: 100})
+        await passwordInput.type(HomeBets.betplay.password || "", {delay: 100})
         this._click(loginButton)
         await this._page.locator("#spanUser").waitFor({timeout: 50000})
         const searchButton = this._page.locator("input.inputSearch")

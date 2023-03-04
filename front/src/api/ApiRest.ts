@@ -48,7 +48,7 @@ export let APIRest = {
     * @returns {Promise.<TResult>}
     * @constructor
     */
-   HttpRequest(url: string, method: APIMethod, body?: Dictionary<any>) {
+   HttpRequest(url: string, method: APIMethod, body?: Dictionary<any>): Promise<any> {
        let token = null;
        let config: Dictionary<any> = {
            method: method,
@@ -61,9 +61,9 @@ export let APIRest = {
        if(token !== null)
            config['headers']['Authorization'] = 'token ' + token;
        url =  APIUrl + url;
+       console.log(config)
        return fetch(url, config)
            .then(response => {
-            console.log("response:", response.body)
                return response.json().then(res =>({ 
                        ok: response.ok, 
                        status: response.status, 
@@ -75,6 +75,14 @@ export let APIRest = {
                if(!response.ok)
                    throw response
                return response.data;
+           }).catch((err) => { 
+                console.log(
+                    "fetch :: url :: ", 
+                    url, 
+                    " error: ", 
+                    JSON.stringify(err)
+                );
+                throw err;
            });
    },
    get(url: string) {

@@ -69,7 +69,7 @@ export class AviatorPage{
         console.log("result history found")
         await this.readBalance()
         await this.readMultipliers()
-        await this.readGameLimits()
+        // await this.readGameLimits()
         this._controls = new BetControl(this._appGame);
         await this._controls.init()
         console.log("aviator loaded")
