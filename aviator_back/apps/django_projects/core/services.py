@@ -1,10 +1,10 @@
 from typing import Any, Optional
-from apps.core import selectors
+from apps.django_projects.core import selectors
 from rest_framework.exceptions import ValidationError
 from datetime import datetime
-from apps.core.models import HomeBetMultiplier
+from apps.django_projects.core.models import HomeBetMultiplier
 from decimal import Decimal
-from apps.core.strategies import multiplier_save
+from apps.django_projects.core.strategies import multiplier_save
 
 
 def get_home_bet(

@@ -9,8 +9,8 @@ import { HomeBets } from './src/constants';
 
 
 (async () => {
-	const homeBet = HomeBets.demo
-	const aviatorPage = new AviatorDemo()
+	const homeBet = HomeBets.betplay
+	const aviatorPage = new AviatorBetPlay()
 	await aviatorPage.open()
 	const game = new Game(
 		homeBet, 

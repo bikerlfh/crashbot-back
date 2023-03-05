@@ -1,7 +1,7 @@
 import functools
 from decimal import Decimal
 from rest_framework.exceptions import ValidationError
-from apps.core.models import HomeBet
+from apps.django_projects.core.models import HomeBet
 
 
 class MultiplierSaveStrategy:

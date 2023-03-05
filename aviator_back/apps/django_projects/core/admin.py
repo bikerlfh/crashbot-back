@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.core.models import (
+from apps.django_projects.core.models import (
     Currency,
     HomeBet,
     Customer,

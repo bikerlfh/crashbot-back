@@ -1,13 +1,10 @@
-import pdb
-from typing import Optional
 from rest_framework.views import APIView
 
 from rest_framework import serializers, status
 from rest_framework.response import Response
 
-from apps.core import services
+from apps.django_projects.core import services
 from apps.utils.django.mixin import APIErrorsMixin
-from apps.utils.rest.serializers import inline_serializer
 
 
 class HomeBetView(

@@ -1,5 +1,5 @@
 from typing import Optional
-from apps.core.models import HomeBet, HomeBetMultiplier
+from apps.django_projects.core.models import HomeBet, HomeBetMultiplier
 from decimal import Decimal
 from django.db.models import QuerySet
 

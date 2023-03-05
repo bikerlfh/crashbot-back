@@ -5,7 +5,7 @@ from typing import Any
 from django.urls import path
 
 # Internal
-from apps.core import views
+from apps.django_projects.core import views
 
 urlpatterns: list[Any] = [
     path(
