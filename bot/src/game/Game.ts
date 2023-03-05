@@ -22,7 +22,7 @@ export class Game {
     ){
         this.homeBet = homeBet
         multipliers.forEach(item => {
-            this.addMultiplier(item)
+            this.multipliers.push(new Multiplier(item))
         })
         this.balance = balance
         this.initialBalance = balance
@@ -33,7 +33,7 @@ export class Game {
         this.requestSaveMultipliers(multipliers)
     }
 
-    private async requestSaveMultipliers(multipliers: number[]){
+    private requestSaveMultipliers(multipliers: number[]){
         AviatorBotAPI.requestSaveMultipliers(this.homeBet.id, multipliers)
         
     }

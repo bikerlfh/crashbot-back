@@ -130,8 +130,9 @@ export class AviatorPage{
         }
         // app-bubble-multiplier
         // app-payout-item
-        let items = await this._historyGame.locator('app-bubble-multiplier').all();
-        items.slice().reverse().forEach(async (item) => {
+        let items = await this._historyGame.locator('app-bubble-multiplier.payout.ng-star-inserted').all();
+        // items.slice().reverse().forEach(async (item) => {
+        items.reverse().forEach(async (item) => {
             const multiplier = await item.textContent();
             if(multiplier !== null){
                 const value = this._formatMultiplier(multiplier)
@@ -139,7 +140,7 @@ export class AviatorPage{
             }
         })
         await this._page.waitForTimeout(2000);
-        console.log("multiplier:", this.multipliers)
+        console.log("multiplier aviator:", this.multipliers)
     }
 
     async bet(amount: number, multiplier: number, control: Control){
