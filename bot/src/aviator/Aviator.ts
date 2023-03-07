@@ -62,7 +62,7 @@ export class AviatorPage{
         this._browser = await playwright.chromium.launch({headless:false});
         this._context = await this._browser.newContext();
         this._page = await this._context.newPage();
-        await this._page.goto(this.url);
+        await this._page.goto(this.url, {timeout: 50000});
         await this._login()
         this._appGame = await this._getAppGame()
         this._historyGame = this._appGame.locator(".result-history");

@@ -16,6 +16,7 @@ const URLS = {
     homeBet: 'home-bet/',
     homeBetDetail: 'home-bet/?P<nombreParametro>',
     addMultipliers: 'home-bet/multiplier/',
+    getPrediction: '/predictions/predict/'
     // gameDetail: 'games/<gameId>/',
 };
 
@@ -64,6 +65,12 @@ export class AviatorBotAPI {
         return APIRest.post(URLS.addMultipliers, {
             home_bet_id: homeBetId,
             multipliers: multipliers
+        });
+    }
+    static requestPrediction = async (homeBetId: number, multipliers?: number[]) => {
+        return await APIRest.post(URLS.getPrediction, {
+            home_bet_id: homeBetId,
+            multipliers: multipliers || null
         });
     }
 }

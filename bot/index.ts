@@ -1,7 +1,6 @@
 import * as dotenv from 'dotenv';
 dotenv.config()
 import {Game} from './src/game/Game'
-import { AviatorBotAPI } from './src/api/AviatorBotAPI';
 import { AviatorBetPlay } from "./src/aviator/AviatorBetPlay"
 import { AviatorDemo } from "./src/aviator/AviatorDemo"
 import { AviatorOneWin } from "./src/aviator/AviatorOneWin"

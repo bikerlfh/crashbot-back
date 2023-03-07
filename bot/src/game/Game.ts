@@ -34,8 +34,19 @@ export class Game {
     }
 
     private requestSaveMultipliers(multipliers: number[]){
-        AviatorBotAPI.requestSaveMultipliers(this.homeBet.id, multipliers)
-        
+        AviatorBotAPI.requestSaveMultipliers(this.homeBet.id, multipliers).then(
+            response => {
+                this.getPrediction()
+            }
+        )
+    }
+
+    private getPrediction(){
+        AviatorBotAPI.requestPrediction(this.homeBet.id).then(
+            response => {
+                console.log("response", response)
+            }
+        )
     }
 
     calculateMinMaxBet(){

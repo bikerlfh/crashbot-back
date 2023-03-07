@@ -2,3 +2,6 @@ Django==4.1.6
 djangorestframework==3.14.0
 psycopg2-binary>=2.8,<2.9
 telethon==1.27.0
+scikit-learn==1.2.1
+keras==2.11.0
+tensorflow

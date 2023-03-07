@@ -61,20 +61,23 @@ export let APIRest = {
        if(token !== null)
            config['headers']['Authorization'] = 'token ' + token;
        url =  APIUrl + url;
-       console.log(config)
+       console.log("http request:", url)
        return fetch(url, config)
            .then(response => {
-               return response.json().then(res =>({ 
-                       ok: response.ok, 
-                       status: response.status, 
-                       data: res
-                   }
-               ));
+                if(response.status === HTTPStatus.INTERNAL_ERROR){
+                    throw "internal server error"
+                }
+                return response.json().then(res =>({ 
+                        ok: response.ok, 
+                        status: response.status, 
+                        data: res
+                    }
+                ));
            })
            .then((response: any) => {
-               if(!response.ok)
-                   throw response
-               return response.data;
+                if(!response.ok)
+                    throw response
+                return response.data;
            }).catch((err) => { 
                 console.log(
                     "fetch :: url :: ", 

@@ -1,0 +1,16 @@
+# Standard Library
+from typing import Any
+
+# Django
+from django.urls import path
+
+# Internal
+from apps.django_projects.predictions import views
+
+urlpatterns: list[Any] = [
+    path(
+        "predict/",
+        views.PredictionView.as_view(),
+        name="prediction-view",
+    )
+]
