@@ -61,7 +61,6 @@ export let APIRest = {
        if(token !== null)
            config['headers']['Authorization'] = 'token ' + token;
        url =  APIUrl + url;
-       console.log("http request:", url)
        return fetch(url, config)
            .then(response => {
                 if(response.status === HTTPStatus.INTERNAL_ERROR){

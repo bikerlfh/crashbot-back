@@ -44,7 +44,7 @@ export class Game {
     private getPrediction(){
         AviatorBotAPI.requestPrediction(this.homeBet.id).then(
             response => {
-                console.log("response", response)
+                console.log("Predictions:", response, 'color: green')
             }
         )
     }
@@ -154,7 +154,7 @@ export class Game {
         // const averagePosition = averageCat_1.positions
         // const positionSum = averagePosition.reduce((a, b) => b - a, 0);
         // if(averagePosition.length == numLastMultiplier && positionSum)
-        console.log("getNextBet: percentage: ", percentage)
+        console.log("getNextBet: percentage: ", percentage.toFixed(2))
         let amounts: number[] = []
         if(percentage >= 50){
             if(profit >0){

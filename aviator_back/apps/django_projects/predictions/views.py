@@ -46,6 +46,11 @@ class PredictionView(
             decimal_places=2,
             required=False
         )
+        sequential_2 = serializers.DecimalField(
+            max_digits=10,
+            decimal_places=2,
+            required=False
+        )
 
     def post(self, request):
         in_serializer = self.InputSerializer(data=request.data)
