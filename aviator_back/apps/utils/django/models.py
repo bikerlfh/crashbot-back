@@ -1,22 +1,20 @@
+# Standard Library
 import uuid
 
+# Django
 from django.db import models
 
 
 class BaseModel(models.Model):
-    CASE_STYLE = 'lower'
+    CASE_STYLE = "lower"
 
     created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='created at'
+        auto_now_add=True, verbose_name="created at"
     )
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        verbose_name='updated at'
-    )
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="updated at")
 
     def clean(self):
-        fields_to_clean = getattr(self, 'FIELDS_TO_CLEAN', None)
+        fields_to_clean = getattr(self, "FIELDS_TO_CLEAN", None)
         fields = self._meta.fields
 
         if not fields_to_clean:
@@ -45,11 +43,7 @@ class BaseModel(models.Model):
 
 
 class BaseModelUUID(BaseModel):
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False
-    )
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     class Meta:
         abstract = True

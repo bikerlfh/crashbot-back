@@ -1,5 +1,6 @@
-from typing import Any
+# Standard Library
 from enum import Enum
+from typing import Any
 
 
 def enum_to_choices(obj: type[Enum]) -> list[tuple[Any, str]]:

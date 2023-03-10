@@ -1,3 +1,4 @@
+# Standard Library
 from typing import Optional
 
 
@@ -6,7 +7,7 @@ class Message:
         self,
         message: str,
         user: Optional[str] = None,
-        silent: Optional[bool] = False
+        silent: Optional[bool] = False,
     ):
         self.message = message
         self.user = user

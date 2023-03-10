@@ -1,9 +1,12 @@
+# Django
 from django.contrib import admin
+
+# Internal
 from apps.django_projects.core.models import (
     Currency,
-    HomeBet,
     Customer,
-    CustomerBalance
+    CustomerBalance,
+    HomeBet,
 )
 
 

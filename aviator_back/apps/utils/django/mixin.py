@@ -1,3 +1,4 @@
+# Django
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from rest_framework import exceptions as rest_exceptions
 
@@ -7,6 +8,7 @@ class APIErrorsMixin:
     Mixin that transforms Django and Python exceptions into rest_framework ones
     without the mixin, they return 500 status code which is not desired.
     """
+
     expected_exceptions = {
         AssertionError: rest_exceptions.APIException,
         ValueError: rest_exceptions.ValidationError,
@@ -38,12 +40,12 @@ class APIErrorsMixin:
         return default
 
     def get_error_message(self, exc):
-        if hasattr(exc, 'message_dict'):
+        if hasattr(exc, "message_dict"):
             return exc.message_dict
-        error_msg = self.get_first_matching_attr(exc, 'message', 'messages')
+        error_msg = self.get_first_matching_attr(exc, "message", "messages")
 
         if isinstance(error_msg, list):
-            error_msg = ', '.join(error_msg)
+            error_msg = ", ".join(error_msg)
 
         if error_msg is None:
             error_msg = str(exc)

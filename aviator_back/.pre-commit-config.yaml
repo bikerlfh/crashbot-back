@@ -1,0 +1,36 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+    -   id: check-docstring-first
+    -   id: check-merge-conflict
+    -   id: debug-statements
+#    -   id: no-commit-to-branch
+        args: [--branch, main, --branch, master, --branch, dev]
+#-   repo: https://github.com/psf/black
+#    rev: 22.3.0
+#   hooks:
+#    -   id: black
+#        args: [--line-length=79, --check]
+#        exclude: ^.*\b(migrations)\b.*$
+-   repo: https://github.com/PyCQA/flake8
+    rev: 3.9.2
+    hooks:
+    -   id: flake8
+        additional_dependencies: [flake8-typing-imports==1.7.0]
+-   repo: https://github.com/pycqa/isort
+    rev: 5.8.0
+    hooks:
+    -   id: isort
+        name: isort (python)
+    -   id: isort
+        name: isort (cython)
+        types: [ cython ]
+    -   id: isort
+        name: isort (pyi)
+        types: [ pyi ]
+-   repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+    rev: v1.3.0
+    hooks:
+    -   id: python-safety-dependencies-check
+        args: [--full-report, -i, '39642', -i, '40291']

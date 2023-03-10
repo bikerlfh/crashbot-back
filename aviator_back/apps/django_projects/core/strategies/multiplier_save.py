@@ -1,6 +1,11 @@
+# Standard Library
 import functools
 from decimal import Decimal
+
+# Django
 from rest_framework.exceptions import ValidationError
+
+# Internal
 from apps.django_projects.core.models import HomeBet
 
 
@@ -23,15 +28,12 @@ class MultiplierSaveStrategy:
             raise ValidationError("multipliers required")
 
     def _compare_multipliers(
-        self,
-        *,
-        last_multipliers: list[Decimal],
-        multipliers: list[Decimal]
+        self, *, last_multipliers: list[Decimal], multipliers: list[Decimal]
     ) -> bool:
         return functools.reduce(
-            lambda x, y: x and y, map(
-                lambda p, q: p == q, last_multipliers, multipliers
-            ), True
+            lambda x, y: x and y,
+            map(lambda p, q: p == q, last_multipliers, multipliers),
+            True,
         )
 
     def get_new_multipliers(self) -> list[Decimal]:

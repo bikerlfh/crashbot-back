@@ -1,3 +1,4 @@
+# Django
 from rest_framework import exceptions
 from rest_framework.settings import api_settings
 
@@ -24,20 +25,21 @@ class ErrorFormatter:
         ]
     }
     """
-    FIELD = 'field'
-    MESSAGE = 'message'
-    CODE = 'code'
-    ERRORS = 'errors'
+
+    FIELD = "field"
+    MESSAGE = "message"
+    CODE = "code"
+    ERRORS = "errors"
 
     def __init__(self, exception):
         self.exception = exception
 
     def __call__(self):
-        if hasattr(self.exception, 'get_full_details'):
+        if hasattr(self.exception, "get_full_details"):
             formatted_errors = self._get_response_json_from_drf_errors(
                 serializer_errors=self.exception.get_full_details()
             )
-        elif hasattr(self.exception, 'get_error_details'):
+        elif hasattr(self.exception, "get_error_details"):
             kwargs = self.exception.get_error_details()
             formatted_errors = self._get_response_json_from_error_message(
                 **kwargs
@@ -62,26 +64,15 @@ class ErrorFormatter:
             errors_dict=serializer_errors
         )
 
-        response_data = {
-            self.ERRORS: list_of_errors
-        }
+        response_data = {self.ERRORS: list_of_errors}
 
         return response_data
 
     def _get_response_json_from_error_message(
-        self,
-        *,
-        message='',
-        field=None,
-        code='error'
+        self, *, message="", field=None, code="error"
     ):
         response_data = {
-            self.ERRORS: [
-                {
-                    self.MESSAGE: message,
-                    self.CODE: code
-                }
-            ]
+            self.ERRORS: [{self.MESSAGE: message, self.CODE: code}]
         }
 
         if field:
@@ -95,7 +86,7 @@ class ErrorFormatter:
 
         return obj
 
-    def _get_list_of_errors(self, field_path='', errors_dict=None):
+    def _get_list_of_errors(self, field_path="", errors_dict=None):
         """
         Error_dict is in the following format:
         {
@@ -112,17 +103,17 @@ class ErrorFormatter:
         message_value = errors_dict.get(self.MESSAGE, None)
 
         # noqa Note: If 'message' is name of a field we don't want to stop the recursion here!
-        if (
-                message_value is not None
-                and type(message_value) in {str, exceptions.ErrorDetail}
-        ):
+        if message_value is not None and type(message_value) in {
+            str,
+            exceptions.ErrorDetail,
+        }:
             if field_path:
                 errors_dict[self.FIELD] = field_path
             return [errors_dict]
 
         errors_list = []
         for key, value in errors_dict.items():
-            new_field_path = f'{field_path}.{key}' if field_path else key
+            new_field_path = f"{field_path}.{key}" if field_path else key
             key_is_non_field_errors = key == api_settings.NON_FIELD_ERRORS_KEY
 
             if type(value) is list:
@@ -143,8 +134,7 @@ class ErrorFormatter:
                 )
 
                 current_level_error_list = self._get_list_of_errors(
-                    field_path=path,
-                    errors_dict=value
+                    field_path=path, errors_dict=value
                 )
 
             errors_list += current_level_error_list

@@ -1,21 +1,21 @@
-from typing import Union, List
+# Standard Library
 from datetime import datetime
+from typing import List, Union
+
+# Libraries
 from asgiref.sync import async_to_sync
+
+# Internal
 from apps.telegram_bot import telegram
 from apps.telegram_bot.typing import Message
 
 
 @async_to_sync
-async def send_telegram_messages(
-    *,
-    messages: List[Message]
-) -> Union[None]:
+async def send_telegram_messages(*, messages: List[Message]) -> Union[None]:
     connector = telegram.TelegramConnector()
     await connector.connect()
     for message in messages:
-        await connector.send_message(
-            message=message
-        )
+        await connector.send_message(message=message)
     await connector.disconnect()
 
 
