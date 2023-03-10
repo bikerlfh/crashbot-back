@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 from apps.django_projects.predictions import services
 from apps.utils.django.mixin import APIErrorsMixin
+from apps.utils.rest.serializers import inline_serializer
 
 
 class PredictionView(
@@ -26,30 +27,19 @@ class PredictionView(
         )
 
     class OutputSerializer(serializers.Serializer):
-        decision_tree = serializers.DecimalField(
-            max_digits=10,
-            decimal_places=2,
-            required=False
-        )
-        decision_tree_2 = serializers.DecimalField(
-            max_digits=10,
-            decimal_places=2,
-            required=False
-        )
-        linear_regression = serializers.DecimalField(
-            max_digits=10,
-            decimal_places=2,
-            required=False
-        )
-        sequential = serializers.DecimalField(
-            max_digits=10,
-            decimal_places=2,
-            required=False
-        )
-        sequential_2 = serializers.DecimalField(
-            max_digits=10,
-            decimal_places=2,
-            required=False
+        predictions = inline_serializer(
+            fields=dict(
+                model=serializers.CharField(),
+                average_predictions=serializers.DecimalField(
+                    max_digits=5,
+                    decimal_places=2
+                ),
+                prediction_value=serializers.DecimalField(
+                    max_digits=5,
+                    decimal_places=2
+                ),
+            ),
+            many=True
         )
 
     def post(self, request):

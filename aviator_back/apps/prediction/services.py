@@ -1,7 +1,38 @@
 import numpy as np
+from decimal import Decimal
 from apps.django_projects.core import selectors as core_selectors
 from apps.prediction import utils
-from apps.prediction.constants import DATA_EXPORT_PATH
+from apps.prediction.constants import DATA_EXPORT_PATH, ModelType, MODELS_PATH
+from apps.django_projects.predictions.models import ModelHomeBet
+from apps.prediction.model_predictor import ModelPredictor, AverageInfo
+
+
+def predict(
+    *,
+    model_home_bet: ModelHomeBet,
+    multipliers: list[Decimal]
+) -> Decimal:
+    model_path = f'{MODELS_PATH}{model_home_bet.name}'
+    model = ModelPredictor(
+        model_path=model_path
+    )
+    data = utils.transform_multipliers_to_data(multipliers=multipliers)
+    prediction = model.predict(data=data)
+    return prediction
+
+
+def evaluate_model_home_bet(
+    *,
+    model_home_bet: ModelHomeBet,
+    multipliers: list[Decimal]
+) -> AverageInfo:
+    model_path = f'{MODELS_PATH}{model_home_bet.name}'
+    model = ModelPredictor(
+        model_path=model_path
+    )
+    data = utils.transform_multipliers_to_data(multipliers=multipliers)
+    average_info = model.evaluate(data=data)
+    return average_info
 
 
 def extract_multipliers_to_csv(*, home_bet_id: int):
