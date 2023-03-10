@@ -46,7 +46,7 @@ class ModelPredictor:
         return round(next_num, 2)
 
     def evaluate(self, *, data: list[int]) -> AverageInfo:
-        X = np.array(# NOQA
+        X = np.array(  # NOQA
             [
                 data[i: i + self.length_window]
                 for i in range(len(data) - self.length_window)
@@ -91,7 +91,7 @@ class ModelPredictor:
         for key, value in self.average_info.categories_data.items():
             count_categories += 1
             dict_value = value
-            dict_value.average_predictions = round(
+            dict_value.percentage_predictions = round(
                 (dict_value.correct_predictions / dict_value.count) * 100, 2
             )
             dict_value.percentage_bets = round(
@@ -100,7 +100,7 @@ class ModelPredictor:
             dict_value.percentage_predictions = Decimal(
                 dict_value.percentage_predictions
             )
-            dict_value.average_bets = Decimal(dict_value.average_bets)
+            dict_value.percentage_bets = Decimal(dict_value.percentage_bets)
             sum_percentage_predictions += dict_value.percentage_predictions
             sum_percentage_bets += dict_value.percentage_bets
             self.average_info.categories_data[key] = dict_value

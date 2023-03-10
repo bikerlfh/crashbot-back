@@ -7,7 +7,7 @@ import numpy as np
 # Internal
 from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.predictions.models import ModelHomeBet
-from apps.prediction import utils
+from apps.prediction import train_models, utils
 from apps.prediction.constants import DATA_EXPORT_PATH, MODELS_PATH
 from apps.prediction.model_predictor import AverageInfo, ModelPredictor
 
@@ -41,3 +41,18 @@ def extract_multipliers_to_csv(*, home_bet_id: int):
         delimiter=", ",
         fmt="% s",
     )
+
+
+def create_sequential_model(
+    *,
+    home_bet_id: int,
+    multipliers: list[Decimal],
+    length_window: int,
+) -> str:
+    data = utils.transform_multipliers_to_data(multipliers)
+    name, eval_result = train_models.create_sequential_model(
+        home_bet_id=home_bet_id,
+        data=data,
+        length_window=length_window,
+    )
+    return name

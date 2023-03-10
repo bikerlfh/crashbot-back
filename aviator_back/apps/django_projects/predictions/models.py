@@ -6,6 +6,7 @@ from django.db import models
 
 # Internal
 from apps.django_projects.core.models import HomeBet
+from apps.django_projects.predictions.constants import ModelStatus
 from apps.prediction.constants import Category, ModelType
 from apps.utils.django.models import BaseModel
 from apps.utils.tools import enum_to_choices
@@ -15,10 +16,11 @@ class ModelHomeBet(BaseModel):
     home_bet = models.ForeignKey(
         HomeBet, on_delete=models.PROTECT, related_name="models"
     )
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     model_type = models.CharField(
         max_length=25, choices=enum_to_choices(ModelType)
     )
+    status = models.CharField(max_length=10, default=ModelStatus.ACTIVE.value)
     length_window = models.SmallIntegerField(default=10)
     average_predictions = models.DecimalField(
         default=Decimal(0), max_digits=5, decimal_places=2
@@ -26,6 +28,7 @@ class ModelHomeBet(BaseModel):
     average_bets = models.DecimalField(
         default=Decimal(0), max_digits=5, decimal_places=2
     )
+    result_date = models.DateTimeField(null=True, blank=True, default=None)
     others = models.JSONField(null=True, blank=True)
 
     def __str__(self):
@@ -37,9 +40,8 @@ class ModelHomeBet(BaseModel):
 
 class ModelCategoryResult(BaseModel):
     model_home_bet = models.ForeignKey(
-        ModelHomeBet, on_delete=models.PROTECT, related_name="averages"
+        ModelHomeBet, on_delete=models.PROTECT, related_name="category_results"
     )
-    result_date = models.DateTimeField()
     category = models.SmallIntegerField(
         choices=enum_to_choices(Category)
     )  # 1, 2, 3

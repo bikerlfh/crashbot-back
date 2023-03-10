@@ -12,5 +12,10 @@ urlpatterns: list[Any] = [
         "predict/",
         views.PredictionView.as_view(),
         name="prediction-view",
-    )
+    ),
+    path(
+        "models/",
+        views.ModelHomeBetView.as_view(),
+        name="model-home-bet-view",
+    ),
 ]

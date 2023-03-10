@@ -1,5 +1,5 @@
 # Standard Library
-from datetime import date, datetime
+from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 
@@ -9,6 +9,7 @@ from rest_framework.exceptions import ValidationError
 # Internal
 from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.predictions import selectors
+from apps.django_projects.predictions.constants import ModelStatus
 from apps.django_projects.predictions.models import (
     ModelCategoryResult,
     ModelHomeBet,
@@ -47,7 +48,6 @@ def create_model_average_result(
     *,
     model_home_bet_id: int,
     category: int,
-    result_date: date,
     correct_predictions: int,
     incorrect_predictions: int,
     percentage_predictions: Decimal,
@@ -67,7 +67,6 @@ def create_model_average_result(
     average = ModelCategoryResult.objects.create(
         model_home_bet_id=model_home_bet_id,
         category=category,
-        result_date=result_date,
         correct_predictions=correct_predictions,
         incorrect_predictions=incorrect_predictions,
         percentage_predictions=round(percentage_predictions, 2),
@@ -96,14 +95,14 @@ def generate_average_result_of_model(*, model_home_bet_id: int) -> None:
     )
 
     # save total averages
+    now = datetime.now()
+    model_home_bet.result_date = now
     model_home_bet.average_predictions = average_result.average_predictions
     model_home_bet.average_bets = average_result.average_bets
     model_home_bet.save()
-    now = datetime.now().date()
     for key, value in average_result.categories_data.items():
         category_ = model_home_bet.averages.filter(category=key).first()
         if category_:
-            category_.result_date = now
             category_.correct_predictions = value.correct_predictions
             category_.incorrect_predictions = value.incorrect_predictions
             category_.percentage_predictions = value.percentage_predictions
@@ -117,7 +116,6 @@ def generate_average_result_of_model(*, model_home_bet_id: int) -> None:
         create_model_average_result(
             model_home_bet_id=model_home_bet_id,
             category=key,
-            result_date=now,
             correct_predictions=value.correct_predictions,
             incorrect_predictions=value.incorrect_predictions,
             percentage_predictions=value.percentage_predictions,
@@ -161,4 +159,85 @@ def predict(
             )
         )
     data = dict(predictions=predictions)
+    return data
+
+
+def create_model_with_all_multipliers(
+    *,
+    home_bet_id: int,
+    length_window: int,
+    model_type: Optional[ModelType] = ModelType.SEQUENTIAL,
+) -> ModelHomeBet:
+    home_bet_exists = core_selectors.filter_home_bet(
+        home_bet_id=home_bet_id
+    ).exists()
+    if not home_bet_exists:
+        raise ValidationError(
+            f"create_model_with_all_multipliers :: "
+            f"home bet {home_bet_id} does not exists"
+        )
+    multipliers = core_selectors.get_last_multipliers(home_bet_id=home_bet_id)
+    if not multipliers:
+        raise ValidationError(
+            f"create_model_with_all_multipliers :: "
+            f"no multipliers for home bet {home_bet_id}"
+        )
+    name = prediction_services.create_sequential_model(
+        home_bet_id=home_bet_id,
+        multipliers=multipliers,
+        length_window=length_window,
+    )
+    model_home_bet = create_model_home_bet(
+        home_bet_id=home_bet_id,
+        name=name,
+        model_type=model_type,
+        length_window=length_window,
+        others=dict(num_multipliers_to_train=len(multipliers)),
+    )
+    generate_average_result_of_model(model_home_bet_id=model_home_bet.id)
+    return model_home_bet
+
+
+def get_models_home_bet(
+    *, home_bet_id: int, status: Optional[str] = ModelStatus.ACTIVE.value
+) -> list[dict]:
+    home_bet_exists = core_selectors.filter_home_bet(
+        home_bet_id=home_bet_id
+    ).exists()
+    if not home_bet_exists:
+        raise ValidationError(f"home bet {home_bet_id} does not exists")
+    models = selectors.filter_model_home_bet_by_home_bet_id(
+        home_bet_id=home_bet_id, status=status
+    ).order_by("-average_predictions")
+    data = []
+    for model in models:
+        categories = []
+        for category in model.category_results.order_by("category"):
+            categories.append(
+                dict(
+                    category=category.category,
+                    correct_predictions=category.correct_predictions,
+                    incorrect_predictions=category.incorrect_predictions,
+                    percentage_predictions=category.percentage_predictions,
+                    correct_bets=category.correct_bets,
+                    incorrect_bets=category.incorrect_bets,
+                    percentage_bets=category.percentage_bets,
+                    other_info=category.other_info,
+                )
+            )
+        data.append(
+            dict(
+                id=model.id,
+                name=model.name,
+                home_bet_id=model.home_bet_id,
+                model_type=model.model_type,
+                status=model.status,
+                length_window=model.length_window,
+                average_predictions=model.average_predictions,
+                average_bets=model.average_bets,
+                result_date=model.result_date,
+                others=model.others,
+                category_results=categories,
+            )
+        )
     return data

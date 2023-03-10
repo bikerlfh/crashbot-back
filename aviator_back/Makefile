@@ -42,6 +42,9 @@ migrate: ## migrate
 load-fixtures: ## loaddata
 	docker compose run --rm --entrypoint=python worker manage.py loaddata fixtures/*.json
 
+create-sequential-model: ## create a sequential model
+	docker compose run --rm --entrypoint=python worker manage.py create_sequential_model ${home_bet_id} ${length_window}
+
 create-super-user: ## loaddata
 	docker compose run --rm --entrypoint=python worker manage.py createsuperuser
 
