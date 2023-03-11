@@ -22,18 +22,21 @@ class PredictionView(
             required=False,
             allow_null=True,
         )
-        length_window = serializers.IntegerField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         predictions = inline_serializer(
             fields=dict(
-                model=serializers.CharField(),
+                id=serializers.IntegerField(),
+                prediction=serializers.DecimalField(
+                    max_digits=5, decimal_places=2
+                ),
+                prediction_round=serializers.IntegerField(),
                 average_predictions=serializers.DecimalField(
                     max_digits=5, decimal_places=2
                 ),
-                prediction_value=serializers.DecimalField(
+                category_percentage=serializers.DecimalField(
                     max_digits=5, decimal_places=2
-                ),
+                )
             ),
             many=True,
         )
@@ -63,7 +66,7 @@ class ModelHomeBetView(
         home_bet_id = serializers.IntegerField()
         model_type = serializers.CharField()
         status = serializers.CharField()
-        length_window = serializers.IntegerField()
+        seq_len = serializers.IntegerField()
         average_predictions = serializers.DecimalField(
             max_digits=5, decimal_places=2
         )

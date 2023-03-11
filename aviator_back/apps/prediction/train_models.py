@@ -1,10 +1,10 @@
 # Standard Library
-from decimal import Decimal
+import uuid
 from typing import Optional, Tuple
 
 # Libraries
 import numpy as np
-from keras.layers import Dense, Dropout
+from keras.layers import Dense, Dropout, LSTM
 from keras.models import Sequential
 from sklearn.model_selection import train_test_split
 
@@ -16,25 +16,24 @@ def create_sequential_model(
     *,
     home_bet_id: int,
     data: list[int],
-    length_window: int,
-    test_size: Optional[Decimal] = Decimal(0.2),
-) -> Tuple[str, Decimal]:
+    seq_len: int,
+    test_size: Optional[float] = 0.2,
+) -> Tuple[str, float]:
     """
     create a sequential model and return the name and evaluation result
     """
-    test_size = float(test_size)
     # Split the list into input and output variables
     X = np.array(  # NOQA
-        [data[i: i + length_window] for i in range(len(data) - length_window)]
+        [data[i: i + seq_len] for i in range(len(data) - seq_len)]
     )
-    y = np.array(data[length_window:])
+    y = np.array(data[seq_len:])
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(  # NOQA
         X, y, test_size=test_size
     )
     # Create and compile the model
     model = Sequential()
-    model.add(Dense(64, input_dim=length_window, activation="relu"))
+    model.add(Dense(64, input_dim=seq_len, activation="relu"))
     model.add(Dense(32, activation="relu"))
     model.add(Dropout(0.2))
     model.add(Dense(16, activation="relu"))
@@ -44,7 +43,47 @@ def create_sequential_model(
     # Evaluate the model on the test set
     mse = model.evaluate(X_test, y_test)
     # print("Mean squared error on test set:", mse)
-    name = f"model_" f"{home_bet_id}_{length_window}_{len(data)}.h5"
+    name = f"{home_bet_id}_{uuid.uuid4()}.h5"
     model_path = f"{MODELS_PATH}{name}"
     model.save(model_path)
+    print("---------------------------------------------")
+    print(f"--------MODEL: {name} ERROR: {mse}----------")
+    print("---------------------------------------------")
+    return name, mse
+
+
+def create_sequential_lstm_model(
+    *,
+    home_bet_id: int,
+    data: list[int],
+    seq_len: int,
+) -> Tuple[str, float]:
+    X = [] # NOQA
+    y = []
+    for i in range(len(data) - seq_len):
+        X.append(data[i:i + seq_len])
+        y.append(data[i + seq_len])
+    X = np.array(X) # NOQA
+    y = np.array(y)
+
+    # Split the data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) # NOQA
+
+    # Create and compile the model
+    model = Sequential()
+    model.add(LSTM(units=32, input_shape=(seq_len, 1)))
+    # model.add(LSTM(units=50, return_sequences=True, input_shape=(seq_len, 1)))
+    # model.add(LSTM(units=50))
+    model.add(Dense(units=1))
+    model.compile(loss='mse', optimizer='adam')
+    model.fit(X_train, y_train, batch_size=32, epochs=1000)
+
+    # Evaluate the model on the test set
+    mse = model.evaluate(X_test, y_test)
+    name = f"{home_bet_id}_{uuid.uuid4()}.h5"
+    model_path = f"{MODELS_PATH}{name}"
+    model.save(model_path)
+    print("---------------------------------------------")
+    print(f"--------MODEL: {name} ERROR: {mse}----------")
+    print("---------------------------------------------")
     return name, mse

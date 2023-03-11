@@ -1,4 +1,5 @@
 # Standard Library
+from typing import Tuple
 from decimal import Decimal
 
 # Libraries
@@ -16,7 +17,7 @@ def predict(
     *, model_home_bet: ModelHomeBet, multipliers: list[Decimal]
 ) -> Decimal:
     model_path = f"{MODELS_PATH}{model_home_bet.name}"
-    model = ModelPredictor(model_path=model_path)
+    model = ModelPredictor(model_path=model_path, seq_len=model_home_bet.seq_len)
     data = utils.transform_multipliers_to_data(multipliers=multipliers)
     prediction = model.predict(data=data)
     return prediction
@@ -26,7 +27,7 @@ def evaluate_model_home_bet(
     *, model_home_bet: ModelHomeBet, multipliers: list[Decimal]
 ) -> AverageInfo:
     model_path = f"{MODELS_PATH}{model_home_bet.name}"
-    model = ModelPredictor(model_path=model_path)
+    model = ModelPredictor(model_path=model_path, seq_len=model_home_bet.seq_len)
     data = utils.transform_multipliers_to_data(multipliers=multipliers)
     average_info = model.evaluate(data=data)
     return average_info
@@ -47,12 +48,27 @@ def create_sequential_model(
     *,
     home_bet_id: int,
     multipliers: list[Decimal],
-    length_window: int,
-) -> str:
+    seq_len: int,
+) -> Tuple[str, float]:
     data = utils.transform_multipliers_to_data(multipliers)
-    name, eval_result = train_models.create_sequential_model(
+    name, eval_error = train_models.create_sequential_model(
         home_bet_id=home_bet_id,
         data=data,
-        length_window=length_window,
+        seq_len=seq_len,
     )
-    return name
+    return name, eval_error
+
+
+def create_sequential_lstm_model(
+    *,
+    home_bet_id: int,
+    multipliers: list[Decimal],
+    seq_len: int,
+) -> Tuple[str, float]:
+    data = utils.transform_multipliers_to_data(multipliers)
+    name, eval_error = train_models.create_sequential_lstm_model(
+        home_bet_id=home_bet_id,
+        data=data,
+        seq_len=seq_len,
+    )
+    return name, eval_error

@@ -23,7 +23,7 @@ def create_model_home_bet(
     home_bet_id: int,
     name: str,
     model_type: ModelType,
-    length_window: int,
+    seq_len: int,
     others: Optional[dict] = {},
 ) -> ModelHomeBet:
     home_bet_exists = core_selectors.filter_home_bet(
@@ -38,7 +38,7 @@ def create_model_home_bet(
         home_bet_id=home_bet_id,
         name=name,
         model_type=model_type.value,
-        length_window=length_window,
+        seq_len=seq_len,
         others=others,
     )
     return model
@@ -50,10 +50,10 @@ def create_model_average_result(
     category: int,
     correct_predictions: int,
     incorrect_predictions: int,
-    percentage_predictions: Decimal,
+    percentage_predictions: float,
     correct_bets: int,
     incorrect_bets: int,
-    percentage_bets: Decimal,
+    percentage_bets: float,
     other_info: Optional[dict] = {},
 ) -> ModelCategoryResult:
     model = selectors.filter_model_home_bet_by_id(
@@ -78,7 +78,10 @@ def create_model_average_result(
     return average
 
 
-def generate_average_result_of_model(*, model_home_bet_id: int) -> None:
+def generate_category_result_of_model(*, model_home_bet_id: int) -> None:
+    print("---------------------------------------------------------")
+    print(f"generation category result for model {model_home_bet_id}")
+    print("---------------------------------------------------------")
     model_home_bet = selectors.filter_model_home_bet_by_id(
         model_home_bet_id=model_home_bet_id
     ).first()
@@ -87,21 +90,21 @@ def generate_average_result_of_model(*, model_home_bet_id: int) -> None:
             f"generate_average_result_of_model :: "
             f"model home bet {model_home_bet_id} does not exists"
         )
+    now = datetime.now()
     multipliers = core_selectors.get_last_multipliers(
-        home_bet_id=model_home_bet.home_bet_id
+        home_bet_id=model_home_bet.home_bet_id,
+        count=200
     )
     average_result = prediction_services.evaluate_model_home_bet(
         model_home_bet=model_home_bet, multipliers=multipliers
     )
-
     # save total averages
-    now = datetime.now()
     model_home_bet.result_date = now
     model_home_bet.average_predictions = average_result.average_predictions
     model_home_bet.average_bets = average_result.average_bets
     model_home_bet.save()
     for key, value in average_result.categories_data.items():
-        category_ = model_home_bet.averages.filter(category=key).first()
+        category_ = model_home_bet.category_results.filter(category=key).first()
         if category_:
             category_.correct_predictions = value.correct_predictions
             category_.incorrect_predictions = value.incorrect_predictions
@@ -142,20 +145,33 @@ def predict(
         multipliers = core_selectors.get_last_multipliers(
             home_bet_id=home_bet_id, count=100
         )
-    average_models = selectors.get_bets_average_result(home_bet_id=home_bet_id)
-    if not average_models:
+    models = selectors.get_bets_models_by_average_predictions(
+        home_bet_id=home_bet_id
+    )
+    if not models:
         raise ValidationError("predict :: no models")
     predictions = []
-    for average_model in average_models:
-        model_home_bet = average_model.model_home_bet
+    for model_home_bet in models:
         prediction_value = prediction_services.predict(
             model_home_bet=model_home_bet, multipliers=multipliers
         )
+        prediction_round = round(prediction_value, 0)
+        if prediction_round < 1:
+            prediction_round = 1
+        elif prediction_round > 3:
+            prediction_round = 3
+        category_data = model_home_bet.category_results.filter(
+            category=prediction_round
+        ).values('percentage_predictions').first()
+        percentage_predictions = category_data["percentage_predictions"]
         predictions.append(
             dict(
+                id=model_home_bet.id,
                 model=model_home_bet.name,
-                average_predictions=average_model.average_predictions,
-                prediction_value=prediction_value,
+                prediction=prediction_value,
+                prediction_round=prediction_round,
+                average_predictions=model_home_bet.average_predictions,
+                category_percentage=percentage_predictions
             )
         )
     data = dict(predictions=predictions)
@@ -165,7 +181,7 @@ def predict(
 def create_model_with_all_multipliers(
     *,
     home_bet_id: int,
-    length_window: int,
+    seq_len: int,
     model_type: Optional[ModelType] = ModelType.SEQUENTIAL,
 ) -> ModelHomeBet:
     home_bet_exists = core_selectors.filter_home_bet(
@@ -182,20 +198,44 @@ def create_model_with_all_multipliers(
             f"create_model_with_all_multipliers :: "
             f"no multipliers for home bet {home_bet_id}"
         )
-    name = prediction_services.create_sequential_model(
-        home_bet_id=home_bet_id,
-        multipliers=multipliers,
-        length_window=length_window,
-    )
+    match model_type:
+        case ModelType.SEQUENTIAL:
+            name, eval_error = prediction_services.create_sequential_model(
+                home_bet_id=home_bet_id,
+                multipliers=multipliers,
+                seq_len=seq_len,
+            )
+        case ModelType.SEQUENTIAL_LSTM:
+            name, eval_error = prediction_services.create_sequential_lstm_model(
+                home_bet_id=home_bet_id,
+                multipliers=multipliers,
+                seq_len=seq_len,
+            )
+        case _:
+            raise ValidationError(
+                f"create_model_with_all_multipliers :: "
+                f"model type {model_type.value} not implemented"
+            )
     model_home_bet = create_model_home_bet(
         home_bet_id=home_bet_id,
         name=name,
         model_type=model_type,
-        length_window=length_window,
-        others=dict(num_multipliers_to_train=len(multipliers)),
+        seq_len=seq_len,
+        others=dict(
+            eval_error=eval_error,
+            num_multipliers_to_train=len(multipliers)
+        ),
     )
-    generate_average_result_of_model(model_home_bet_id=model_home_bet.id)
+    generate_category_result_of_model(model_home_bet_id=model_home_bet.id)
     return model_home_bet
+
+
+def generate_category_results_of_models():
+    model_ids = selectors.filter_model_home_bet(
+        status=ModelStatus.ACTIVE.value
+    ).order_by('id').values_list('id', flat=True)
+    for model_id in model_ids:
+        generate_category_result_of_model(model_home_bet_id=model_id)
 
 
 def get_models_home_bet(
@@ -232,7 +272,7 @@ def get_models_home_bet(
                 home_bet_id=model.home_bet_id,
                 model_type=model.model_type,
                 status=model.status,
-                length_window=model.length_window,
+                seq_len=model.seq_len,
                 average_predictions=model.average_predictions,
                 average_bets=model.average_bets,
                 result_date=model.result_date,

@@ -11,10 +11,14 @@ from apps.django_projects.predictions.models import (
 )
 
 
+def filter_model_home_bet(**kwargs) -> QuerySet[ModelHomeBet]:
+    return ModelHomeBet.objects.filter(**kwargs)
+
+
 def filter_model_home_bet_by_id(
     *, model_home_bet_id: int
 ) -> QuerySet[ModelHomeBet]:
-    return ModelHomeBet.objects.filter(id=model_home_bet_id)
+    return filter_model_home_bet(id=model_home_bet_id)
 
 
 def filter_model_home_bet_by_home_bet_id(
@@ -23,18 +27,17 @@ def filter_model_home_bet_by_home_bet_id(
     filter_ = dict(home_bet_id=home_bet_id)
     if status is not None:
         filter_.update(status=status)
-    return ModelHomeBet.objects.filter(**filter_).prefetch_related(
+    return filter_model_home_bet(**filter_).prefetch_related(
         "category_results"
     )
 
 
-def get_bets_average_result(
+def get_bets_models_by_average_predictions(
     *, home_bet_id: int, number_of_models: Optional[int] = 3
-) -> list[ModelCategoryResult]:
-    averages = (
-        ModelCategoryResult.objects.filter(home_bet_id=home_bet_id)
-        .selected_related("home_bet")
-        .order_by("-average_predictions")
-        .distinct("model_home_bet_id")[:number_of_models]
-    )
-    return averages
+) -> QuerySet[ModelHomeBet]:
+    models = filter_model_home_bet_by_home_bet_id(
+        home_bet_id=home_bet_id
+    ).order_by(
+        "-average_predictions"
+    )[:number_of_models]
+    return models
