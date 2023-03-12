@@ -20,7 +20,7 @@
             "updated_at": "2022-06-08 14:43",
             "name": "BetPlay",
             "url": "https://www.betplay.com.co",
-            "min_bet": 5000,
+            "min_bet": 500,
             "max_bet": 50000,
             "currencies": [1]
         }

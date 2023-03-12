@@ -5,3 +5,4 @@ telethon==1.27.0
 scikit-learn==1.2.1
 keras==2.11.0
 tensorflow
+cryptography==39.0.2

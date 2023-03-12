@@ -4,8 +4,6 @@ from django.contrib import admin
 # Internal
 from apps.django_projects.core.models import (
     Currency,
-    Customer,
-    CustomerBalance,
     HomeBet,
 )
 
@@ -19,15 +17,5 @@ class HomeBetAdmin(admin.ModelAdmin):
     fields = ["name", "url", "min_bet", "max_bet", "currencies"]
 
 
-class CustomerAdmin(admin.ModelAdmin):
-    list_display = ["user", "phone_number"]
-
-
-class CustomerBalanceAdmin(admin.ModelAdmin):
-    list_display = ["customer", "username", "home_bet", "amount"]
-
-
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(HomeBet, HomeBetAdmin)
-admin.site.register(Customer, CustomerAdmin)
-admin.site.register(CustomerBalance, CustomerBalanceAdmin)

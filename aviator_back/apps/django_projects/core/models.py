@@ -1,5 +1,4 @@
 # Django
-from django.contrib.auth.models import User
 from django.db import models
 
 # Internal
@@ -41,47 +40,3 @@ class HomeBetMultiplier(BaseModel):
 
     class Meta:
         db_table = "homebet_multiplier"
-
-
-class Customer(BaseModel):
-    user = models.OneToOneField(
-        User, on_delete=models.DO_NOTHING, related_name="customer"
-    )
-    phone_number = models.CharField(max_length=15)
-
-    def __str__(self):
-        return self.user.username
-
-    class Meta:
-        db_table = "customer"
-
-
-class CustomerBalance(BaseModel):
-    customer = models.ForeignKey(
-        Customer, on_delete=models.DO_NOTHING, related_name="balances"
-    )
-    username = models.CharField(max_length=50, null=True, blank=True)
-    home_bet = models.ForeignKey(
-        HomeBet, on_delete=models.DO_NOTHING, related_name="balances"
-    )
-    currency = models.ForeignKey(
-        Currency, on_delete=models.DO_NOTHING, related_name="customers"
-    )
-    amount = models.DecimalField(default=0, max_digits=18, decimal_places=2)
-
-    class Meta:
-        db_table = "customer_balance"
-
-
-class CustomerBetHistory(BaseModel):
-    balance = models.ForeignKey(
-        CustomerBalance,
-        on_delete=models.DO_NOTHING,
-        related_name="bet_history",
-    )
-    bet_amount = models.DecimalField(max_digits=18, decimal_places=2)
-    multiplier = models.DecimalField(max_digits=8, decimal_places=2, null=True)
-    profit_amount = models.DecimalField(max_digits=18, decimal_places=2)
-
-    class Meta:
-        db_table = "customer_bet_history"
