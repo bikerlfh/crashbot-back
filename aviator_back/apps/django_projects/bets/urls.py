@@ -9,7 +9,7 @@ from apps.django_projects.bets import views
 
 urlpatterns: list[Any] = [
     path(
-        "bet/",
+        "",
         views.BetView.as_view(),
         name="bets",
     ),

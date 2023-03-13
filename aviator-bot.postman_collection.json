@@ -1,0 +1,350 @@
+{
+	"info": {
+		"_postman_id": "8f891eac-f8a6-4a0c-aa95-e70e33a7eb45",
+		"name": "aviator-bot",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8014861"
+	},
+	"item": [
+		{
+			"name": "balance",
+			"item": [
+				{
+					"name": "get-customer-balance",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/customers/balance/?customer_id=1&home_bet_id=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"customers",
+								"balance",
+								""
+							],
+							"query": [
+								{
+									"key": "customer_id",
+									"value": "1"
+								},
+								{
+									"key": "home_bet_id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-customer-balance",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customer_id\": 1,\n    \"home_bet_id\": 2,\n    \"amount\": 1200000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/customers/balance/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"customers",
+								"balance",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "bets",
+			"item": [
+				{
+					"name": "create-bet",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"external_id\": \"12312312\",\n    \"customer_id\": 1,\n    \"home_bet_id\": 2,\n    \"prediction\": 2.2,\n    \"prediction_round\": 2,\n    \"multiplier\": 2.3,\n    \"amount\": 500\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/bets/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"bets",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "process-bet",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bet_id\": 1,\n    \"multiplier\": 2.3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/bets/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"bets",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-bet",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bet_id\": 1,\n    \"multiplier\": 2.3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/bets/?bet_id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"bets",
+								""
+							],
+							"query": [
+								{
+									"key": "bet_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "add-multiplier",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"home_bet_id\": 1,\n    \"multipliers\": [2]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/home-bet/multiplier/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"home-bet",
+						"multiplier",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get-homebet-multipliers",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/home-bet/multiplier/?home_bet_id=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"home-bet",
+						"multiplier",
+						""
+					],
+					"query": [
+						{
+							"key": "home_bet_id",
+							"value": "1"
+						},
+						{
+							"key": "count",
+							"value": "2",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get-homebet",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"home_bet_id\": 1,\n    \"multipliers\": [1,2,3,4,6,7,8,9,10, 45, 56]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/home-bet/?home_bet_id=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"home-bet",
+						""
+					],
+					"query": [
+						{
+							"key": "home_bet_id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "predict",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"home_bet_id\":2,\n    \"multipliers_1\": [\n        17.76, 316.44,  2.79,  2.23,\n   1.37,   1.21,  1.59,  1.25,\n   2.62,   1.36,   2.1,  1.36,\n   1.94,   2.18,  4.16,  1.88,\n   2.23,   1.95, 38.73,     1,\n   1.29,  80.05,  1.82, 20.25,\n   3.37,1.88, 27.70,19.12,1.98,1.43, 1.51, 1.7,1,  1.42, 1.55, 5.24, 8.48, 1.24\n    ],\n    \"length_window\":10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/predictions/predict/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"predictions",
+						"predict",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get-models",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/predictions/models/?home_bet_id=1&status=active",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"predictions",
+						"models",
+						""
+					],
+					"query": [
+						{
+							"key": "home_bet_id",
+							"value": "1"
+						},
+						{
+							"key": "status",
+							"value": "active"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

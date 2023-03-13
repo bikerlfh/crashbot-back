@@ -10,6 +10,7 @@ from apps.django_projects.customers import selectors as customer_selectors
 
 def create_bet(
     *,
+    external_id: str,
     customer_id: int,
     home_bet_id: int,
     prediction: float,
@@ -23,8 +24,16 @@ def create_bet(
     ).first()
     if not balance:
         raise ValidationError("Balance does not exist")
+
+    bet_exists = selectors.filter_bet(
+        external_id=external_id,
+        balance__customer_id=customer_id,
+    ).exists()
+    if bet_exists:
+        raise ValidationError("Bet already exists")
     bet = Bet.objects.create(
         balance_id=balance.id,
+        external_id=external_id,
         prediction=prediction,
         prediction_round=prediction_round,
         amount=amount,
@@ -50,3 +59,22 @@ def process_bet(
         bet.status = BetStatus.LOST.value
         bet.profit_amount = -bet.amount
     bet.save()
+
+
+def get_bet(
+    *,
+    bet_id: int
+) -> dict[str, any]:
+    bet_data = selectors.filter_bet(id=bet_id).values(
+        'id',
+        'prediction',
+        'prediction_round',
+        'amount',
+        'multiplier',
+        'multiplier_result',
+        'profit_amount',
+        'status'
+    ).first()
+    if not bet_data:
+        raise ValidationError("Bet does not exist")
+    return bet_data

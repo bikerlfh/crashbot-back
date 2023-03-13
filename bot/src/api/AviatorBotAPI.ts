@@ -16,7 +16,10 @@ const URLS = {
     homeBet: 'home-bet/',
     homeBetDetail: 'home-bet/?P<nombreParametro>',
     addMultipliers: 'home-bet/multiplier/',
-    getPrediction: '/predictions/predict/'
+    getPrediction: '/predictions/predict/',
+    updateBalance: '/customers/balance/',
+    createBet: 'bets/',
+    getBet: 'bets/?P<bet_id>',
     // gameDetail: 'games/<gameId>/',
 };
 
@@ -72,5 +75,34 @@ export class AviatorBotAPI {
             home_bet_id: homeBetId,
             multipliers: multipliers || null
         });
+    }
+    static requestUpdateBalance = async (customerId: number, homeBetId: number, amount: number) => {
+        return await APIRest.patch(URLS.updateBalance, {
+            customer_id: customerId,
+            home_bet_id: homeBetId,
+            amount: amount
+        });
+    }
+    static requestCreateBet = async (
+        external_id: string,
+        customerId: number, 
+        homeBetId: number,
+        prediction: number,
+        predictionRound: number,
+        multiplier: number,
+        amount: number
+    ) => {
+        return await APIRest.post(URLS.createBet, {
+            external_id: external_id,
+            customer_id: customerId,
+            home_bet_id: homeBetId,
+            prediction: prediction,
+            prediction_round: predictionRound,
+            multiplier: multiplier,
+            amount: amount
+        });
+    }
+    static requestGetBet = async (betId:number) => {
+        return await APIRest.get(makeURL(URLS.createBet, {bet_id: betId}));
     }
 }
