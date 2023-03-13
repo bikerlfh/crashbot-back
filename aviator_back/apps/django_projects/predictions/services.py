@@ -6,6 +6,7 @@ from decimal import Decimal
 from typing import Optional
 
 # Django
+from django.db.models import Max
 from rest_framework.exceptions import ValidationError
 
 # Internal
@@ -145,22 +146,20 @@ def predict(
     home_bet_id: int,
     multipliers: Optional[list[Decimal]] = None,
 ) -> dict:
-    home_bet_exists = core_selectors.filter_home_bet(
-        home_bet_id=home_bet_id
-    ).exists()
-    if not home_bet_exists:
-        raise ValidationError(
-            f"predict :: " f"home bet {home_bet_id} does not exists"
-        )
-    if not multipliers:
-        multipliers = core_selectors.get_last_multipliers(
-            home_bet_id=home_bet_id, count=100
-        )
     models = selectors.get_bets_models_by_average_predictions(
         home_bet_id=home_bet_id
     )
     if not models:
-        raise ValidationError("predict :: no models")
+        raise ValidationError("no models")
+    if not multipliers:
+        max_ = models.annotate(
+           max=Max("seq_len")
+        ).first().max
+        multipliers = core_selectors.get_last_multipliers(
+            home_bet_id=home_bet_id, count=max_
+        )
+    if not multipliers:
+        raise ValidationError("no multipliers")
     predictions = []
     for model_home_bet in models:
         prediction_value = prediction_services.predict(
@@ -174,7 +173,9 @@ def predict(
         category_data = model_home_bet.category_results.filter(
             category=prediction_round
         ).values('percentage_predictions').first()
-        percentage_predictions = category_data["percentage_predictions"]
+        percentage_predictions = 0
+        if category_data:
+            percentage_predictions = category_data["percentage_predictions"]
         predictions.append(
             dict(
                 id=model_home_bet.id,
@@ -248,21 +249,23 @@ def create_model_with_all_multipliers(
     return model_home_bet
 
 
-def create_model_for_all_in_play_home_bet() -> None:
+def create_model_for_all_in_play_home_bet(
+    *,
+    home_bet_ids: Optional[list[int]] = None,
+) -> None:
     """
     create model for all in-play home bets
     (multipliers created no more than 10 minutes ago)
     """
-    home_bet_ids = core_selectors.filter_home_bet_in_play().\
-        values_list('id', flat=True)
+    if not home_bet_ids:
+        home_bet_ids = core_selectors.filter_home_bet_in_play().\
+            values_list('id', flat=True)
     for home_bet_id in home_bet_ids:
-        best_model_exists = selectors.get_bets_models_by_average_predictions(
+        bets_mod = selectors.get_bets_models_by_average_predictions(
             home_bet_id=home_bet_id,
             number_of_models=1
-        ).filter(
-            average_predictions__gte=PERCENTAGE_ACCEPTABLE
-        ).exists()
-        if best_model_exists:
+        ).first()
+        if bets_mod and bets_mod.average_predictions >= PERCENTAGE_ACCEPTABLE:
             continue
         for model_type_ in GENERATE_AUTOMATIC_MODEL_TYPES:
             model = create_model_with_all_multipliers(
@@ -277,15 +280,27 @@ def create_model_for_all_in_play_home_bet() -> None:
 
 
 def generate_category_results_of_models():
-    models = selectors.filter_model_home_bet(
-        status=ModelStatus.ACTIVE.value
-    ).order_by('id')
+    models = selectors.filter_models_to_generate_category_result()
+    home_bet_ids_to_create = set()
     for model in models:
         generate_category_result_of_model(model_home_bet_id=model.id)
         model.refresh_from_db()
         if model.average_predictions < PERCENTAGE_MODEL_TO_INACTIVE:
             model.status = ModelStatus.INACTIVE.value
             model.save()
+            home_bet_ids_to_create.add(model.home_bet_id)
+    if not home_bet_ids_to_create:
+        return
+    home_bet_ids = selectors.filter_model_home_bet(
+        home_bet_id__in=home_bet_ids_to_create,
+        status=ModelStatus.ACTIVE.value
+    ).values_list('home_bet_id', flat=True)
+    home_bet_ids_ = [_id for _id in home_bet_ids_to_create if _id not in home_bet_ids]
+    if not home_bet_ids_:
+        return
+    create_model_for_all_in_play_home_bet(
+        home_bet_ids=home_bet_ids_
+    )
 
 
 def get_models_home_bet(

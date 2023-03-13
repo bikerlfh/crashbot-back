@@ -56,6 +56,7 @@ export let APIRest = {
                'Content-Type': 'application/json',
            },
            body: body? JSON.stringify(body) : null,
+           timeout: 5000,
        };
        
        if(token !== null)

@@ -9,6 +9,7 @@
  */
 import {Dictionary} from '../types/interfaces';
 import {APIRest} from './APIRest';
+import {Prediction} from './models';
 
 
 const URLS = {
@@ -70,10 +71,12 @@ export class AviatorBotAPI {
             multipliers: multipliers
         });
     }
-    static requestPrediction = async (homeBetId: number, multipliers?: number[]) => {
+    static requestPrediction = async (homeBetId: number, multipliers?: number[]): Promise<Prediction[]> => {
         return await APIRest.post(URLS.getPrediction, {
             home_bet_id: homeBetId,
             multipliers: multipliers || null
+        }).then((response: any) => { 
+            return response.predictions.map((prediction: any) => new Prediction(prediction));
         });
     }
     static requestUpdateBalance = async (customerId: number, homeBetId: number, amount: number) => {

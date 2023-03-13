@@ -1,6 +1,7 @@
 import {Multiplier, Average, Player, Bet} from "./core"
 import {AviatorBotAPI} from "../api/AviatorBotAPI"
 import { HomeBet } from "../constants"
+import { Prediction } from "../api/models"
 
 export class Game {
     homeBet: HomeBet
@@ -14,6 +15,7 @@ export class Game {
     maximumWinForOneBet: number = 0
     _minBet: number = 0
     _maxBet: number = 0
+    _predictions: any[] = []
     
     constructor(
         homeBet: HomeBet,
@@ -34,19 +36,26 @@ export class Game {
     }
 
     private requestSaveMultipliers(multipliers: number[]){
-        AviatorBotAPI.requestSaveMultipliers(this.homeBet.id, multipliers).then(
-            response => {
-                this.getPrediction()
+        AviatorBotAPI.requestSaveMultipliers(this.homeBet.id, multipliers).catch(
+            error => {
+                console.error("error in requestSaveMultipliers:", error)
             }
         )
     }
 
-    private getPrediction(){
-        AviatorBotAPI.requestPrediction(this.homeBet.id).then(
-            response => {
-                console.log("Predictions:", response)
+    private async getPrediction(): Promise<Prediction|null>{
+        // const multipliers = this.multipliers.map(item => item.multiplier)
+        const predictions = await AviatorBotAPI.requestPrediction(this.homeBet.id).catch(
+            error => {
+                console.error("error in requestPrediction:", error)
+                return []
             }
         )
+        if(predictions.length == 0){
+            return null
+        }
+        // TODO add logic to select the best prediction
+        return predictions[0]
     }
 
     calculateMinMaxBet(){
@@ -108,7 +117,7 @@ export class Game {
         })
         return result
     }
-    calculateAmountBet(betsAverage: number[]){
+    /*calculateAmountBet(betsAverage: number[]){
         const amounts: number[] = []
         let profit = this.balance - this.initialBalance
         let balance = this.balance
@@ -131,13 +140,39 @@ export class Game {
             amounts.push(amount)
         })
         return amounts
-    }
-    
-    _randomMultiplier(min: number, max: number): number{
+    }*/
+    private _randomMultiplier(min: number, max: number): number{
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    getNextBet(): Bet[]{
+    calculateAmountBet(multiplier: number, usedAmount?: number): number{
+        if(!usedAmount){
+            usedAmount = 0
+        }
+        let balance = this.balance - usedAmount
+        let profit = balance - this.initialBalance
+        let amount = this._minBet
+        console.log("balance: ", balance, "; profit: ", profit, "; amount: ", amount)
+        if(profit < 0){
+            amount = (Math.abs(profit) / (multiplier -1))
+        }
+        amount = amount > this.minimumBet? amount: this.minimumBet;
+        if(amount > balance){
+            amount = balance
+        }
+        if(amount > this.maximumBet){
+            amount = this.maximumBet
+        }
+        amount = parseFloat(amount.toFixed(0))
+        return amount
+    }
+
+    async getNextBet(): Promise<Bet[]>{
+        const prediction = await this.getPrediction()
+        if(prediction == null){
+            return []
+        }
+        console.log("prediction: ", prediction)
         this.bets = []
         const numLastMultiplier = 15
         const averages = this.getTotalAverage(numLastMultiplier)
@@ -155,10 +190,31 @@ export class Game {
             3: averageCat_3.percentage
         }
         console.log("averages: ", averages_per, "; percentage:", percentage.toFixed(2))
+        // no bets when prediction is 1
+        const categoryPrecentage = prediction.categoryPercentage
+        if(prediction.predictionRound == 1){
+            console.log("predictionRound == 1")
+            return []
+        }
+        if(categoryPrecentage < 80){
+            console.log("categoryPrecentage < 80")
+            return []
+        }
+        
+        let amount = this.calculateAmountBet(prediction.predictionRound)
+        this.bets.push(new Bet(amount, prediction.predictionRound))
+        if(profit < 0 && prediction.prediction > prediction.predictionRound){
+            amount = this.calculateAmountBet(averageCat_1.average, amount)    
+        }
+        else{
+            amount = this.calculateAmountBet(prediction.prediction, amount)
+        }
+        
+        this.bets.push(new Bet(amount, prediction.prediction))
         // const averagePosition = averageCat_1.positions
         // const positionSum = averagePosition.reduce((a, b) => b - a, 0);
         // if(averagePosition.length == numLastMultiplier && positionSum)
-        let amounts: number[] = []
+        /*let amounts: number[] = []
         if(percentage >= 50){
             if(profit >0){
                 const multiplier_2 = this._randomMultiplier(2, 3.5)
@@ -178,7 +234,7 @@ export class Game {
         }else if(percentageCat1 >= 90){
             const amount = parseFloat((this.balance * 0.3).toFixed(0))
             this.bets.push(new Bet(amount, 1.95))
-        }
+        }*/
         return this.bets
     }
 }
