@@ -13,9 +13,4 @@ urlpatterns: list[Any] = [
         views.BetView.as_view(),
         name="bets",
     ),
-    path(
-        "balance/",
-        views.CustomerBalanceView.as_view(),
-        name="customer-balance",
-    ),
 ]

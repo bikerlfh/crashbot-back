@@ -20,6 +20,7 @@ from django.urls import include, path
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("apps.django_projects.core.urls")),
-    path("predictions/", include("apps.django_projects.predictions.urls")),
+    path("customers/", include("apps.django_projects.customers.urls")),
     path("bets/", include("apps.django_projects.bets.urls")),
+    path("predictions/", include("apps.django_projects.predictions.urls")),
 ]

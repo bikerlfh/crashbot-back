@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "apps.django_projects.core",
+    "apps.django_projects.customers",
     "apps.django_projects.bets",
     "apps.django_projects.predictions",
 ]

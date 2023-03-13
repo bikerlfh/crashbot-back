@@ -14,3 +14,11 @@ class FernetCrypto:
     @classmethod
     def decrypt(cls, value: str) -> str:
         return cls.fernet.decrypt(value.encode()).decode()
+
+    @classmethod
+    def verify_signature(cls, value: str) -> bool:
+        try:
+            cls.decrypt(value)
+            return True
+        except (Exception,):
+            return False
