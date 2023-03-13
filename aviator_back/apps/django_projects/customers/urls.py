@@ -13,9 +13,4 @@ urlpatterns: list[Any] = [
         views.CustomerBalanceView.as_view(),
         name="customer-balance",
     ),
-    path(
-        "balance/update/",
-        views.UpdateCustomerBalanceView.as_view(),
-        name="update-customer-balance",
-    ),
 ]

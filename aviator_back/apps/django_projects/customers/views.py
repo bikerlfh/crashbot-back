@@ -21,6 +21,14 @@ class CustomerBalanceView(
         # username = serializers.CharField()
         # password = serializers.CharField()
 
+    class InputPATCHSerializer(serializers.Serializer):
+        customer_id = serializers.IntegerField()
+        home_bet_id = serializers.IntegerField()
+        amount = serializers.DecimalField(
+            max_digits=10,
+            decimal_places=2
+        )
+
     def get(self, request):
         serializer = self.InputGETSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
@@ -32,21 +40,8 @@ class CustomerBalanceView(
             status=status.HTTP_200_OK
         )
 
-
-class UpdateCustomerBalanceView(
-    APIErrorsMixin,
-    APIView
-):
-    class InputGETSerializer(serializers.Serializer):
-        customer_id = serializers.IntegerField()
-        home_bet_id = serializers.IntegerField()
-        amount = serializers.DecimalField(
-            max_digits=10,
-            decimal_places=2
-        )
-
     def patch(self, request):
-        serializer = self.InputGETSerializer(data=request.data)
+        serializer = self.InputPATCHSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         services.update_customer_balance(**serializer.validated_data)
         return Response(

@@ -9,8 +9,12 @@ from django.db.models import QuerySet
 from apps.django_projects.core.models import HomeBet, HomeBetMultiplier
 
 
-def filter_home_bet(*, home_bet_id: Optional[int] = None) -> QuerySet[HomeBet]:
-    filter_ = dict()
+def filter_home_bet(
+    *,
+    home_bet_id: Optional[int] = None,
+    filter_: Optional[dict] = None,
+) -> QuerySet[HomeBet]:
+    filter_ = filter_ or {}
     if home_bet_id:
         filter_.update(id=home_bet_id)
     return HomeBet.objects.filter(**filter_).prefetch_related(

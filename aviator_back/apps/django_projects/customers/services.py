@@ -1,6 +1,6 @@
 from rest_framework.exceptions import ValidationError
-from apps.django_projects.bets import selectors
-from apps.django_projects.bets.models import CustomerBalance
+from apps.django_projects.customers import selectors
+from apps.django_projects.customers.models import CustomerBalance
 from apps.django_projects.core import selectors as core_selectors
 
 

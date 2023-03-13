@@ -14,6 +14,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from os import getenv
 from pathlib import Path
 
+from celery.schedules import crontab
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -140,3 +142,17 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+CELERY_BROKER_URL = "redis://redis:6379"
+CELERY_RESULT_BACKEND = "redis://redis:6379"
+
+CELERY_BEAT_SCHEDULE = {
+    "task_generate_category_result": {
+        "task": "apps.django_projects.predictions.tasks.task_generate_category_result",
+        "schedule": crontab(minute="*/5"),
+    },
+    "task_create_sequential_models": {
+        "task": "apps.django_projects.predictions.tasks.task_create_sequential_models",
+        "schedule": crontab(minute="*/10"),
+    },
+}

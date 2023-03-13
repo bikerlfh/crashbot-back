@@ -1,4 +1,5 @@
 # Standard Library
+import logging
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
@@ -9,13 +10,21 @@ from rest_framework.exceptions import ValidationError
 # Internal
 from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.predictions import selectors
-from apps.django_projects.predictions.constants import ModelStatus
+from apps.django_projects.predictions.constants import (
+    ModelStatus,
+    PERCENTAGE_ACCEPTABLE,
+    DEFAULT_SEQ_LEN,
+    PERCENTAGE_MODEL_TO_INACTIVE
+)
 from apps.django_projects.predictions.models import (
     ModelCategoryResult,
     ModelHomeBet,
 )
 from apps.prediction import services as prediction_services
 from apps.prediction.constants import ModelType
+
+
+logger = logging.getLogger(__name__)
 
 
 def create_model_home_bet(
@@ -183,21 +192,25 @@ def create_model_with_all_multipliers(
     home_bet_id: int,
     seq_len: int,
     model_type: Optional[ModelType] = ModelType.SEQUENTIAL,
-) -> ModelHomeBet:
+) -> ModelHomeBet | None:
     home_bet_exists = core_selectors.filter_home_bet(
         home_bet_id=home_bet_id
     ).exists()
     if not home_bet_exists:
-        raise ValidationError(
+        logger.error(
             f"create_model_with_all_multipliers :: "
             f"home bet {home_bet_id} does not exists"
         )
-    multipliers = core_selectors.get_last_multipliers(home_bet_id=home_bet_id)
+        return
+    multipliers = core_selectors.get_last_multipliers(
+        home_bet_id=home_bet_id
+    )
     if not multipliers:
-        raise ValidationError(
+        logger.warning(
             f"create_model_with_all_multipliers :: "
             f"no multipliers for home bet {home_bet_id}"
         )
+        return
     match model_type:
         case ModelType.SEQUENTIAL:
             name, eval_error = prediction_services.create_sequential_model(
@@ -212,10 +225,11 @@ def create_model_with_all_multipliers(
                 seq_len=seq_len,
             )
         case _:
-            raise ValidationError(
+            logger.error(
                 f"create_model_with_all_multipliers :: "
                 f"model type {model_type.value} not implemented"
             )
+            return
     model_home_bet = create_model_home_bet(
         home_bet_id=home_bet_id,
         name=name,
@@ -230,12 +244,48 @@ def create_model_with_all_multipliers(
     return model_home_bet
 
 
+def create_model_for_all_in_play_home_bet() -> None:
+    """
+    create model for all in-play home bets
+    (multipliers created no more than 10 minutes ago)
+    """
+    now = datetime.now()
+    home_bet_ids = core_selectors.filter_home_bet(
+        filter_=dict(
+            multipliers__multiplier_dt__gte=now
+        )
+    ).values_list('id', flat=True)
+    for home_bet_id in home_bet_ids:
+        best_model = selectors.get_bets_models_by_average_predictions(
+            home_bet_id=home_bet_id,
+            number_of_models=1
+        ).first()
+
+        if best_model and \
+                best_model.average_predictions >= PERCENTAGE_ACCEPTABLE:
+            continue
+        create_model_with_all_multipliers(
+            home_bet_id=home_bet_id,
+            seq_len=DEFAULT_SEQ_LEN,
+            model_type=ModelType.SEQUENTIAL_LSTM
+        )
+        # create_model_with_all_multipliers(
+        #     home_bet_id=home_bet_id,
+        #     seq_len=DEFAULT_SEQ_LEN,
+        #     model_type=ModelType.SEQUENTIAL
+        # )
+
+
 def generate_category_results_of_models():
-    model_ids = selectors.filter_model_home_bet(
+    models = selectors.filter_model_home_bet(
         status=ModelStatus.ACTIVE.value
-    ).order_by('id').values_list('id', flat=True)
-    for model_id in model_ids:
-        generate_category_result_of_model(model_home_bet_id=model_id)
+    ).order_by('id')
+    for model in models:
+        generate_category_result_of_model(model_home_bet_id=model.id)
+        model.refresh_from_db()
+        if model.average_predictions < PERCENTAGE_MODEL_TO_INACTIVE:
+            model.status = ModelStatus.INACTIVE.value
+            model.save()
 
 
 def get_models_home_bet(
