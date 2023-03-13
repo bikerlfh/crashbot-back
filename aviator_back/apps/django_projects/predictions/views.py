@@ -62,7 +62,6 @@ class ModelHomeBetView(
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
-        name = serializers.CharField()
         home_bet_id = serializers.IntegerField()
         model_type = serializers.CharField()
         status = serializers.CharField()

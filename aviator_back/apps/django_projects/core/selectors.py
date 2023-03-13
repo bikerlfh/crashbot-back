@@ -1,12 +1,14 @@
 # Standard Library
+from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Optional
 
 # Django
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 
 # Internal
 from apps.django_projects.core.models import HomeBet, HomeBetMultiplier
+from apps.django_projects.predictions.constants import ModelStatus
 
 
 def filter_home_bet(
@@ -20,6 +22,15 @@ def filter_home_bet(
     return HomeBet.objects.filter(**filter_).prefetch_related(
         "multipliers", "currencies"
     )
+
+
+def filter_home_bet_in_play() -> QuerySet[HomeBet]:
+    now = datetime.now() - timedelta(minutes=10)
+    return HomeBet.objects.filter(
+        Q(models__isnull=True) |
+        Q(multipliers__multiplier_dt__gte=now),
+        multipliers__isnull=False,
+    ).distinct('id')
 
 
 def get_last_multipliers(

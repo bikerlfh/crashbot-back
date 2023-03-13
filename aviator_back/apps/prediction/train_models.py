@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 
 # Internal
 from apps.prediction.constants import MODELS_PATH
+from apps.prediction import utils
 
 
 def create_sequential_model(

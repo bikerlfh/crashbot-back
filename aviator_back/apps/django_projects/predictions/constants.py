@@ -9,7 +9,9 @@ class ModelStatus(str, Enum):
 
 
 DEFAULT_SEQ_LEN = int(getenv("DEFAULT_SEQ_LEN", 15))
-DEFAULT_MODEL_TYPE = getenv("DEFAULT_MODEL_TYPE", "sequential_lstm")
+GENERATE_AUTOMATIC_MODEL_TYPES = getenv(
+    "GENERATE_AUTOMATIC_MODEL_TYPES", "sequential,sequential_lstm"
+).split(",")
 # AVERAGE_PERCENTAGE_ACCEPTABLE
 PERCENTAGE_ACCEPTABLE = float(getenv("AVERAGE_PERCENTAGE_ACCEPTABLE", 85))
 PERCENTAGE_MODEL_TO_INACTIVE = float(getenv(

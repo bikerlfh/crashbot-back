@@ -1,5 +1,6 @@
 # Standard Library
 import logging
+import pdb
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
@@ -14,7 +15,7 @@ from apps.django_projects.predictions.constants import (
     DEFAULT_SEQ_LEN,
     PERCENTAGE_ACCEPTABLE,
     PERCENTAGE_MODEL_TO_INACTIVE,
-    ModelStatus,
+    ModelStatus, GENERATE_AUTOMATIC_MODEL_TYPES,
 )
 from apps.django_projects.predictions.models import (
     ModelCategoryResult,
@@ -239,7 +240,7 @@ def create_model_with_all_multipliers(
         model_type=model_type,
         seq_len=seq_len,
         others=dict(
-            eval_error=eval_error,
+            eval_error=float(eval_error),
             num_multipliers_to_train=len(multipliers)
         ),
     )
@@ -252,31 +253,27 @@ def create_model_for_all_in_play_home_bet() -> None:
     create model for all in-play home bets
     (multipliers created no more than 10 minutes ago)
     """
-    now = datetime.now()
-    home_bet_ids = core_selectors.filter_home_bet(
-        filter_=dict(
-            multipliers__multiplier_dt__gte=now
-        )
-    ).values_list('id', flat=True)
+    home_bet_ids = core_selectors.filter_home_bet_in_play().\
+        values_list('id', flat=True)
     for home_bet_id in home_bet_ids:
-        best_model = selectors.get_bets_models_by_average_predictions(
+        best_model_exists = selectors.get_bets_models_by_average_predictions(
             home_bet_id=home_bet_id,
             number_of_models=1
-        ).first()
-
-        if best_model and \
-                best_model.average_predictions >= PERCENTAGE_ACCEPTABLE:
+        ).filter(
+            average_predictions__gte=PERCENTAGE_ACCEPTABLE
+        ).exists()
+        if best_model_exists:
             continue
-        create_model_with_all_multipliers(
-            home_bet_id=home_bet_id,
-            seq_len=DEFAULT_SEQ_LEN,
-            model_type=ModelType.SEQUENTIAL_LSTM
-        )
-        # create_model_with_all_multipliers(
-        #     home_bet_id=home_bet_id,
-        #     seq_len=DEFAULT_SEQ_LEN,
-        #     model_type=ModelType.SEQUENTIAL
-        # )
+        for model_type_ in GENERATE_AUTOMATIC_MODEL_TYPES:
+            model = create_model_with_all_multipliers(
+                home_bet_id=home_bet_id,
+                seq_len=DEFAULT_SEQ_LEN,
+                model_type=ModelType(model_type_)
+            )
+            logger.info(
+                f"create_model_for_all_in_play_home_bet :: "
+                f"model {model.id} ({model_type_}) created"
+            )
 
 
 def generate_category_results_of_models():
@@ -321,7 +318,6 @@ def get_models_home_bet(
         data.append(
             dict(
                 id=model.id,
-                name=model.name,
                 home_bet_id=model.home_bet_id,
                 model_type=model.model_type,
                 status=model.status,

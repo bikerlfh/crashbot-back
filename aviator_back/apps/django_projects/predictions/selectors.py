@@ -4,6 +4,7 @@ from typing import Optional
 # Django
 from django.db.models import QuerySet
 
+from apps.django_projects.predictions.constants import ModelStatus
 # Internal
 from apps.django_projects.predictions.models import ModelHomeBet
 
@@ -33,7 +34,8 @@ def get_bets_models_by_average_predictions(
     *, home_bet_id: int, number_of_models: Optional[int] = 3
 ) -> QuerySet[ModelHomeBet]:
     models = filter_model_home_bet_by_home_bet_id(
-        home_bet_id=home_bet_id
+        home_bet_id=home_bet_id,
+        status=ModelStatus.ACTIVE
     ).order_by(
         "-average_predictions"
     )[:number_of_models]

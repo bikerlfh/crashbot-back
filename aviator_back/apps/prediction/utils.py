@@ -13,3 +13,7 @@ def transform_multipliers_to_data(multipliers: list[Decimal]):
             continue
         data.append(3)
     return data
+
+
+def to_float(value: any) -> float:
+    return float("{:.2f}".format(value))

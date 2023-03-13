@@ -11,7 +11,7 @@ logger = get_task_logger(__name__)
 @shared_task
 def task_generate_category_result():
     services.generate_category_results_of_models()
-    logger.info("task_generate_category_result successfully")
+    logger.info("task_generate_category_result invoked")
 
 
 @shared_task
@@ -19,5 +19,5 @@ def task_create_sequential_models():
     """
     create sequential models for all home bets
     """
+    logger.info("task_create_sequential_model invoked")
     services.create_model_for_all_in_play_home_bet()
-    logger.info("task_create_sequential_model successfully")

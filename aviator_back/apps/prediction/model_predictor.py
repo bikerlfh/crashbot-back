@@ -9,10 +9,7 @@ from keras.models import load_model
 
 # Internal
 from apps.prediction.constants import Category
-
-
-def _to_float(value) -> float:
-    return float("{:.2f}".format(value))
+from apps.prediction import utils
 
 
 @dataclass
@@ -95,10 +92,10 @@ class ModelPredictor:
         count_categories = 0
         for key, value in self.average_info.categories_data.items():
             dict_value = value
-            dict_value.percentage_predictions = _to_float(
+            dict_value.percentage_predictions = utils.to_float(
                 (dict_value.correct_predictions / dict_value.count) * 100
             )
-            dict_value.percentage_bets = _to_float(
+            dict_value.percentage_bets = utils.to_float(
                 (dict_value.correct_bets / dict_value.count) * 100
             )
             # dict_value.percentage_predictions = Decimal(
@@ -111,13 +108,13 @@ class ModelPredictor:
             sum_percentage_predictions += dict_value.percentage_predictions
             sum_percentage_bets += dict_value.percentage_bets
             self.average_info.categories_data[key] = dict_value
-        self.average_info.average_predictions = _to_float(
+        self.average_info.average_predictions = utils.to_float(
             sum_percentage_predictions / count_categories
         )
         # self.average_info.average_predictions = Decimal(
         #     self.average_info.average_predictions
         # )
-        self.average_info.average_bets = _to_float(
+        self.average_info.average_bets = utils.to_float(
             sum_percentage_bets / count_categories
         )
         # self.average_info.average_bets = Decimal(
