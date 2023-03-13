@@ -1,5 +1,7 @@
+# Django
 from django.db.models import QuerySet
 
+# Internal
 from apps.django_projects.bets.models import Bet
 
 

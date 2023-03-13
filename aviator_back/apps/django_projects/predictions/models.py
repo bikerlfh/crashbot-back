@@ -1,5 +1,4 @@
 # Standard Library
-from decimal import Decimal
 
 # Django
 from django.db import models

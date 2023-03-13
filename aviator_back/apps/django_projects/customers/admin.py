@@ -1,12 +1,9 @@
 # Django
 from django.contrib import admin
-from django.forms import ModelForm, PasswordInput, CharField
+from django.forms import CharField, ModelForm, PasswordInput
 
 # Internal
-from apps.django_projects.customers.models import (
-    Customer,
-    CustomerBalance,
-)
+from apps.django_projects.customers.models import Customer, CustomerBalance
 
 
 class CustomerAdmin(admin.ModelAdmin):

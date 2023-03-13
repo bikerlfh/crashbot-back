@@ -1,6 +1,9 @@
+# Standard Library
 from datetime import datetime
-from django.utils import timezone
+
+# Django
 from django.conf import settings
+from django.utils import timezone
 
 
 def localtime(value: datetime):

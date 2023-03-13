@@ -1,3 +1,4 @@
+# Standard Library
 from dataclasses import dataclass
 
 
@@ -8,4 +9,3 @@ class Bet:
     multiplier: float | None = None
     profit_amount: float | None = None
     id: int | None = None
-

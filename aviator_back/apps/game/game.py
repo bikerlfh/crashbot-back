@@ -1,8 +1,7 @@
-from apps.django_projects.bets.models import CustomerBalance
-
+# Internal
 from apps.django_projects.bets import selectors as bets_selectors
+from apps.django_projects.bets.models import CustomerBalance
 from apps.game.domain import models
-from apps.django_projects.bets.constants import BetStatus
 
 
 class Game:
@@ -21,7 +20,13 @@ class Game:
         bets_qry = bets_selectors.filter_bet(
             customer_id=self.customer_id,
             home_bet_id=self.home_bet_id
-        ).order_by('id').values('id', 'amount', 'multiplier', 'profit_amount', 'status')
+        ).order_by('id').values(
+            'id',
+            'amount',
+            'multiplier',
+            'profit_amount',
+            'status'
+        )
         for bet_ in bets_qry:
             self.bets.append(
                 models.Bet(

@@ -1,7 +1,10 @@
+# Django
 from rest_framework.exceptions import ValidationError
+
+# Internal
+from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.customers import selectors
 from apps.django_projects.customers.models import CustomerBalance
-from apps.django_projects.core import selectors as core_selectors
 
 
 def create_customer_balance(

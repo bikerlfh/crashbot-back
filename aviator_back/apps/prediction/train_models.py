@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 
 # Libraries
 import numpy as np
-from keras.layers import Dense, Dropout, LSTM
+from keras.layers import LSTM, Dense, Dropout
 from keras.models import Sequential
 from sklearn.model_selection import train_test_split
 
@@ -72,7 +72,13 @@ def create_sequential_lstm_model(
     # Create and compile the model
     model = Sequential()
     model.add(LSTM(units=32, input_shape=(seq_len, 1)))
-    # model.add(LSTM(units=50, return_sequences=True, input_shape=(seq_len, 1)))
+    # model.add(
+    #   LSTM(
+    #       units=50,
+    #       return_sequences=True,
+    #       input_shape=(seq_len, 1)
+    #   )
+    # )
     # model.add(LSTM(units=50))
     model.add(Dense(units=1))
     model.compile(loss='mse', optimizer='adam')

@@ -1,6 +1,6 @@
 # Standard Library
-from typing import Tuple
 from decimal import Decimal
+from typing import Tuple
 
 # Libraries
 import numpy as np
@@ -17,7 +17,10 @@ def predict(
     *, model_home_bet: ModelHomeBet, multipliers: list[Decimal]
 ) -> Decimal:
     model_path = f"{MODELS_PATH}{model_home_bet.name}"
-    model = ModelPredictor(model_path=model_path, seq_len=model_home_bet.seq_len)
+    model = ModelPredictor(
+        model_path=model_path,
+        seq_len=model_home_bet.seq_len
+    )
     data = utils.transform_multipliers_to_data(multipliers=multipliers)
     prediction = model.predict(data=data)
     return prediction
@@ -27,7 +30,10 @@ def evaluate_model_home_bet(
     *, model_home_bet: ModelHomeBet, multipliers: list[Decimal]
 ) -> AverageInfo:
     model_path = f"{MODELS_PATH}{model_home_bet.name}"
-    model = ModelPredictor(model_path=model_path, seq_len=model_home_bet.seq_len)
+    model = ModelPredictor(
+        model_path=model_path,
+        seq_len=model_home_bet.seq_len
+    )
     data = utils.transform_multipliers_to_data(multipliers=multipliers)
     average_info = model.evaluate(data=data)
     return average_info

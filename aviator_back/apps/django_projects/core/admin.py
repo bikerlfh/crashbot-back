@@ -2,10 +2,7 @@
 from django.contrib import admin
 
 # Internal
-from apps.django_projects.core.models import (
-    Currency,
-    HomeBet,
-)
+from apps.django_projects.core.models import Currency, HomeBet
 
 
 class CurrencyAdmin(admin.ModelAdmin):

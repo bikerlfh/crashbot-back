@@ -11,10 +11,10 @@ from rest_framework.exceptions import ValidationError
 from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.predictions import selectors
 from apps.django_projects.predictions.constants import (
-    ModelStatus,
-    PERCENTAGE_ACCEPTABLE,
     DEFAULT_SEQ_LEN,
-    PERCENTAGE_MODEL_TO_INACTIVE
+    PERCENTAGE_ACCEPTABLE,
+    PERCENTAGE_MODEL_TO_INACTIVE,
+    ModelStatus,
 )
 from apps.django_projects.predictions.models import (
     ModelCategoryResult,
@@ -22,7 +22,6 @@ from apps.django_projects.predictions.models import (
 )
 from apps.prediction import services as prediction_services
 from apps.prediction.constants import ModelType
-
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +112,9 @@ def generate_category_result_of_model(*, model_home_bet_id: int) -> None:
     model_home_bet.average_bets = average_result.average_bets
     model_home_bet.save()
     for key, value in average_result.categories_data.items():
-        category_ = model_home_bet.category_results.filter(category=key).first()
+        category_ = model_home_bet.category_results.filter(
+            category=key
+        ).first()
         if category_:
             category_.correct_predictions = value.correct_predictions
             category_.incorrect_predictions = value.incorrect_predictions
@@ -219,10 +220,12 @@ def create_model_with_all_multipliers(
                 seq_len=seq_len,
             )
         case ModelType.SEQUENTIAL_LSTM:
-            name, eval_error = prediction_services.create_sequential_lstm_model(
-                home_bet_id=home_bet_id,
-                multipliers=multipliers,
-                seq_len=seq_len,
+            name, eval_error = (
+                prediction_services.create_sequential_lstm_model(
+                    home_bet_id=home_bet_id,
+                    multipliers=multipliers,
+                    seq_len=seq_len,
+                )
             )
         case _:
             logger.error(

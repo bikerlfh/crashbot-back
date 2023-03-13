@@ -1,8 +1,8 @@
+# Django
 from django.db.models import QuerySet
 
-from apps.django_projects.customers.models import (
-    Customer, CustomerBalance
-)
+# Internal
+from apps.django_projects.customers.models import Customer, CustomerBalance
 
 
 def filter_customer(

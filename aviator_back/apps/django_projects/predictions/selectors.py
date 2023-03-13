@@ -5,10 +5,7 @@ from typing import Optional
 from django.db.models import QuerySet
 
 # Internal
-from apps.django_projects.predictions.models import (
-    ModelCategoryResult,
-    ModelHomeBet,
-)
+from apps.django_projects.predictions.models import ModelHomeBet
 
 
 def filter_model_home_bet(**kwargs) -> QuerySet[ModelHomeBet]:

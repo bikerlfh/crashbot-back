@@ -1,8 +1,10 @@
+# Django
 from django.db import models
 
+# Internal
 from apps.django_projects.bets.constants import BetStatus
-from apps.utils.django.models import BaseModel
 from apps.django_projects.customers.models import CustomerBalance
+from apps.utils.django.models import BaseModel
 
 
 class Bet(BaseModel):

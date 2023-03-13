@@ -1,6 +1,11 @@
+# Standard Library
 import base64
-from cryptography.fernet import Fernet
+
+# Django
 from django.conf import settings
+
+# Libraries
+from cryptography.fernet import Fernet
 
 
 class FernetCrypto:

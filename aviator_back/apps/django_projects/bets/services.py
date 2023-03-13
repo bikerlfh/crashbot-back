@@ -1,4 +1,7 @@
+# Django
 from rest_framework.exceptions import ValidationError
+
+# Internal
 from apps.django_projects.bets import selectors
 from apps.django_projects.bets.constants import BetStatus
 from apps.django_projects.bets.models import Bet

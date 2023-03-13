@@ -1,5 +1,4 @@
 # Standard Library
-import os
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Optional
@@ -8,6 +7,7 @@ from typing import Optional
 import numpy as np
 from keras.models import load_model
 
+# Internal
 from apps.prediction.constants import Category
 
 
@@ -101,10 +101,10 @@ class ModelPredictor:
             dict_value.percentage_bets = _to_float(
                 (dict_value.correct_bets / dict_value.count) * 100
             )
-            #dict_value.percentage_predictions = Decimal(
-            #    dict_value.percentage_predictions
-            #)
-            #dict_value.percentage_bets = Decimal(dict_value.percentage_bets)
+            # dict_value.percentage_predictions = Decimal(
+            #     dict_value.percentage_predictions
+            # )
+            # dict_value.percentage_bets = Decimal(dict_value.percentage_bets)
             if key == Category.CATEGORY_3.value:
                 continue
             count_categories += 1
@@ -114,13 +114,13 @@ class ModelPredictor:
         self.average_info.average_predictions = _to_float(
             sum_percentage_predictions / count_categories
         )
-        #self.average_info.average_predictions = Decimal(
-        #    self.average_info.average_predictions
-        #)
+        # self.average_info.average_predictions = Decimal(
+        #     self.average_info.average_predictions
+        # )
         self.average_info.average_bets = _to_float(
             sum_percentage_bets / count_categories
         )
-        #self.average_info.average_bets = Decimal(
-        #    self.average_info.average_bets
-        #)
+        # self.average_info.average_bets = Decimal(
+        #     self.average_info.average_bets
+        # )
         return self.average_info

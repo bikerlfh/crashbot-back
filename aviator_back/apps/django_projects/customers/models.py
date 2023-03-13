@@ -1,9 +1,11 @@
+# Django
 from django.contrib.auth.models import User
 from django.db import models
 
-from apps.utils.django.models import BaseModel
+# Internal
 from apps.django_projects.core.models import HomeBet
 from apps.utils.cryptography_tool import FernetCrypto
+from apps.utils.django.models import BaseModel
 
 
 class Customer(BaseModel):
