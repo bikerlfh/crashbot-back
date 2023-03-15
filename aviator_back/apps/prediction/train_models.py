@@ -69,7 +69,7 @@ def create_sequential_lstm_model(
 
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) # NOQA
-
+    import pdb; pdb.set_trace()
     # Create and compile the model
     model = Sequential()
     model.add(LSTM(units=32, input_shape=(seq_len, 1)))
