@@ -32,7 +32,7 @@ export let HomeBets: Dictionary<HomeBet>= {
     betplay: new HomeBet({
         id: 2,
         url: "https://betplay.com.co/slots",
-        minBet: 100,
+        minBet: 5000,
         maxBet: 50000, 
         username: process.env.BET_PLAY_USERNAME,
         password: process.env.BET_PLAY_PASSWORD

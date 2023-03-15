@@ -29,9 +29,6 @@ import { AviatorBotAPI } from './src/api/AviatorBotAPI';
 		if(balance != null){
 			game.balance = balance
 		}
-		if(game.balance < 800000){
-			throw new Error("balance is less than 800000")
-		}
 		const profit = game.balance - initialBalance
 		if(profit > 0){
 			game.initialBalance = game.balance
