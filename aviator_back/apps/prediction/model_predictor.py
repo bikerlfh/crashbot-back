@@ -42,12 +42,23 @@ class ModelPredictor:
         )
 
     def predict(self, *, data: list[int]) -> Decimal:
+        """
+        predict the nex multiplier
+        @param data: list of multipliers transformed to categorize
+        @return: the next multiplier
+        """
         next_num = self.loaded_model.predict(
             np.array([data[-self.seq_len:]])
         )[0][0]
         return round(next_num, 2)
 
-    def evaluate(self, *, data: list[int]) -> AverageInfo:
+    def evaluate(self, *, multipliers: list[Decimal]) -> AverageInfo:
+        """
+        evaluate the model
+        @param multipliers: list of multipliers in Decimal value
+        @return: AverageInfo
+        """
+        data = utils.transform_multipliers_to_data(multipliers=multipliers)
         X = np.array(  # NOQA
             [
                 data[i: i + self.seq_len]
@@ -55,11 +66,13 @@ class ModelPredictor:
             ]
         )
         y = np.array(data[self.seq_len:])
+        y_multiplier = np.array(multipliers[self.seq_len:])
         for i in range(len(X)):
             if i == len(X) - 1:
                 break
             _data = X[i]
             next_value = y[i]
+            next_multiplier = y_multiplier[i]
             value = self.predict(data=_data)
             value_round = round(value, 0)
             category_data = self.average_info.categories_data.get(
@@ -83,7 +96,7 @@ class ModelPredictor:
                 category_data.correct_predictions += 1
             else:
                 category_data.incorrect_predictions += 1
-            if value <= next_value:
+            if value <= next_multiplier:
                 category_data.correct_bets += 1
             else:
                 category_data.incorrect_bets += 1

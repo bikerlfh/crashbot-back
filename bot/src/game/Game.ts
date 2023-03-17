@@ -46,16 +46,13 @@ export class Game {
 
     private async getPrediction(): Promise<PredictionCore|null>{
         // const multipliers = this.multipliers.map(item => item.multiplier)
-        const predictions = await AviatorBotAPI.requestPrediction(this.homeBet.id).then(
-            response => {
-                console.log("response in requestPrediction:", response)
-                return response
-            }
-        ).catch(error => { return [] })
-        if(predictions.length == 0){
-            this._prediction_model.addPredictions(predictions)
-            return null
-        }
+        const predictions = await AviatorBotAPI.requestPrediction(this.homeBet.id).catch(
+            error => { return [] }
+        )
+        // if(predictions.length == 0){
+        //     this._prediction_model.addPredictions(predictions)
+        //     return null
+        // }
         this._prediction_model.addPredictions(predictions)
         return this._prediction_model.getBestPrediction()
     }
@@ -63,11 +60,15 @@ export class Game {
     calculateMinMaxBet(){
         const numMinBets = this.balance / this.minimumBet
         if(numMinBets <= 50){
+            // if the balance is less than 50 minimum bets, the minimum bet is the minimum bet
+            // and the maximum bet is 3 times the minimum bet
             this._minBet = this.minimumBet
             this._maxBet = parseFloat((this.minimumBet * (numMinBets * 3)).toFixed(0))
             return
         }
+        // if the balance is more than 50 minimum bets, the minimum bet is 0.3% of the balance
         this._minBet = parseFloat((this.minimumBet * (numMinBets * 0.003)).toFixed(0))
+        // and the maximum bet is 0.8% of the balance
         this._maxBet = parseFloat((this.minimumBet * (numMinBets * 0.008)).toFixed(0))
     }
 
@@ -120,37 +121,13 @@ export class Game {
         })
         return result
     }
-    /*calculateAmountBet(betsAverage: number[]){
-        const amounts: number[] = []
-        let profit = this.balance - this.initialBalance
-        let balance = this.balance
-        betsAverage.forEach(average => {
-            let amount = this._minBet
-            if(profit < 0){
-                amount = (Math.abs(profit) / (average -1))
-            }else if(amounts.length > 0){
-                amount = amounts.slice(-1)[0] / 3
-            }
-            amount = amount > this.minimumBet? amount: this.minimumBet;
-            if(amount > balance){
-                amount = balance
-            }
-            if(amount > this.maximumBet){
-                amount = this.maximumBet
-            }
-            amount = parseFloat(amount.toFixed(0))
-            balance -= amount
-            amounts.push(amount)
-        })
-        return amounts
-    }*/
+   
     private _randomMultiplier(min: number, max: number): number{
         const precision = 100;
         const randomNum = Math.floor(
             Math.random() * (max * precision - min * precision) + 1 * precision
         ) / (min * precision);
         return randomNum
-        // return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
     calculateAmountBet(multiplier: number, usedAmount?: number): number{
@@ -162,7 +139,7 @@ export class Game {
         let amount = this._minBet
         console.log("balance: ", balance, "; profit: ", profit, "; amount: ", amount)
         if(profit < 0){
-            amount = (Math.abs(profit) / (multiplier -1)) + this.minimumBet
+            amount = (Math.abs(profit) / (multiplier -1)) + this._minBet
         }
         else{
             amount *= 2
@@ -184,11 +161,8 @@ export class Game {
     async getNextBet(): Promise<Bet[]>{
         const prediction = await this.getPrediction()
         if(prediction == null){
-            console.log("prediction is null")
             return []
         }
-        console.log("prediction selected: ", prediction)
-        console.log("prediction selected: ", prediction.getPredictionRoundValue())
         this.bets = []
         const numLastMultiplier = 15
         const averages = this.getTotalAverage(numLastMultiplier)
@@ -205,6 +179,7 @@ export class Game {
             2: averageCat_2.percentage,
             3: averageCat_3.percentage
         }
+        console.clear()
         console.log("averages: ", averages_per, "; percentage:", percentage.toFixed(2))
         // no bets when prediction is 1
         const categoryPrecentage = prediction.getCategoryPercentage()
@@ -212,12 +187,18 @@ export class Game {
         let predictionValue = prediction.getPreditionValue()
         const averagePredictionValuesInLive = prediction.averagePredictionValuesInLive
         const averagePredictionInLive = prediction.averagePredictionInLive
+        console.log(
+            "predictionRound: ", predictionRound,
+            "predictionValue: ", predictionValue,
+            "ValuesInLive: ", averagePredictionValuesInLive,
+            "InLive: ", averagePredictionInLive,
+            "categoryPrecentage: ", categoryPrecentage,
+        )
         if(predictionValue < 0){
             predictionValue = 1.1
         }
         if(predictionRound == 1){
             if(averagePredictionValuesInLive < 70){
-                console.log("predictionRound == 1 && averagePredictionValuesInLive < 70")
                 return []
             }
             this.bets.push(new Bet(this.calculateAmountBet(predictionValue), predictionValue))
@@ -226,7 +207,6 @@ export class Game {
         if(predictionRound == 2){
             if(averagePredictionInLive < 70){
                 if(profit < 0){
-                    console.log("predictionRound == 2 && averagePredictionInLive < 70")
                     return []
                 }
                 this.bets.push(new Bet(this.calculateAmountBet(predictionValue), predictionValue)) 

@@ -8,7 +8,7 @@ class ModelStatus(str, Enum):
     INACTIVE = "inactive"
 
 
-DEFAULT_SEQ_LEN = int(getenv("DEFAULT_SEQ_LEN", 15))
+DEFAULT_SEQ_LEN = int(getenv("DEFAULT_SEQ_LEN", 18))
 GENERATE_AUTOMATIC_MODEL_TYPES = getenv(
     "GENERATE_AUTOMATIC_MODEL_TYPES", "sequential,sequential_lstm"
 ).split(",")

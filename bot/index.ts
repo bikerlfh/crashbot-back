@@ -8,10 +8,10 @@ import { Control } from './src/aviator/BetControl';
 
 (async () => {
 	let readlineSync = require('readline-sync');
-	let automaticPlay = readlineSync.question("automatic play? [y/n]");
+	let automaticPlay = readlineSync.question("automatic play? [y/n]: ");
 	automaticPlay = automaticPlay == "y"
 	let homeBetSelected = readlineSync.question(
-		"which bookmaker do you choose (default: demo)? [betPlay=1, 1Win=2]"
+		"which bookmaker do you choose (default: demo)? [betPlay=1, 1Win=2]: "
 	);
 	let homeBet = HomeBets.demo
 	switch(homeBetSelected){

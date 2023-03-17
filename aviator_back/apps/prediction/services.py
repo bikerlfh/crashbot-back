@@ -34,8 +34,7 @@ def evaluate_model_home_bet(
         model_path=model_path,
         seq_len=model_home_bet.seq_len
     )
-    data = utils.transform_multipliers_to_data(multipliers=multipliers)
-    average_info = model.evaluate(data=data)
+    average_info = model.evaluate(multipliers=multipliers)
     return average_info
 
 

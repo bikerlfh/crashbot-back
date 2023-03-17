@@ -7,11 +7,9 @@ import numpy as np
 from keras.layers import LSTM, Dense, Dropout
 from keras.models import Sequential
 from sklearn.model_selection import train_test_split
-from keras.utils import to_categorical
 
 # Internal
 from apps.prediction.constants import MODELS_PATH
-from apps.prediction import utils
 
 
 def create_sequential_model(

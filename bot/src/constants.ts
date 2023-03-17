@@ -52,6 +52,6 @@ export const HomeBets: Dictionary<HomeBet> = {
         id: 4,
         minBet: 500,
         maxBet: 500000, 
-        aviatorPage: new AviatorDemo("https://www.rivalo.co)
+        aviatorPage: new AviatorDemo("https://www.rivalo.co")
     }),
 }
