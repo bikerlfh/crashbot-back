@@ -31,7 +31,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         home_bet_id = options["home_bet_id"]
-        seq_len = options["seq_len"] or 15
+        seq_len = options["seq_len"] or 18
         model_type = ModelType(options["model_type"])
         model_home_bet = services.create_model_with_all_multipliers(
             home_bet_id=home_bet_id,

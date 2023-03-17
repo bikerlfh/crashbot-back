@@ -145,9 +145,11 @@ def predict(
     *,
     home_bet_id: int,
     multipliers: Optional[list[Decimal]] = None,
+    model_home_bet_id: Optional[int] = None,
 ) -> dict:
     models = selectors.get_bets_models_by_average_predictions(
-        home_bet_id=home_bet_id
+        home_bet_id=home_bet_id,
+        model_home_bet_id=model_home_bet_id,
     )
     if not models:
         raise ValidationError("no models")

@@ -22,6 +22,11 @@ class PredictionView(
             required=False,
             allow_null=True,
         )
+        model_home_bet_id = serializers.IntegerField(
+            required=False,
+            allow_null=True,
+            default=None,
+        )
 
     class OutputSerializer(serializers.Serializer):
         predictions = inline_serializer(

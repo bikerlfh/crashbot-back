@@ -7,6 +7,7 @@ import numpy as np
 from keras.layers import LSTM, Dense, Dropout
 from keras.models import Sequential
 from sklearn.model_selection import train_test_split
+from keras.utils import to_categorical
 
 # Internal
 from apps.prediction.constants import MODELS_PATH
@@ -40,7 +41,7 @@ def create_sequential_model(
     model.add(Dense(16, activation="relu"))
     model.add(Dense(1))
     model.compile(loss="mse", optimizer="adam")
-    model.fit(X_train, y_train, epochs=1000, batch_size=32)
+    model.fit(X_train, y_train, epochs=3000, batch_size=32)
     # Evaluate the model on the test set
     mse = model.evaluate(X_test, y_test)
     # print("Mean squared error on test set:", mse)
@@ -59,31 +60,18 @@ def create_sequential_lstm_model(
     data: list[int],
     seq_len: int,
 ) -> Tuple[str, float]:
-    X = [] # NOQA
-    y = []
-    for i in range(len(data) - seq_len):
-        X.append(data[i:i + seq_len])
-        y.append(data[i + seq_len])
-    X = np.array(X) # NOQA
-    y = np.array(y)
-
+    X = np.array(  # NOQA
+        [data[i: i + seq_len] for i in range(len(data) - seq_len)]
+    )
+    y = np.array(data[seq_len:])
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) # NOQA
-    import pdb; pdb.set_trace()
     # Create and compile the model
     model = Sequential()
     model.add(LSTM(units=32, input_shape=(seq_len, 1)))
-    # model.add(
-    #   LSTM(
-    #       units=50,
-    #       return_sequences=True,
-    #       input_shape=(seq_len, 1)
-    #   )
-    # )
-    # model.add(LSTM(units=50))
     model.add(Dense(units=1))
     model.compile(loss='mse', optimizer='adam')
-    model.fit(X_train, y_train, batch_size=32, epochs=1000)
+    model.fit(X_train, y_train, batch_size=32, epochs=4000)
 
     # Evaluate the model on the test set
     mse = model.evaluate(X_test, y_test)

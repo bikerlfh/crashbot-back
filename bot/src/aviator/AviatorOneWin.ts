@@ -5,9 +5,6 @@ import { HomeBets } from '../constants'
 export class AviatorOneWin extends AviatorPage{
     _frame: playwright.FrameLocator| null = null
 
-    constructor(){
-        super(HomeBets.oneWin.url)
-    }
 
     async _login(): Promise<void> {
         if(!this._page){

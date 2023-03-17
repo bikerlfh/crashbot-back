@@ -1,7 +1,6 @@
 import {Multiplier, Average, Player, Bet} from "./core"
 import {AviatorBotAPI} from "../api/AviatorBotAPI"
 import { HomeBet } from "../constants"
-import { Prediction } from "../api/models"
 import { PredictionModel, PredictionCore } from "./PredictionCore"
 
 export class Game {
@@ -146,7 +145,12 @@ export class Game {
         return amounts
     }*/
     private _randomMultiplier(min: number, max: number): number{
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+        const precision = 100;
+        const randomNum = Math.floor(
+            Math.random() * (max * precision - min * precision) + 1 * precision
+        ) / (min * precision);
+        return randomNum
+        // return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
     calculateAmountBet(multiplier: number, usedAmount?: number): number{

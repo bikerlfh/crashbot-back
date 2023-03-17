@@ -38,25 +38,29 @@ export class PredictionCore{
         }
     }
 
-    addMultiplierResult(prediction: number){
-        this.multiplierResults.push(prediction)
+    addMultiplierResult(multiplier: number){
+        this.multiplierResults.push(multiplier)
         this.calculateAveragePredictions()
         this.calculateCategoryPercentages()
     }
 
     calculateCategoryPercentages(){
         for(let i = 1; i <= 3; i++){
+            let countI = 0
             let count = 0;
-            for (let j = 0; j < this.predictionRounds.length; j++) {
+            for (let j = 0; j < this.predictionRounds.length; j++){
                 const value = this.predictionRounds[j]
-                if(value == i && value <= this.multiplierResults[j]){
-                    count++;
+                if(value == i){
+                    countI +=1
+                    if(value <= this.multiplierResults[j]){
+                        count++;
+                    }
                 }
             }
-            if(count === 0){
+            if(count === 0 || countI === 0){
                 continue;
             }
-            this.categoryPercentages[i] = (count / this.predictionRounds.length) * 100;
+            this.categoryPercentages[i] = (count / countI) * 100;
         }
     }
 

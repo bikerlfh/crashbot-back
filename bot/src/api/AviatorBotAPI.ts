@@ -71,10 +71,15 @@ export class AviatorBotAPI {
             multipliers: multipliers
         });
     }
-    static requestPrediction = async (homeBetId: number, multipliers?: number[]): Promise<Prediction[]> => {
+    static requestPrediction = async (
+        homeBetId: number,
+         multipliers?: number[], 
+         modelId?: number
+    ): Promise<Prediction[]> => {
         return await APIRest.post(URLS.getPrediction, {
             home_bet_id: homeBetId,
-            multipliers: multipliers || null
+            multipliers: multipliers || null,
+            model_home_bet_id: modelId || null
         }).then((response: any) => { 
             return response.predictions.map((prediction: any) => new Prediction(prediction));
         });

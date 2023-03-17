@@ -1,20 +1,34 @@
-import * as dotenv from 'dotenv';
+import * as dotenv from 'dotenv'
 dotenv.config()
 import {Game} from './src/game/Game'
-import { AviatorBetPlay } from "./src/aviator/AviatorBetPlay"
-import { AviatorDemo } from "./src/aviator/AviatorDemo"
-import { AviatorOneWin } from "./src/aviator/AviatorOneWin"
+
 import { HomeBets } from './src/constants';
 import { Control } from './src/aviator/BetControl';
-import { AviatorBotAPI } from './src/api/AviatorBotAPI';
 
 
 (async () => {
-	// const predictions = await AviatorBotAPI.requestPrediction(HomeBets.betplay.id)
-	//console.log(predictions)
-	const homeBet = HomeBets.betplay
-	const aviatorPage = new AviatorBetPlay()
+	let readlineSync = require('readline-sync');
+	let automaticPlay = readlineSync.question("automatic play? [y/n]");
+	automaticPlay = automaticPlay == "y"
+	let homeBetSelected = readlineSync.question(
+		"which bookmaker do you choose (default: demo)? [betPlay=1, 1Win=2]"
+	);
+	let homeBet = HomeBets.demo
+	switch(homeBetSelected){
+		case "1":
+			homeBet = HomeBets.betplay
+			break;
+		case "2":
+			homeBet = HomeBets.oneWin
+			break;
+		default:
+			homeBet = HomeBets.demo
+	}
+	console.clear()
+	console.log("opening home bet.....")
+	const aviatorPage = homeBet.aviatorPage
 	await aviatorPage.open()
+	console.clear()
 	const game = new Game(
 		homeBet, 
 		aviatorPage.multipliers,
@@ -37,6 +51,9 @@ import { AviatorBotAPI } from './src/api/AviatorBotAPI';
 		const bets = await game.getNextBet()
 		if(bets.length){
 			console.log("bets:", bets)
+			if(automaticPlay == false){
+				continue
+			}
 			for (let index = 0; index < bets.length; index++) {
 				const bet = bets[index];
 				const control = index == 0? Control.Control1: Control.Control2
@@ -45,10 +62,4 @@ import { AviatorBotAPI } from './src/api/AviatorBotAPI';
 			}
 		}
 	}
-	// const average = game.getAverage(1)
-	// await aviatorPage.bet(5, average, Control.Control2)
-	// await aviatorPage._controls?.setAutoCashOut(2, Control.Control1)
-	// await new_page.screenshot({ path: 'example.png' });
-	// console.log("screenshot")
-	// await browser.close();
   })();

@@ -54,11 +54,12 @@ class ModelPredictor:
                 for i in range(len(data) - self.seq_len)
             ]
         )
+        y = np.array(data[self.seq_len:])
         for i in range(len(X)):
             if i == len(X) - 1:
                 break
             _data = X[i]
-            next_value = X[i + 1][-1]
+            next_value = y[i]
             value = self.predict(data=_data)
             value_round = round(value, 0)
             category_data = self.average_info.categories_data.get(
@@ -73,10 +74,10 @@ class ModelPredictor:
                     percentage_bets=0,
                 ),
             )
-            # if value < 1:
-            #     value = 1
-            # if value < 1:
-            #     value = 1
+            if value < 1:
+                value = 1
+            if value < 1:
+                value = 1
             category_data.count += 1
             if value_round == next_value:
                 category_data.correct_predictions += 1
@@ -98,10 +99,6 @@ class ModelPredictor:
             dict_value.percentage_bets = utils.to_float(
                 (dict_value.correct_bets / dict_value.count) * 100
             )
-            # dict_value.percentage_predictions = Decimal(
-            #     dict_value.percentage_predictions
-            # )
-            # dict_value.percentage_bets = Decimal(dict_value.percentage_bets)
             if key == Category.CATEGORY_3.value:
                 continue
             count_categories += 1
@@ -111,13 +108,7 @@ class ModelPredictor:
         self.average_info.average_predictions = utils.to_float(
             sum_percentage_predictions / count_categories
         )
-        # self.average_info.average_predictions = Decimal(
-        #     self.average_info.average_predictions
-        # )
         self.average_info.average_bets = utils.to_float(
             sum_percentage_bets / count_categories
         )
-        # self.average_info.average_bets = Decimal(
-        #     self.average_info.average_bets
-        # )
         return self.average_info

@@ -39,15 +39,17 @@ def evaluate_model_home_bet(
     return average_info
 
 
-def extract_multipliers_to_csv(*, home_bet_id: int):
+def extract_multipliers_to_csv(*, home_bet_id: int) -> str:
     multipliers = core_selectors.get_last_multipliers(home_bet_id=home_bet_id)
     data = utils.transform_multipliers_to_data(multipliers)
+    file_path = f"{DATA_EXPORT_PATH}data_{home_bet_id}_{len(data)}.csv"
     np.savetxt(
-        f"{DATA_EXPORT_PATH}data_{home_bet_id}_{len(data)}.csv",
+        file_path,
         data,
         delimiter=", ",
         fmt="% s",
     )
+    return file_path
 
 
 def create_sequential_model(

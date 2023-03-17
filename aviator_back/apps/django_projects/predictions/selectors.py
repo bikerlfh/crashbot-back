@@ -2,7 +2,7 @@
 from typing import Optional
 
 # Django
-from django.db.models import QuerySet, F
+from django.db.models import QuerySet, F, Q
 
 from apps.django_projects.predictions.constants import ModelStatus
 # Internal
@@ -38,11 +38,14 @@ def filter_model_home_bet_by_home_bet_id(
 
 
 def get_bets_models_by_average_predictions(
-    *, home_bet_id: int, number_of_models: Optional[int] = 3
+    *,
+    home_bet_id: int,
+    number_of_models: Optional[int] = 3,
+    model_home_bet_id: Optional[int] = None
 ) -> QuerySet[ModelHomeBet]:
-    models = filter_model_home_bet_by_home_bet_id(
+    models = ModelHomeBet.objects.filter(
+        Q(status=ModelStatus.ACTIVE.value) | Q(id=model_home_bet_id),
         home_bet_id=home_bet_id,
-        status=ModelStatus.ACTIVE
     ).prefetch_related('category_results').order_by(
         "-average_predictions"
     )[:number_of_models]
