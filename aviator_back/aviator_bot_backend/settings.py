@@ -31,12 +31,13 @@ SECRET_KEY = (
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
+    "channels",
     "apps.django_projects.core",
     "apps.django_projects.customers",
     "apps.django_projects.bets",
@@ -79,6 +81,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "aviator_bot_backend.wsgi.application"
+ASGI_APPLICATION = "aviator_bot_backend.asgi.application"
 
 
 # Database
@@ -155,4 +158,14 @@ CELERY_BEAT_SCHEDULE = {
     #    "task": "apps.django_projects.predictions.tasks.task_create_sequential_models",
     #    "schedule": crontab(minute="*/8"),
     # },
+}
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+        },
+    },
 }

@@ -282,27 +282,35 @@ def create_model_for_all_in_play_home_bet(
 
 
 def generate_category_results_of_models():
+    """
+    generate category results for all models
+    inactive models with average predictions < PERCENTAGE_MODEL_TO_INACTIVE 
+    """
     models = selectors.filter_models_to_generate_category_result()
-    home_bet_ids_to_create = set()
+    models_to_inactive = []
     for model in models:
         generate_category_result_of_model(model_home_bet_id=model.id)
         model.refresh_from_db()
         if model.average_predictions < PERCENTAGE_MODEL_TO_INACTIVE:
-            model.status = ModelStatus.INACTIVE.value
-            model.save()
-            home_bet_ids_to_create.add(model.home_bet_id)
-    if not home_bet_ids_to_create:
+            models_to_inactive.append(model)
+    if not models_to_inactive:
         return
+    home_bet_ids_to_create = {model.home_bet_id for model in models_to_inactive}
     home_bet_ids = selectors.filter_model_home_bet(
         home_bet_id__in=home_bet_ids_to_create,
         status=ModelStatus.ACTIVE.value
     ).values_list('home_bet_id', flat=True)
-    home_bet_ids_ = [_id for _id in home_bet_ids_to_create if _id not in home_bet_ids]
+    home_bet_ids_ = set(_id for _id in home_bet_ids_to_create if _id not in home_bet_ids)
     if not home_bet_ids_:
         return
+    # create models for home bets with no active models
     create_model_for_all_in_play_home_bet(
         home_bet_ids=home_bet_ids_
     )
+    # inactive models with average predictions < PERCENTAGE_MODEL_TO_INACTIVE
+    for model in models_to_inactive:
+        model.status = ModelStatus.INACTIVE.value
+        model.save()
 
 
 def get_models_home_bet(

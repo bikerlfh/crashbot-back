@@ -4,7 +4,9 @@ psycopg2-binary>=2.8,<2.9
 telethon==1.27.0
 scikit-learn==1.2.1
 keras==2.11.0
-tensorflow
+tensorflow==2.11.0
 cryptography==39.0.2
 redis==4.5.1
 celery==5.2.7
+channels[daphne]==4.0.0
+channels_redis==4.0.0
