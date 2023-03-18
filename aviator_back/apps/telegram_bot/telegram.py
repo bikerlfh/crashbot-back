@@ -65,7 +65,7 @@ class TelegramConnector(Singleton):
     async def disconnect(self):
         await self.client.disconnect()
 
-    async def send_message(self, *, message: Message) -> Union[None]:
+    async def send_message(self, *, message: Message) -> None:
         try:
             user = self.channel_name
             if message.user:
