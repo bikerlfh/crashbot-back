@@ -20,13 +20,10 @@ class Command(BaseCommand):
         parser.add_argument(
             "model_type",
             type=str,
-            help="model type (sequential, sequential_lstm)"
+            help="model type (sequential, sequential_lstm, transformer)",
         )
         parser.add_argument(
-            "seq_len",
-            type=int,
-            nargs='?',
-            help="size of sequential"
+            "seq_len", type=int, nargs="?", help="size of sequential"
         )
 
     def handle(self, *args, **options):

@@ -43,7 +43,7 @@ load-fixtures: ## loaddata
 	docker compose run --rm --entrypoint=python worker manage.py loaddata fixtures/*.json
 
 create-model: ## create a sequential model
-	docker compose run --rm --entrypoint=python worker manage.py create_sequential_model ${home_bet_id} ${seq_len} ${model_type}
+	docker compose run --rm --entrypoint=python worker manage.py create_model ${home_bet_id} ${seq_len} ${model_type}
 
 generate-category-result: ## generate category result for all models
 	docker compose run --rm --entrypoint=python worker manage.py generate_category_results

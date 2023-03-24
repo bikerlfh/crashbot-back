@@ -1,15 +1,17 @@
 # Standard Library
+import abc
+import uuid
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Optional
+from typing import Optional, Tuple
 
 # Libraries
 import numpy as np
-from keras.models import load_model
 
 # Internal
+from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.prediction import utils
-from apps.prediction.constants import Category
+from apps.prediction.constants import MODELS_PATH, Category, ModelType
 
 
 @dataclass
@@ -31,26 +33,95 @@ class AverageInfo:
     categories_data: dict[int, _CategoryData]
 
 
-class ModelPredictor:
-    def __init__(self, *, model_path: str, seq_len: int):
-        self.loaded_model = load_model(model_path)
+class AbstractBaseModel(abc.ABC):
+    """
+    Abstract class for the models
+    """
+
+    MODEL_EXTENSION = "h5"
+
+    def __init__(
+        self,
+        *,
+        model_type: ModelType,
+        seq_len: Optional[int] = DEFAULT_SEQ_LEN,
+    ):
+        self.model_type = model_type
         self.seq_len = seq_len
         self.average_info = AverageInfo(
             average_predictions=0,
             average_bets=0,
             categories_data={},
         )
+        self.model = None
 
+    @abc.abstractmethod
+    def _compile_model(self) -> any:
+        ...
+
+    def _split_data_to_train(
+        self, data: list[int]
+    ) -> Tuple[np.array, np.array]:
+        """
+        get the list of sequences and the list of next values
+        @return: Tuple[train_data, test_data]
+        the list of sequences and the list of next values
+        """
+        X = np.array(  # NOQA
+            [
+                data[i: i + self.seq_len]
+                for i in range(len(data) - self.seq_len)
+            ]
+        )
+        y = np.array(data[self.seq_len:])
+        return X, y
+
+    @abc.abstractmethod
+    def load_model(self, *, name: str) -> None:
+        ...
+
+    @abc.abstractmethod
+    def train(
+        self,
+        *,
+        home_bet_id: int,
+        multipliers: list[Decimal],
+        test_size: Optional[float] = 0.2,
+        epochs: Optional[int] = None,
+    ) -> Tuple[str, float]:
+        """
+        train the model
+        @param home_bet_id: the home bet id
+        @param multipliers: list of multipliers
+        @param test_size: the test size
+        @param epochs: the number of epochs
+        @return: model_name, loss
+        """
+        ...
+
+    @abc.abstractmethod
     def predict(self, *, data: list[int]) -> Decimal:
+        ...
+
+    def _generate_model_path_to_save(
+        self, *, home_bet_id: int
+    ) -> Tuple[str, str]:
         """
-        predict the nex multiplier
-        @param data: list of multipliers transformed to categorize
-        @return: the next multiplier
+        generate the model path
+        @param home_bet_id: the home bet id
+        @return: model_name, model_path
         """
-        next_num = self.loaded_model.predict(
-            np.array([data[-self.seq_len:]])
-        )[0][0]
-        return round(next_num, 2)
+        name = f"{home_bet_id}_{uuid.uuid4()}.{self.MODEL_EXTENSION}"
+        model_path = f"{MODELS_PATH}{name}"
+        return name, model_path
+
+    def _get_model_path(self, *, name: str) -> str:
+        """
+        get the model path
+        @param name: the model home bet name
+        @return: model_path
+        """
+        return f"{MODELS_PATH}{name}"
 
     def evaluate(self, *, multipliers: list[Decimal]) -> AverageInfo:
         """
@@ -59,13 +130,7 @@ class ModelPredictor:
         @return: AverageInfo
         """
         data = utils.transform_multipliers_to_data(multipliers=multipliers)
-        X = np.array(  # NOQA
-            [
-                data[i: i + self.seq_len]
-                for i in range(len(data) - self.seq_len)
-            ]
-        )
-        y = np.array(data[self.seq_len:])
+        X, y = self._split_data_to_train(data)  # NOQA
         y_multiplier = np.array(multipliers[self.seq_len:])
         for i in range(len(X)):
             if i == len(X) - 1:
@@ -89,8 +154,8 @@ class ModelPredictor:
             )
             if value < 1:
                 value = 1
-            if value < 1:
-                value = 1
+            if value > 3:
+                value = 3
             category_data.count += 1
             if value_round == next_value:
                 category_data.correct_predictions += 1

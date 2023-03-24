@@ -17,6 +17,7 @@ class CustomerBalanceAdmin(admin.ModelAdmin):
         class Meta:
             model = CustomerBalance
             fields = "__all__"
+
     list_display = ["customer", "username", "home_bet", "amount"]
     form = BalanceForm
 

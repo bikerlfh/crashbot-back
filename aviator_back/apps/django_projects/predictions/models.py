@@ -21,12 +21,8 @@ class ModelHomeBet(BaseModel):
     )
     status = models.CharField(max_length=10, default=ModelStatus.ACTIVE.value)
     seq_len = models.SmallIntegerField(default=10)
-    average_predictions = models.FloatField(
-        default=0
-    )
-    average_bets = models.FloatField(
-        default=0
-    )
+    average_predictions = models.FloatField(default=0)
+    average_bets = models.FloatField(default=0)
     result_date = models.DateTimeField(null=True, blank=True, default=None)
     others = models.JSONField(null=True, blank=True)
 

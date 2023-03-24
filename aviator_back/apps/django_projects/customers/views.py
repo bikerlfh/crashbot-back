@@ -8,29 +8,20 @@ from apps.django_projects.customers import services
 from apps.utils.django.mixin import APIErrorsMixin
 
 
-class CustomerBalanceView(
-    APIErrorsMixin,
-    APIView
-):
+class CustomerBalanceView(APIErrorsMixin, APIView):
     class InputGETSerializer(serializers.Serializer):
         customer_id = serializers.IntegerField()
         home_bet_id = serializers.IntegerField()
 
     class OutputGETSerializer(serializers.Serializer):
-        amount = serializers.DecimalField(
-            max_digits=10,
-            decimal_places=2
-        )
+        amount = serializers.DecimalField(max_digits=10, decimal_places=2)
         # username = serializers.CharField()
         # password = serializers.CharField()
 
     class InputPATCHSerializer(serializers.Serializer):
         customer_id = serializers.IntegerField()
         home_bet_id = serializers.IntegerField()
-        amount = serializers.DecimalField(
-            max_digits=10,
-            decimal_places=2
-        )
+        amount = serializers.DecimalField(max_digits=10, decimal_places=2)
 
     def get(self, request):
         serializer = self.InputGETSerializer(data=request.GET)
@@ -39,14 +30,11 @@ class CustomerBalanceView(
         out_serializer = self.OutputGETSerializer(data=data)
         out_serializer.is_valid(raise_exception=True)
         return Response(
-            data=out_serializer.validated_data,
-            status=status.HTTP_200_OK
+            data=out_serializer.validated_data, status=status.HTTP_200_OK
         )
 
     def patch(self, request):
         serializer = self.InputPATCHSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         services.update_customer_balance(**serializer.validated_data)
-        return Response(
-            status=status.HTTP_200_OK
-        )
+        return Response(status=status.HTTP_200_OK)

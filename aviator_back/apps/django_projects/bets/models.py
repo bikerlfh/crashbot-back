@@ -13,36 +13,18 @@ class Bet(BaseModel):
         on_delete=models.DO_NOTHING,
         related_name="bets",
     )
-    external_id = models.CharField(
-        max_length=50
-    )
-    prediction = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        default=0,
-    )
-    prediction_round = models.IntegerField(default=0)
-    amount = models.DecimalField(max_digits=18, decimal_places=2)
-    multiplier = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        null=True
-    )
-    multiplier_result = models.DecimalField(
-        max_digits=18, decimal_places=2,
-        null=True,
-        blank=True
-    )
-    profit_amount = models.DecimalField(
-        max_digits=18,
-        decimal_places=2,
-        default=0
-    )
-    status = models.CharField(
-        max_length=10,
-        default=BetStatus.PENDING.value
-    )
+    external_id = models.CharField(max_length=50)
+    prediction = models.FloatField(default=0.0)
+    amount = models.FloatField()
+    multiplier = models.FloatField(null=True)
+    multiplier_result = models.FloatField(null=True, blank=True)
+    profit_amount = models.FloatField(default=0.0)
+    status = models.CharField(max_length=10, default=BetStatus.PENDING.value)
 
     class Meta:
         db_table = "bet"
         unique_together = ("balance", "external_id")
+
+    @property
+    def prediction_round(self) -> int:
+        return round(self.prediction_round, 0)

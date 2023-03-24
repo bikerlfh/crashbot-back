@@ -2,10 +2,33 @@
 from enum import Enum
 from os import getenv
 
+TELEGRAM_BOT_TOKEN = getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_PHONE_NUMBER = getenv("TELEGRAM_PHONE_NUMBER")
 TELEGRAM_API_ID = int(getenv("TELEGRAM_API_ID", 0))
 TELEGRAM_API_HASH = getenv("TELEGRAM_API_HASH")
-TELEGRAM_CHANNEL_NAME = getenv("TELEGRAM_CHANNEL_NAME")
+
+# CHANNELS LISTENERS CONFIG
+AVIATOR_COLOMBIA_CHAT_ID = int(getenv("AVIATOR_COLOMBIA_CHAT_ID", 1864888051))
+AVIATOR_COLOMBIA_MESSAGE_TO_SEARCH = getenv(
+    "AVIATOR_COLOMBIA_MESSAGE_TO_SEARCH",
+    "Vamos a tomar la ronda ahora mismo. El retiro Automatico en 1.95",
+)
+CHANNEL_LISTENERS_CONFIG = [
+    dict(
+        home_bet_id=3,
+        chat_id=AVIATOR_COLOMBIA_CHAT_ID,
+        message=AVIATOR_COLOMBIA_MESSAGE_TO_SEARCH,
+        min_multiplier=1.95,
+        max_multiplier=2.9,
+    ),
+    dict(  # TEST USER PAO
+        home_bet_id=1,
+        chat_id=5759433798,
+        message="hola",
+        min_multiplier=2,
+        max_multiplier=2.5,
+    ),
+]
 
 
 class Emoji(Enum):

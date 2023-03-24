@@ -1,26 +1,20 @@
 # Standard Library
-from datetime import datetime
-from typing import List, Union
-
-# Libraries
-from asgiref.sync import async_to_sync
+from typing import Union
 
 # Internal
-from apps.telegram_bot import telegram
-from apps.telegram_bot.typing import Message
+from apps.telegram_bot.bot import TelegramBot
 
 
-@async_to_sync
-async def send_telegram_messages(*, messages: List[Message]) -> Union[None]:
-    connector = telegram.TelegramConnector()
-    await connector.connect()
-    for message in messages:
-        await connector.send_message(message=message)
-    await connector.disconnect()
+def start_telegram_bot():
+    """
+    use to start telegram bot
+    """
+    print("staring telegram bot")
+    bot = TelegramBot()
+    print("telegram bot connected")
+    bot.run_until_disconnected()
 
 
-def is_time_between(begin_time, end_time, check_time=None):
-    check_time = check_time or datetime.now().time()
-    if begin_time < end_time:
-        return begin_time <= check_time <= end_time
-    return check_time >= begin_time or check_time <= end_time
+def send_telegram_message(*, chat_id: int, message: str) -> Union[None]:
+    bot = TelegramBot()
+    bot.send_message(chat_id=chat_id, message=message)

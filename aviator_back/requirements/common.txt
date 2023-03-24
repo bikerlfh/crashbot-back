@@ -1,4 +1,4 @@
-Django==4.1.6
+Django==4.1.7
 djangorestframework==3.14.0
 psycopg2-binary>=2.8,<2.9
 telethon==1.27.0
@@ -10,3 +10,5 @@ redis==4.5.1
 celery==5.2.7
 channels[daphne]==4.0.0
 channels_redis==4.0.0
+torch==2.0.0
+torchvision==0.15.0

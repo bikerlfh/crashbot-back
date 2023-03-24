@@ -4,11 +4,10 @@ from decimal import Decimal
 from typing import Optional
 
 # Django
-from django.db.models import QuerySet, Q
+from django.db.models import Q, QuerySet
 
 # Internal
 from apps.django_projects.core.models import HomeBet, HomeBetMultiplier
-from apps.django_projects.predictions.constants import ModelStatus
 
 
 def filter_home_bet(
@@ -27,17 +26,16 @@ def filter_home_bet(
 def filter_home_bet_in_play() -> QuerySet[HomeBet]:
     now = datetime.now() - timedelta(minutes=10)
     return HomeBet.objects.filter(
-        Q(models__isnull=True) |
-        Q(multipliers__multiplier_dt__gte=now),
+        Q(models__isnull=True) | Q(multipliers__multiplier_dt__gte=now),
         multipliers__isnull=False,
-    ).distinct('id')
+    ).distinct("id")
 
 
 def get_last_multipliers(
     *,
     home_bet_id: int,
     count: Optional[int] = None,
-    filter_: Optional[dict] = {}
+    filter_: Optional[dict] = {},
 ) -> list[Decimal]:
     filter_.update(home_bet_id=home_bet_id)
     _multipliers = (

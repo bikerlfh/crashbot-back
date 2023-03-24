@@ -17,23 +17,20 @@ class Game:
         self._load_bets()
 
     def _load_bets(self):
-        bets_qry = bets_selectors.filter_bet(
-            customer_id=self.customer_id,
-            home_bet_id=self.home_bet_id
-        ).order_by('id').values(
-            'id',
-            'amount',
-            'multiplier',
-            'profit_amount',
-            'status'
+        bets_qry = (
+            bets_selectors.filter_bet(
+                customer_id=self.customer_id, home_bet_id=self.home_bet_id
+            )
+            .order_by("id")
+            .values("id", "amount", "multiplier", "profit_amount", "status")
         )
         for bet_ in bets_qry:
             self.bets.append(
                 models.Bet(
-                    id=bet_['id'],
-                    amount=bet_['amount'],
-                    multiplier=bet_['multiplier'],
-                    profit_amount=bet_['profit_amount'],
-                    status=bet_['status']
+                    id=bet_["id"],
+                    amount=bet_["amount"],
+                    multiplier=bet_["multiplier"],
+                    profit_amount=bet_["profit_amount"],
+                    status=bet_["status"],
                 )
             )

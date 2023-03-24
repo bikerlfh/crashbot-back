@@ -1,6 +1,5 @@
 # Standard Library
 import logging
-import pdb
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
@@ -14,9 +13,10 @@ from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.predictions import selectors
 from apps.django_projects.predictions.constants import (
     DEFAULT_SEQ_LEN,
+    GENERATE_AUTOMATIC_MODEL_TYPES,
     PERCENTAGE_ACCEPTABLE,
     PERCENTAGE_MODEL_TO_INACTIVE,
-    ModelStatus, GENERATE_AUTOMATIC_MODEL_TYPES,
+    ModelStatus,
 )
 from apps.django_projects.predictions.models import (
     ModelCategoryResult,
@@ -102,8 +102,7 @@ def generate_category_result_of_model(*, model_home_bet_id: int) -> None:
         )
     now = datetime.now()
     multipliers = core_selectors.get_last_multipliers(
-        home_bet_id=model_home_bet.home_bet_id,
-        count=200
+        home_bet_id=model_home_bet.home_bet_id, count=200
     )
     average_result = prediction_services.evaluate_model_home_bet(
         model_home_bet=model_home_bet, multipliers=multipliers
@@ -154,9 +153,7 @@ def predict(
     if not models:
         raise ValidationError("no models")
     if not multipliers:
-        max_ = models.annotate(
-           max=Max("seq_len")
-        ).first().max
+        max_ = models.annotate(max=Max("seq_len")).first().max
         multipliers = core_selectors.get_last_multipliers(
             home_bet_id=home_bet_id, count=max_
         )
@@ -172,9 +169,11 @@ def predict(
             prediction_round = 1
         elif prediction_round > 3:
             prediction_round = 3
-        category_data = model_home_bet.category_results.filter(
-            category=prediction_round
-        ).values('percentage_predictions').first()
+        category_data = (
+            model_home_bet.category_results.filter(category=prediction_round)
+            .values("percentage_predictions")
+            .first()
+        )
         percentage_predictions = 0
         if category_data:
             percentage_predictions = category_data["percentage_predictions"]
@@ -185,7 +184,7 @@ def predict(
                 prediction=prediction_value,
                 prediction_round=prediction_round,
                 average_predictions=model_home_bet.average_predictions,
-                category_percentage=percentage_predictions
+                category_percentage=percentage_predictions,
             )
         )
     data = dict(predictions=predictions)
@@ -207,44 +206,28 @@ def create_model_with_all_multipliers(
             f"home bet {home_bet_id} does not exists"
         )
         return
-    multipliers = core_selectors.get_last_multipliers(
-        home_bet_id=home_bet_id
-    )
+    multipliers = core_selectors.get_last_multipliers(home_bet_id=home_bet_id)
     if not multipliers:
         logger.warning(
             f"create_model_with_all_multipliers :: "
             f"no multipliers for home bet {home_bet_id}"
         )
         return
-    match model_type:
-        case ModelType.SEQUENTIAL:
-            name, eval_error = prediction_services.create_sequential_model(
-                home_bet_id=home_bet_id,
-                multipliers=multipliers,
-                seq_len=seq_len,
-            )
-        case ModelType.SEQUENTIAL_LSTM:
-            name, eval_error = (
-                prediction_services.create_sequential_lstm_model(
-                    home_bet_id=home_bet_id,
-                    multipliers=multipliers,
-                    seq_len=seq_len,
-                )
-            )
-        case _:
-            logger.error(
-                f"create_model_with_all_multipliers :: "
-                f"model type {model_type.value} not implemented"
-            )
-            return
+
+    name, loss_error = prediction_services.create_model(
+        home_bet_id=home_bet_id,
+        multipliers=multipliers,
+        model_type=model_type,
+        seq_len=seq_len,
+    )
     model_home_bet = create_model_home_bet(
         home_bet_id=home_bet_id,
         name=name,
         model_type=model_type,
         seq_len=seq_len,
         others=dict(
-            eval_error=float(eval_error),
-            num_multipliers_to_train=len(multipliers)
+            loss_error=float(loss_error),
+            num_multipliers_to_train=len(multipliers),
         ),
     )
     generate_category_result_of_model(model_home_bet_id=model_home_bet.id)
@@ -253,19 +236,19 @@ def create_model_with_all_multipliers(
 
 def create_model_for_all_in_play_home_bet(
     *,
-    home_bet_ids: Optional[list[int]] = None,
+    home_bet_ids: Optional[set[int]] = None,
 ) -> None:
     """
     create model for all in-play home bets
     (multipliers created no more than 10 minutes ago)
     """
     if not home_bet_ids:
-        home_bet_ids = core_selectors.filter_home_bet_in_play().\
-            values_list('id', flat=True)
+        home_bet_ids = core_selectors.filter_home_bet_in_play().values_list(
+            "id", flat=True
+        )
     for home_bet_id in home_bet_ids:
         bets_mod = selectors.get_bets_models_by_average_predictions(
-            home_bet_id=home_bet_id,
-            number_of_models=1
+            home_bet_id=home_bet_id, number_of_models=1
         ).first()
         if bets_mod and bets_mod.average_predictions >= PERCENTAGE_ACCEPTABLE:
             continue
@@ -273,7 +256,7 @@ def create_model_for_all_in_play_home_bet(
             model = create_model_with_all_multipliers(
                 home_bet_id=home_bet_id,
                 seq_len=DEFAULT_SEQ_LEN,
-                model_type=ModelType(model_type_)
+                model_type=ModelType(model_type_),
             )
             logger.info(
                 f"create_model_for_all_in_play_home_bet :: "
@@ -284,7 +267,7 @@ def create_model_for_all_in_play_home_bet(
 def generate_category_results_of_models():
     """
     generate category results for all models
-    inactive models with average predictions < PERCENTAGE_MODEL_TO_INACTIVE 
+    inactive models with average predictions < PERCENTAGE_MODEL_TO_INACTIVE
     """
     models = selectors.filter_models_to_generate_category_result()
     models_to_inactive = []
@@ -295,18 +278,19 @@ def generate_category_results_of_models():
             models_to_inactive.append(model)
     if not models_to_inactive:
         return
-    home_bet_ids_to_create = {model.home_bet_id for model in models_to_inactive}
+    home_bet_ids_to_create = {
+        model.home_bet_id for model in models_to_inactive
+    }
     home_bet_ids = selectors.filter_model_home_bet(
-        home_bet_id__in=home_bet_ids_to_create,
-        status=ModelStatus.ACTIVE.value
-    ).values_list('home_bet_id', flat=True)
-    home_bet_ids_ = set(_id for _id in home_bet_ids_to_create if _id not in home_bet_ids)
+        home_bet_id__in=home_bet_ids_to_create, status=ModelStatus.ACTIVE.value
+    ).values_list("home_bet_id", flat=True)
+    home_bet_ids_ = set(
+        _id for _id in home_bet_ids_to_create if _id not in home_bet_ids
+    )
     if not home_bet_ids_:
         return
     # create models for home bets with no active models
-    create_model_for_all_in_play_home_bet(
-        home_bet_ids=home_bet_ids_
-    )
+    create_model_for_all_in_play_home_bet(home_bet_ids=home_bet_ids_)
     # inactive models with average predictions < PERCENTAGE_MODEL_TO_INACTIVE
     for model in models_to_inactive:
         model.status = ModelStatus.INACTIVE.value

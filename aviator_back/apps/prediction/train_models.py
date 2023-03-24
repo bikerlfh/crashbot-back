@@ -63,12 +63,14 @@ def create_sequential_lstm_model(
     )
     y = np.array(data[seq_len:])
     # Split the data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) # NOQA
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )  # NOQA
     # Create and compile the model
     model = Sequential()
     model.add(LSTM(units=32, input_shape=(seq_len, 1)))
     model.add(Dense(units=1))
-    model.compile(loss='mse', optimizer='adam')
+    model.compile(loss="mse", optimizer="adam")
     model.fit(X_train, y_train, batch_size=32, epochs=4000)
 
     # Evaluate the model on the test set

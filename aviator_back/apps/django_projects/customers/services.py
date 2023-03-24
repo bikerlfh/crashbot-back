@@ -28,19 +28,16 @@ def create_customer_balance(
         username=username,
         password=password,
         currency_id=currency_id,
-        amount=amount
+        amount=amount,
     )
     return balance
 
 
 def get_customer_balance_data(
-    *,
-    customer_id: int,
-    home_bet_id: int
+    *, customer_id: int, home_bet_id: int
 ) -> dict[str, any]:
     balance = selectors.filter_balance(
-        customer_id=customer_id,
-        home_bet_id=home_bet_id
+        customer_id=customer_id, home_bet_id=home_bet_id
     ).first()
     if not balance:
         raise ValidationError("Balance does not exist")
@@ -61,8 +58,7 @@ def update_customer_balance(
     password: str | None = None,
 ) -> CustomerBalance:
     balance = selectors.filter_balance(
-        customer_id=customer_id,
-        home_bet_id=home_bet_id
+        customer_id=customer_id, home_bet_id=home_bet_id
     ).first()
     if not balance:
         raise ValidationError("Balance does not exist")

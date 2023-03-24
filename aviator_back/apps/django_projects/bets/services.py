@@ -14,13 +14,12 @@ def create_bet(
     customer_id: int,
     home_bet_id: int,
     prediction: float,
-    prediction_round: int,
     amount: float,
     multiplier: float,
+    multiplier_result: float,
 ) -> Bet:
     balance = customer_selectors.filter_balance(
-        customer_id=customer_id,
-        home_bet_id=home_bet_id
+        customer_id=customer_id, home_bet_id=home_bet_id
     ).first()
     if not balance:
         raise ValidationError("Balance does not exist")
@@ -31,50 +30,39 @@ def create_bet(
     ).exists()
     if bet_exists:
         raise ValidationError("Bet already exists")
+    profit_amount = amount * (multiplier - 1)
+    status = BetStatus.WON.value
+    if multiplier >= multiplier_result:
+        profit_amount = -amount
+        status = BetStatus.LOST.value
     bet = Bet.objects.create(
         balance_id=balance.id,
         external_id=external_id,
         prediction=prediction,
-        prediction_round=prediction_round,
         amount=amount,
         multiplier=multiplier,
-        status=BetStatus.PENDING.value
+        multiplier_result=multiplier_result,
+        profit_amount=profit_amount,
+        status=status,
     )
     return bet
 
 
-def process_bet(
-    *,
-    bet_id: int,
-    multiplier: float
-) -> None:
-    bet = selectors.filter_bet(id=bet_id).first()
-    if not bet:
-        raise ValidationError("Bet does not exist")
-    bet.multiplier_result = multiplier
-    if bet.multiplier <= multiplier:
-        bet.status = BetStatus.WON.value
-        bet.profit_amount = bet.amount * (bet.multiplier - 1)
-    else:
-        bet.status = BetStatus.LOST.value
-        bet.profit_amount = -bet.amount
-    bet.save()
-
-
-def get_bet(
-    *,
-    bet_id: int
-) -> dict[str, any]:
-    bet_data = selectors.filter_bet(id=bet_id).values(
-        'id',
-        'prediction',
-        'prediction_round',
-        'amount',
-        'multiplier',
-        'multiplier_result',
-        'profit_amount',
-        'status'
-    ).first()
+def get_bet(*, bet_id: int) -> dict[str, any]:
+    bet_data = (
+        selectors.filter_bet(id=bet_id)
+        .values(
+            "id",
+            "prediction",
+            "prediction_round",
+            "amount",
+            "multiplier",
+            "multiplier_result",
+            "profit_amount",
+            "status",
+        )
+        .first()
+    )
     if not bet_data:
         raise ValidationError("Bet does not exist")
     return bet_data

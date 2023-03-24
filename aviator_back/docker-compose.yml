@@ -64,5 +64,19 @@ services:
       - redis
     links:
       - redis
+  telegram_bot:
+    tty: true
+    stdin_open: true
+    build:
+      context: .
+      dockerfile: Dockerfile_telegram.dev
+    environment:
+      - PIP_DEFAULT_TIMEOUT=100
+    env_file:
+      - ./.envrc
+    volumes:
+      - ./:/app/
+    depends_on:
+      - worker
 volumes:
   postgres_data:
