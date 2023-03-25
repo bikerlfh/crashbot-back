@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import Optional
 
 # Django
-from django.db.models import Max
+from django.db.models import Max, Q
 from rest_framework.exceptions import ValidationError
 
 # Internal
@@ -281,11 +281,19 @@ def generate_category_results_of_models():
     home_bet_ids_to_create = {
         model.home_bet_id for model in models_to_inactive
     }
-    home_bet_ids = selectors.filter_model_home_bet(
-        home_bet_id__in=home_bet_ids_to_create, status=ModelStatus.ACTIVE.value
-    ).values_list("home_bet_id", flat=True)
+    models_ = selectors.filter_model_home_bet(
+        home_bet_id__in=home_bet_ids_to_create,
+        status=ModelStatus.ACTIVE.value,
+    ).values("id", "home_bet_id")
+    model_ids_to_inactive = {model.id for model in models_to_inactive}
+    home_bet_ids = {
+        model["home_bet_id"]
+        for model in models_
+        if model['id'] not in model_ids_to_inactive
+    }
     home_bet_ids_ = set(
-        _id for _id in home_bet_ids_to_create if _id not in home_bet_ids
+        _id for _id in home_bet_ids_to_create
+        if _id not in home_bet_ids
     )
     if not home_bet_ids_:
         return

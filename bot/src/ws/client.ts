@@ -43,7 +43,11 @@ export class WebSocketClient {
 
     private onClose(event: CloseEvent): void {
         console.log('WebSocket connection closed');
-        throw new Error('WebSocket connection closed');
+        console.log('connnecting to WebSocket....');
+        WebSocketClient.instance.connect().then(() => {}).catch((error) => {
+            console.error('Error reconnecting to WebSocket', error);
+        });
+        
     }
 
     private onError(event: ErrorEvent): void {

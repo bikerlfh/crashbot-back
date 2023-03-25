@@ -6,7 +6,7 @@ import { WebSocketClient } from "../ws/client"
 import { AviatorPage } from "../aviator/Aviator"
 import { Control } from '../aviator/BetControl';
 import { BetData } from "../api/models"
-import { GenerateRandomMultiplier, sleepNow } from "./utils"
+import { GenerateRandomMultiplier, sleepNow, roundNumber } from "./utils"
 
 
 export class Game {
@@ -51,16 +51,19 @@ export class Game {
             const chatId = data.hasOwnProperty("chat_id")? data.chat_id: null
             const others = data.hasOwnProperty("others")? data.others: null
             if(!homeBetId || !minMultiplier || !maxMultiplier){
-                console.error("socketOnMessage: homeBetId, minMultiplier, maxMultiplier is undefined")
+                console.error("socketOnMessage: data incomplete")
                 return
             }
             if(homeBetId != this.homeBet.id){
                 // the home bet of the bet is not the same as the current home bet
                 return
             }
-            const amount = this.calculateAmountBet(minMultiplier)
+            // TODO: fix this. Amount should be calculated from the multiplier
+            //const amount = this.calculateAmountBet(minMultiplier)
+            const amount = this.validateBetAmount(roundNumber(this.balance * 0.1))
+            const amount2 = this.validateBetAmount(roundNumber(amount / 3))
             this.bets.push(new Bet(amount, minMultiplier))
-            this.bets.push(new Bet(this.calculateAmountBet(maxMultiplier, amount), maxMultiplier))
+            this.bets.push(new Bet(amount2, maxMultiplier))
             this.sendBetsToAviator(this.bets).then(() => {}).catch(error => {
                 this.bets = []
             })
@@ -184,11 +187,21 @@ export class Game {
             await this.waitNextGame()
             if(this.autoPlay){
                 await this.getNextBet()
-            }
-            if(this.bets.length){
                 await this.sendBetsToAviator(this.bets)
             }
         }
+    }
+
+    private validateBetAmount(amount: number){
+        if(amount < this.minimumBet){
+            amount = this.minimumBet
+        }else if(amount > this.maximumBet){
+            amount = this.maximumBet
+        }
+        if(amount > this.balance){
+            amount = this.balance
+        }
+        return amount
     }
 
     private evaluateBets(multiplier: number){

@@ -19,7 +19,7 @@ CHANNEL_LISTENERS_CONFIG = [
         chat_id=AVIATOR_COLOMBIA_CHAT_ID,
         message=AVIATOR_COLOMBIA_MESSAGE_TO_SEARCH,
         min_multiplier=1.95,
-        max_multiplier=2.9,
+        max_multiplier=3,
     ),
     dict(  # TEST USER PAO
         home_bet_id=1,
