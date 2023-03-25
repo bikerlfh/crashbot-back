@@ -7,6 +7,9 @@ import { AviatorBetPlay } from "./aviator/AviatorBetPlay"
 import { AviatorDemo } from "./aviator/AviatorDemo"
 import { AviatorOneWin } from "./aviator/AviatorOneWin"
 
+
+export const WEB_SOCKET_URL: string = process.env.WEB_SOCKET_URL || "ws://localhost:8000/bot/"
+
 export class HomeBet{
     id: number
     minBet: number

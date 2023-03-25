@@ -96,8 +96,8 @@ export class AviatorBotAPI {
         customerId: number, 
         homeBetId: number,
         prediction: number,
-        predictionRound: number,
         multiplier: number,
+        multiplierResult: number,
         amount: number
     ) => {
         return await APIRest.post(URLS.createBet, {
@@ -105,8 +105,8 @@ export class AviatorBotAPI {
             customer_id: customerId,
             home_bet_id: homeBetId,
             prediction: prediction,
-            prediction_round: predictionRound,
             multiplier: multiplier,
+            multiplier_result: multiplierResult,
             amount: amount
         });
     }

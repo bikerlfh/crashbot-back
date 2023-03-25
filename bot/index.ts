@@ -4,7 +4,7 @@ import {Game} from './src/game/Game'
 
 import { HomeBets } from './src/constants';
 import { Control } from './src/aviator/BetControl';
-
+import {WebSocketClient} from './src/ws/client';
 
 (async () => {
 	let readlineSync = require('readline-sync');
@@ -29,6 +29,9 @@ import { Control } from './src/aviator/BetControl';
 	const aviatorPage = homeBet.aviatorPage
 	await aviatorPage.open()
 	console.clear()
+	// const websocketUrl = 'ws://localhost:8000/bot/';
+	// const socket = new WebSocketClient(websocketUrl);
+	// await socket.connect();
 	const game = new Game(
 		homeBet, 
 		aviatorPage.multipliers,

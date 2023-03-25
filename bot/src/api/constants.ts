@@ -1,5 +1,5 @@
 /**
- * API url
+ * APIUrl
  * @type {string}
  */
 export const APIUrl = "http://localhost:8000/";
