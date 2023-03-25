@@ -3,11 +3,11 @@ import WebSocket from 'ws';
 import { WEB_SOCKET_URL } from '../constants';
 
 export class WebSocketClient {
+    private static instance: WebSocketClient;
     private socket: WebSocket | any;
     private connectedPromise: Promise<void>;
-    private connected: boolean = false;
 
-    constructor() {
+    private constructor() {
         this.socket = new WebSocket(WEB_SOCKET_URL);
         this.connectedPromise = new Promise((resolve) => {
             this.socket.addEventListener('open', () => {
@@ -19,7 +19,15 @@ export class WebSocketClient {
         this.socket.onerror = this.onError.bind(this);
         // this.socket.onmessage = this.onMessage.bind(this);
         this.setOnMessage(this.onMessage.bind(this));
-      }
+    }
+
+    public static async getInstance(): Promise<WebSocketClient> {
+        if (!WebSocketClient.instance) {
+            WebSocketClient.instance = new WebSocketClient();
+            await WebSocketClient.instance.connect();
+        }
+        return WebSocketClient.instance;
+    }
 
     async connect(): Promise<void> {
         await this.connectedPromise;
@@ -30,12 +38,12 @@ export class WebSocketClient {
     }
 
     private onOpen(event: Event): void {
-        this.connected = true;
         console.log('WebSocket connection established');
     }
 
     private onClose(event: CloseEvent): void {
         console.log('WebSocket connection closed');
+        throw new Error('WebSocket connection closed');
     }
 
     private onError(event: ErrorEvent): void {
@@ -44,10 +52,6 @@ export class WebSocketClient {
 
     private onMessage(event: MessageEvent): void {
         console.log('WebSocket message received:', event.data);
-    }
-
-    public isConnected(): boolean {
-        return this.connected;
     }
 
     public send(message: any): void {

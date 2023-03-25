@@ -1,4 +1,4 @@
-import {Multiplier, Average, Player, Bet} from "./core"
+import {Multiplier, Average, Bet} from "./core"
 import {AviatorBotAPI} from "../api/AviatorBotAPI"
 import { HomeBet } from "../constants"
 import { PredictionModel, PredictionCore } from "./PredictionCore"

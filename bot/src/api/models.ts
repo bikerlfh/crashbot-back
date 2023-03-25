@@ -16,3 +16,24 @@ export class Prediction{
     }
 }
 
+
+
+export class BetData{
+    constructor(
+        public externalId: string, 
+        public prediction: number, 
+        public multiplier: number, 
+        public amount: number,
+        public multiplierResult?: number, 
+    ){}
+
+    toDict(){
+        return {
+            external_id: this.externalId,
+            prediction: this.prediction,
+            multiplier: this.multiplier,
+            multiplier_result: this.multiplierResult,
+            amount: this.amount
+        }
+    }
+}

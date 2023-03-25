@@ -7,9 +7,10 @@
  * de la siguiente forma: (?P<nombreParametro>), ejemplo en la url productoDetalle
  * @version 1.3
  */
+import { Multiplier } from '../game/core';
 import {Dictionary} from '../types/interfaces';
 import {APIRest} from './APIRest';
-import {Prediction} from './models';
+import {Prediction, BetData} from './models';
 
 
 const URLS = {
@@ -17,8 +18,8 @@ const URLS = {
     homeBet: 'home-bet/',
     homeBetDetail: 'home-bet/?P<nombreParametro>',
     addMultipliers: 'home-bet/multiplier/',
-    getPrediction: '/predictions/predict/',
-    updateBalance: '/customers/balance/',
+    getPrediction: 'predictions/predict/',
+    updateBalance: 'customers/balance/',
     createBet: 'bets/',
     getBet: 'bets/?P<bet_id>',
     // gameDetail: 'games/<gameId>/',
@@ -73,8 +74,8 @@ export class AviatorBotAPI {
     }
     static requestPrediction = async (
         homeBetId: number,
-         multipliers?: number[], 
-         modelId?: number
+        multipliers?: number[], 
+        modelId?: number
     ): Promise<Prediction[]> => {
         return await APIRest.post(URLS.getPrediction, {
             home_bet_id: homeBetId,
@@ -92,22 +93,14 @@ export class AviatorBotAPI {
         });
     }
     static requestCreateBet = async (
-        external_id: string,
         customerId: number, 
         homeBetId: number,
-        prediction: number,
-        multiplier: number,
-        multiplierResult: number,
-        amount: number
+        bets: BetData[]
     ) => {
         return await APIRest.post(URLS.createBet, {
-            external_id: external_id,
             customer_id: customerId,
             home_bet_id: homeBetId,
-            prediction: prediction,
-            multiplier: multiplier,
-            multiplier_result: multiplierResult,
-            amount: amount
+            bets: bets.map((bet) => bet.toDict())
         });
     }
     static requestGetBet = async (betId:number) => {

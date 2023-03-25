@@ -45,8 +45,8 @@ export class BetControl{
         if(this._betControl_1 == null || this._betControl_2 == null){
             throw "no bet controls"
         }
-        const inputAppSpinner_1 = this._betControl_1.locator("app-spinner").first()
-        const inputAppSpinner_2 = this._betControl_2.locator("app-spinner").first()
+        const inputAppSpinner_1 = this._betControl_1.locator(".bet-block>app-spinner").first()
+        const inputAppSpinner_2 = this._betControl_2.locator(".bet-block>app-spinner").first()
         if(inputAppSpinner_1 == null || inputAppSpinner_2 == null){
             throw "no inputAppSpinner_1 or inputAppSpinner_2"
         }

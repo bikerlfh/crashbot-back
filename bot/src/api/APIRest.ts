@@ -79,12 +79,6 @@ export let APIRest = {
                     throw response
                 return response.data;
            }).catch((err) => { 
-                console.log(
-                    "fetch :: url :: ", 
-                    url, 
-                    " error: ", 
-                    JSON.stringify(err)
-                );
                 throw err;
            });
    },

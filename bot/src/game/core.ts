@@ -1,19 +1,3 @@
-export class Player{
-    id: number|null = null
-    balance: number = 0
-
-    constructor(id: number, balance: number){
-        this.id = id
-        this.balance = balance
-    }
-    
-    updateBalance(amount: number){
-        // the amount can be negative
-        this.balance += amount
-    }
-}
-
-
 export class Multiplier{
     multiplier: number
     category: number
@@ -47,17 +31,23 @@ export class Average{
  }
 
  export class Bet{
+    externalId: string
     amount: number = 0
+    prediction: number
     multiplier: number = 0
+    multiplierResult?: number
     profit: number = 0
 
-    constructor(amount: number, multiplier: number){
-        this.amount = amount
+    constructor(amount: number, multiplier: number, prediction?: number){
+        this.externalId = Math.random().toString(36).substring(2)
         this.multiplier = multiplier
+        this.prediction = prediction || this.multiplier
+        this.amount = amount
     }
 
-    evaluate(lastMultiplier: number): number{
-        if(lastMultiplier >= this.multiplier){
+    evaluate(multiplierResult: number): number{
+        this.multiplierResult = multiplierResult
+        if(multiplierResult >= this.multiplier){
             this.profit += this.amount * (this.multiplier - 1)
         }else{
             this.profit -= this.amount
