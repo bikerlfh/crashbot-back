@@ -168,12 +168,12 @@ export class Player{
         let predictionValue = prediction.getPreditionValue()
         const averagePredictionValuesInLive = prediction.averagePredictionValuesInLive
         const averagePredictionInLive = prediction.averagePredictionInLive
-        console.log("player :: profit: ", profit)
-        console.log("player :: categoryPrecentage: ", categoryPrecentage)
-        console.log("player :: predictionRound: ", predictionRound)
-        console.log("player :: predictionValue: ", predictionValue)
-        console.log("player :: averagePredictionValuesInLive: ", averagePredictionValuesInLive)
-        console.log("player :: averagePredictionInLive: ", averagePredictionInLive)
+        console.log("profit: ", profit)
+        console.log("categoryPrecentage: ", categoryPrecentage)
+        console.log("predictionRound: ", predictionRound)
+        console.log("predictionValue: ", predictionValue)
+        console.log("averagePredictionValuesInLive: ", averagePredictionValuesInLive)
+        console.log("averagePredictionInLive: ", averagePredictionInLive)
         const inAveragePredictionValuesInLive = averagePredictionValuesInLive >= this.MIN_AVERAGE_PREDICTION_VALUES_IN_LIVE_TO_BET
         const inCategoryPrecentage = categoryPrecentage >= this.MIN_CATEGORY_PERCENTAGE_TO_BET
         const inAveragePredictionInLive = averagePredictionInLive >= this.MIN_AVERAGE_PREDICTION_IN_LIVE_TO_BET

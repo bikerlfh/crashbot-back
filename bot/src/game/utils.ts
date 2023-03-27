@@ -1,10 +1,8 @@
- export const generateRandomMultiplier = (min: number, max: number): number  => {
-    const precision = 100;
-    const randomNum = Math.floor(
-        Math.random() * (max * precision - min * precision) + 1 * precision
-    ) / (min * precision);
-    return randomNum
-}
+export const generateRandomMultiplier = (min: number, max: number): number  =>{
+    const randomNum = Math.random() * (max - min) + min;
+    const value = Number(randomNum.toFixed(2));
+    return value;
+  }
 
 export const sleepNow = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay))
 

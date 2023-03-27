@@ -33,7 +33,7 @@ export class PredictionCore{
         this.predictionValues.push(prediction)
         this.predictionRounds.push(predictionRound)
         this.averagePredictionsOfModel = averagePredictions
-        if(this.categoryPercentages[predictionRound] === 0){
+        if(this.categoryPercentages[predictionRound] == 0){
             this.categoryPercentages[predictionRound] = categoryPercentage
         }
     }
