@@ -6,7 +6,7 @@ from django.db.models import F, Q, QuerySet
 
 # Internal
 from apps.django_projects.predictions.constants import ModelStatus
-from apps.django_projects.predictions.models import ModelHomeBet
+from apps.django_projects.predictions.models import ModelHomeBet, PlayerStrategy
 
 
 def filter_model_home_bet(**kwargs) -> QuerySet[ModelHomeBet]:
@@ -56,3 +56,7 @@ def get_bets_models_by_average_predictions(
         .order_by("-average_predictions")[:number_of_models]
     )
     return models
+
+
+def filter_player_strategy(**kwargs) -> QuerySet[PlayerStrategy]:
+    return PlayerStrategy.objects.filter(**kwargs).order_by("number_of_bets", "strategy_type")

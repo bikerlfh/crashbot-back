@@ -18,4 +18,9 @@ urlpatterns: list[Any] = [
         views.ModelHomeBetView.as_view(),
         name="model-home-bet-view",
     ),
+    path(
+        "strategy/",
+        views.PlayerStrategyView.as_view(),
+        name="player-strategies-view",
+    ),
 ]

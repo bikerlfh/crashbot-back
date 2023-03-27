@@ -5,7 +5,7 @@ from django.db import models
 
 # Internal
 from apps.django_projects.core.models import HomeBet
-from apps.django_projects.predictions.constants import ModelStatus
+from apps.django_projects.predictions.constants import ModelStatus, StrategyType
 from apps.prediction.constants import Category, ModelType
 from apps.utils.django.models import BaseModel
 from apps.utils.tools import enum_to_choices
@@ -54,3 +54,20 @@ class ModelCategoryResult(BaseModel):
     @property
     def total_predictions(self) -> int:
         return self.correct_predictions + self.incorrect_predictions
+
+
+
+class PlayerStrategy(BaseModel):
+    strategy_type = models.CharField(
+        max_length=25,
+        default=StrategyType.LOOSE.value,
+    )
+    number_of_bets = models.IntegerField(default=0)
+    profit_percentage = models.FloatField(default=0)
+    min_balance_percentage_to_bet_amount = models.FloatField(default=0)
+    profit_percentage_to_bet_amount = models.FloatField(default=0)
+    others = models.JSONField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = "player_strategy"

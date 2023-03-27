@@ -17,6 +17,7 @@ from apps.django_projects.predictions.constants import (
     PERCENTAGE_ACCEPTABLE,
     PERCENTAGE_MODEL_TO_INACTIVE,
     ModelStatus,
+    StrategyType,
 )
 from apps.django_projects.predictions.models import (
     ModelCategoryResult,
@@ -347,3 +348,19 @@ def get_models_home_bet(
             )
         )
     return data
+
+
+def get_active_player_strategies() -> list[dict[str, any]]:
+    stratiegies = selectors.filter_player_strategy(
+        is_active=True
+    ).values(
+        "id", 
+        "strategy_type",
+        "number_of_bets", 
+        "profit_percentage", 
+        "min_balance_percentage_to_bet_amount",
+        "profit_percentage_to_bet_amount",
+        "others",
+        "is_active"
+    )
+    return list(stratiegies)

@@ -107,3 +107,31 @@ class ModelHomeBetView(
         out_serializer = self.OutputSerializer(data=data, many=True)
         out_serializer.is_valid(raise_exception=True)
         return Response(data=out_serializer.validated_data)
+    
+
+
+class PlayerStrategyView(
+    APIErrorsMixin,
+    APIView,
+):
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        strategy_type = serializers.CharField()
+        number_of_bets = serializers.IntegerField()
+        profit_percentage = serializers.FloatField()
+        min_balance_percentage_to_bet_amount = serializers.FloatField()
+        profit_percentage_to_bet_amount = serializers.FloatField()
+        others = serializers.JSONField(required=False, allow_null=True)
+        is_active = serializers.BooleanField()
+
+    def get(self, request):
+        data = services.get_active_player_strategies()
+        out_serializer = self.OutputSerializer(data=data, many=True)
+        out_serializer.is_valid(raise_exception=True)
+        return Response(
+            data=dict(strategies=out_serializer.validated_data)
+        )
+
+
+

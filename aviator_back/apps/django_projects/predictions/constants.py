@@ -8,6 +8,13 @@ class ModelStatus(str, Enum):
     INACTIVE = "inactive"
 
 
+class StrategyType(str, Enum):
+    AGRESSIVE = "agressive"
+    TIGHT = "tight"
+    LOOSE = "losse"
+    
+
+
 DEFAULT_SEQ_LEN = int(getenv("DEFAULT_SEQ_LEN", 18))
 GENERATE_AUTOMATIC_MODEL_TYPES = getenv(
     "GENERATE_AUTOMATIC_MODEL_TYPES", "sequential,sequential_lstm"
