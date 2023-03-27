@@ -102,11 +102,15 @@ export class BetControl{
         if(!autoCashOutMultiplier){
             throw "buttons null autoCashOutMultiplier"
         }
+        /*
         const value = parseFloat(parseFloat(await autoCashOutMultiplier.inputValue({timeout: 500})).toFixed(0))
         if(value != multiplier){
             await autoCashOutMultiplier.fill("", {timeout: 500})
             await autoCashOutMultiplier.type(multiplier.toString(), {delay: 100})
         }
+        */
+        await autoCashOutMultiplier.fill("", {timeout: 500})
+        await autoCashOutMultiplier.type(multiplier.toString(), {delay: 100})
     }
     
     async updateAmount(amount: number, control:Control){
@@ -139,7 +143,7 @@ export class BetControl{
             throw "bet: bet button null. control"
         }
         if(control === Control.Control1){
-            await this._betButton_1.click();({delay: this._randomDelay()})
+            await this._betButton_1.click({delay: this._randomDelay()})
             //await this.aviatorPage.waitForTimeout(1000)
             return
         }

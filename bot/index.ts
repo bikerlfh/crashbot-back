@@ -7,13 +7,8 @@ import {PlayerType} from './src/game/player';
 
 (async () => {
 	let readlineSync = require('readline-sync');
-	let autoPlay = readlineSync.question("automatic play? [y/n]: ");
-	autoPlay = autoPlay == "y"
 	const homeBetSelected = readlineSync.question(
 		"which bookmaker do you choose (default: demo)? [betPlay=1, 1Win=2]: "
-	);
-	let playerTypeSelected = readlineSync.question(
-		"which player type do you choose (default: tight)? [aggressive=1, tight=2, loose=3]: "
 	);
 	let homeBet = HomeBets.demo
 	switch(homeBetSelected){
@@ -26,7 +21,16 @@ import {PlayerType} from './src/game/player';
 		default:
 			homeBet = HomeBets.demo
 	}
-	switch(playerTypeSelected){
+	let _playerTypeSelected = "2"
+	let playerTypeSelected = PlayerType.TIGHT
+	let autoPlay = readlineSync.question("automatic play? [y/n]: ");
+	autoPlay = autoPlay == "y"
+	if(autoPlay){
+		_playerTypeSelected = readlineSync.question(
+			"which player type do you choose (default: tight)? [aggressive=1, tight=2, loose=3]: "
+		);
+	}
+	switch(_playerTypeSelected){
 		case "1":
 			playerTypeSelected = PlayerType.AGGRESSIVE
 			break;

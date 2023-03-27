@@ -42,12 +42,6 @@ export class Player{
         minimumBet: number = 0,
         maximumBet: number = 0
     ){
-        if(this.STOP_LOSS_PERCENTAGE == 0){
-            throw new Error("STOP_LOSS_PERCENTAGE must be greater than 0")
-        }
-        if(this.TAKE_PROFIT_PERCENTAGE == 0){
-            throw new Error("TAKE_PROFIT_PERCENTAGE must be greater than 0")
-        }
         this.minimumBet = minimumBet
         this.maximumBet = maximumBet
     }
@@ -77,6 +71,9 @@ export class Player{
         this.PLAYER_STRATEGIES = (
             await AviatorBotAPI.requestGetStrategies()
         ).filter((s)=> s.strategyType == this.PLAYER_TYPE)
+        console.log("stopLoss: ", this.stopLoss)
+        console.log("takeProfit: ", this.takeProfit)
+        console.log("Player strategies: ", this.PLAYER_STRATEGIES)
     }
 
     private validateBetAmount(amount: number): number{
@@ -95,10 +92,10 @@ export class Player{
     private getStrategy(): PlayerStrategy|undefined{
         let profit = this.getProfitPercent()
         const numOfBets = this.getNumberOfBets()
-        let strategy = this.PLAYER_STRATEGIES.find((s)=>{
-            return s.numberOfBets >= numOfBets && profit >= s.profitPercentage
-        })
-        return strategy
+        let strategies = this.PLAYER_STRATEGIES.filter((s)=>
+            numOfBets >= s.numberOfBets && profit >= s.profitPercentage
+        )
+        return strategies.length > 0? strategies.slice(-1)[0]: undefined
     }
     
     getNumberOfBets(): number{
@@ -115,12 +112,16 @@ export class Player{
 
     inStopLoss(): boolean{
         const profit = this.getProfit()
-        return profit < 0 && Math.abs(profit) <= this.stopLoss
+        return profit < 0 && Math.abs(profit) >= this.stopLoss
     }
     
     inTakeProfit(): boolean{
         const profit = this.getProfit()
         return profit >= this.takeProfit
+    }
+
+    updateBalance(balance: number){
+        this.balance = balance
     }
 
     calculateAmountBet(multiplier: number, strategy: PlayerStrategy, usedAmount?: number): number{
@@ -167,9 +168,12 @@ export class Player{
         let predictionValue = prediction.getPreditionValue()
         const averagePredictionValuesInLive = prediction.averagePredictionValuesInLive
         const averagePredictionInLive = prediction.averagePredictionInLive
-        if(predictionValue < 0){
-            predictionValue = 1.1
-        }
+        console.log("player :: profit: ", profit)
+        console.log("player :: categoryPrecentage: ", categoryPrecentage)
+        console.log("player :: predictionRound: ", predictionRound)
+        console.log("player :: predictionValue: ", predictionValue)
+        console.log("player :: averagePredictionValuesInLive: ", averagePredictionValuesInLive)
+        console.log("player :: averagePredictionInLive: ", averagePredictionInLive)
         const inAveragePredictionValuesInLive = averagePredictionValuesInLive >= this.MIN_AVERAGE_PREDICTION_VALUES_IN_LIVE_TO_BET
         const inCategoryPrecentage = categoryPrecentage >= this.MIN_CATEGORY_PERCENTAGE_TO_BET
         const inAveragePredictionInLive = averagePredictionInLive >= this.MIN_AVERAGE_PREDICTION_IN_LIVE_TO_BET
@@ -179,7 +183,7 @@ export class Player{
         const bets: Bet[] = []
         // CATEGORY 1
         if(predictionRound == 1){
-            if(!inAveragePredictionValuesInLive){
+            if(!inAveragePredictionValuesInLive || predictionValue < 1){
                 return []
             }
             const amount = this.calculateAmountBet(predictionValue, strategy)

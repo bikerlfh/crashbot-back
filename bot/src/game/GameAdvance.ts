@@ -12,8 +12,6 @@ import { PlayerType, Player } from "./player"
 
 export class Game {
     private aviatorPage: AviatorPage
-    private _minBet: number = 0
-    private _maxBet: number = 0
     private minimumBet: number = 0
     private maximumBet: number = 0
     private maximumWinForOneBet: number = 0
@@ -95,9 +93,8 @@ export class Game {
         console.log("saving intial multipliers.....")
         this.requestSaveMultipliers(multipliers)
         this._ws_client.setOnMessage(this.wsOnMessage.bind(this))
-        this.calculateMinMaxBet()
         this.initialized = true
-        console.clear()
+        //console.clear()
         console.log("Game initialized")
     }
 
@@ -159,6 +156,7 @@ export class Game {
          */
         await this.aviatorPage.waitNextGame()
         this.balance = await this.readBalanceToAviator()
+        this.player.updateBalance(this.balance)
         this.addMultiplier(this.aviatorPage.multipliers.slice(-1)[0])
         this.bets = []
         console.clear()
@@ -225,48 +223,6 @@ export class Game {
         this.multipliers.push(new Multiplier(multiplier))
         this.requestSaveMultipliers([multiplier])
         this.requestSaveBets(this.bets)
-    }
-
-
-    calculateMinMaxBet(){
-        const numMinBets = this.balance / this.minimumBet
-        if(numMinBets <= 50){
-            // if the balance is less than 50 minimum bets, the minimum bet is the minimum bet
-            // and the maximum bet is 3 times the minimum bet
-            this._minBet = this.minimumBet
-            this._maxBet = parseFloat((this.minimumBet * (numMinBets * 3)).toFixed(0))
-            return
-        }
-        // if the balance is more than 50 minimum bets, the minimum bet is 0.3% of the balance
-        this._minBet = parseFloat((this.minimumBet * (numMinBets * 0.003)).toFixed(0))
-        // and the maximum bet is 0.8% of the balance
-        this._maxBet = parseFloat((this.minimumBet * (numMinBets * 0.008)).toFixed(0))
-    }
-
-    calculateAmountBet(multiplier: number, usedAmount?: number): number{
-        usedAmount = usedAmount || 0
-        let balance = this.balance - usedAmount
-        let profit = balance - this.initialBalance
-        let amount = this._minBet
-        console.log("balance: ", balance, "; profit: ", profit, "; amount: ", amount)
-        if(profit < 0){
-            amount = (Math.abs(profit) / (multiplier -1)) + this._minBet
-        }
-        else{
-            amount *= 2
-        }
-        amount = amount > this.minimumBet? amount: this.minimumBet;
-        if(amount > balance){
-            amount = balance
-        }
-        if(amount > this.maximumBet){
-            amount = this.maximumBet
-        }
-        if(amount < 0){
-            amount = this._minBet
-        }
-        amount = parseFloat(amount.toFixed(0))
-        return amount
     }
 
     async getNextBet(): Promise<Bet[]>{
