@@ -1,45 +1,84 @@
+import { generateRandomMultiplier, roundNumber } from "./utils"
+import { PlayerStrategy } from "../api/models"
+import { PredictionCore } from "./PredictionCore"
+import { Bet } from "./core"
+import { AviatorBotAPI } from "../api/AviatorBotAPI"
+
+
+export enum PlayerType{
+    AGGRESSIVE = "aggressive",
+    TIGHT = "tight",
+    LOOSE = "loose",
+}
 
 
 export class Player{
-    private MIN_NUMBER_OF_BETS: number = 0
-    private MIN_BET_PERCENTAGE_OF_BALANCE: number = 0.003
-    private MAX_BET_PERCENTAGE_OF_BALANCE: number = 0.008
-    private STOP_LOSS_PERCENTAGE: number = 0
-    private TAKE_PROFIT_PERCENTAGE: number = 0
-    private PROFIT_STRATEGIES: [] = []
+    /*
+    * The Player class is a class used to determine the optimal fraction of one's capital to bet on a given bet.
+    * @param {number} STOP_LOSS_PERCENTAGE: use to calculate stop loss
+    * @param {number} TAKE_PROFIT_PERCENTAGE: use to calculate take profit
+    * @param PROFIT_STRATEGIES is the amount of money you have to bet  
+    */
+
+    PLAYER_TYPE: PlayerType = PlayerType.LOOSE
+
+    MIN_CATEGORY_PERCENTAGE_TO_BET: number = 80
+    MIN_AVERAGE_PREDICTION_IN_LIVE_TO_BET: number = 80
+    MIN_AVERAGE_PREDICTION_VALUES_IN_LIVE_TO_BET: number = 80
+
+    STOP_LOSS_PERCENTAGE: number = 0
+    TAKE_PROFIT_PERCENTAGE: number = 0
+
+    private PLAYER_STRATEGIES: PlayerStrategy[] = []
     
-    private initialBalance: number
-    private balance: number
-    private stopLoss: number;
-    private takeProfit: number;
+    private initialBalance: number = 0
+    private balance: number = 0
+    private stopLoss: number = 0
+    private takeProfit: number = 0
     private minimumBet: number
     private maximumBet: number
-    private _minBet: number = 0
-    private _maxBet: number = 0
 
     constructor(
-        balance: number, 
         minimumBet: number = 0,
         maximumBet: number = 0
     ){
-        if(this.MIN_NUMBER_OF_BETS == 0){
-            throw new Error("NUMBER_OF_BETS must be greater than 0")
-        }
         if(this.STOP_LOSS_PERCENTAGE == 0){
             throw new Error("STOP_LOSS_PERCENTAGE must be greater than 0")
         }
         if(this.TAKE_PROFIT_PERCENTAGE == 0){
             throw new Error("TAKE_PROFIT_PERCENTAGE must be greater than 0")
         }
-        this.initialBalance = balance
-        this.balance = balance
         this.minimumBet = minimumBet
         this.maximumBet = maximumBet
-        this.stopLoss = this.balance * (this.STOP_LOSS_PERCENTAGE / 100)
-        this.takeProfit = this.balance * (this.TAKE_PROFIT_PERCENTAGE / 100)
-        this.calculateMinMaxBet()
     }
-    
+
+    static getInstance(
+        minimumBet: number = 0,
+        maximumBet: number = 0,
+        playerType: PlayerType,
+    ): Player{
+        switch(playerType){
+            case PlayerType.AGGRESSIVE:
+                return new AggressivePlayer(minimumBet, maximumBet)
+            case PlayerType.TIGHT:
+                return new TightPlayer(minimumBet, maximumBet)
+            case PlayerType.LOOSE:
+                return new LoosePlayer(minimumBet, maximumBet)
+            default:
+                throw new Error("Invalid player type")
+        }
+    }
+
+    async initialize(balance: number){
+        this.initialBalance = balance
+        this.balance = balance
+        this.stopLoss = this.initialBalance * (this.STOP_LOSS_PERCENTAGE / 100)
+        this.takeProfit = this.initialBalance * (this.TAKE_PROFIT_PERCENTAGE / 100)
+        this.PLAYER_STRATEGIES = (
+            await AviatorBotAPI.requestGetStrategies()
+        ).filter((s)=> s.strategyType == this.PLAYER_TYPE)
+    }
+
     private validateBetAmount(amount: number): number{
         if(amount < this.minimumBet){
             amount = this.minimumBet
@@ -50,7 +89,20 @@ export class Player{
         if(amount > this.balance){
             amount = this.balance
         }
-        return amount
+        return roundNumber(amount, 0)
+    }
+
+    private getStrategy(): PlayerStrategy|undefined{
+        let profit = this.getProfitPercent()
+        const numOfBets = this.getNumberOfBets()
+        let strategy = this.PLAYER_STRATEGIES.find((s)=>{
+            return s.numberOfBets >= numOfBets && profit >= s.profitPercentage
+        })
+        return strategy
+    }
+    
+    getNumberOfBets(): number{
+        return roundNumber(this.balance / this.minimumBet, 0)
     }
 
     getProfit(): number{
@@ -61,52 +113,127 @@ export class Player{
         return this.getProfit() / this.initialBalance * 100
     }
 
-    private calculateMinMaxBet(){
-        const numMinBets = this.balance / this.minimumBet
-        if(numMinBets <= 50){
-            // if the balance is less than 50 minimum bets, the minimum bet is the minimum bet
-            // and the maximum bet is 3 times the minimum bet
-            this._minBet = this.minimumBet
-            this._maxBet = parseFloat((this.minimumBet * (numMinBets * this.MIN_NUMBER_OF_BETS)).toFixed(0))
-        }else{
-            // if the balance is more than 50 minimum bets, the minimum bet is 0.3% of the balance
-            this._minBet = parseFloat((this.balance *  this.MIN_BET_PERCENTAGE_OF_BALANCE).toFixed(0))
-            // and the maximum bet is 0.8% of the balance
-            this._maxBet = parseFloat((this.balance *  this.MAX_BET_PERCENTAGE_OF_BALANCE).toFixed(0))
-        }
-        this._minBet = this.validateBetAmount(this._minBet)
-        this._maxBet = this.validateBetAmount(this._maxBet)
+    inStopLoss(): boolean{
+        const profit = this.getProfit()
+        return profit < 0 && Math.abs(profit) <= this.stopLoss
+    }
+    
+    inTakeProfit(): boolean{
+        const profit = this.getProfit()
+        return profit >= this.takeProfit
     }
 
-    calculateAmountBet(multiplier: number, usedAmount?: number): number{
+    calculateAmountBet(multiplier: number, strategy: PlayerStrategy, usedAmount?: number): number{
         usedAmount = usedAmount || 0
-        let balance = this.balance - usedAmount
         let profit = this.getProfit()
-        let amount = this._minBet
+        const balance = this.balance - usedAmount
+        const minBet = balance * (strategy.minBalancePercentageToBetAmount / 100)
+        let amount = 0
         if(profit < 0){
-            amount = (Math.abs(profit) / (multiplier -1)) + this._minBet
+            amount = (Math.abs(profit) / (multiplier - 1)) + minBet
+        }
+        else if(usedAmount <= 0){
+            amount = minBet + profit * (strategy.profitPercentageToBetAmount / 100)
         }
         else{
-            amount *= 2
+            amount = usedAmount / 3
         }
         amount = this.validateBetAmount(amount)
-        if(amount > balance){
-            amount = balance
-        }
-        amount = parseFloat(amount.toFixed(0))
         return amount
     }
-}
 
-
-export class TightPlayer extends Player{
-    
-}
-
-export class LoosePlayer extends Player{
-    
+    getNextBet(prediction: PredictionCore): Bet[]{
+        if(this.inStopLoss()){
+            console.log("player :: Stop loss reached")
+            return []
+        }
+        if(this.inTakeProfit()){
+            console.log("player :: Take profit reached")
+            return []
+        }
+        if(prediction == null){
+            return []
+        }
+        const strategy = this.getStrategy()
+        if(!strategy){
+            console.warn(
+                "No strategy found for profit percentage: ", this.getProfitPercent()
+            )
+            return []
+        }
+        const profit = this.getProfit()
+        const categoryPrecentage = prediction.getCategoryPercentage()
+        const predictionRound = prediction.getPredictionRoundValue()
+        let predictionValue = prediction.getPreditionValue()
+        const averagePredictionValuesInLive = prediction.averagePredictionValuesInLive
+        const averagePredictionInLive = prediction.averagePredictionInLive
+        if(predictionValue < 0){
+            predictionValue = 1.1
+        }
+        const inAveragePredictionValuesInLive = averagePredictionValuesInLive >= this.MIN_AVERAGE_PREDICTION_VALUES_IN_LIVE_TO_BET
+        const inCategoryPrecentage = categoryPrecentage >= this.MIN_CATEGORY_PERCENTAGE_TO_BET
+        const inAveragePredictionInLive = averagePredictionInLive >= this.MIN_AVERAGE_PREDICTION_IN_LIVE_TO_BET
+        if(!inCategoryPrecentage){
+            return []
+        }
+        const bets: Bet[] = []
+        // CATEGORY 1
+        if(predictionRound == 1){
+            if(!inAveragePredictionValuesInLive){
+                return []
+            }
+            const amount = this.calculateAmountBet(predictionValue, strategy)
+            return [new Bet(amount, predictionValue)]
+        }
+        if(!inAveragePredictionInLive){
+            return []
+        }
+        // CATEGORY 2
+        if(predictionRound == 2){
+            if(profit < 0){
+                bets.push(new Bet(this.calculateAmountBet(1.95, strategy), 1.95))
+            }else{
+                const amount = this.calculateAmountBet(1.95, strategy)
+                const multiplier = generateRandomMultiplier(2, 2.8)
+                bets.push(new Bet(amount, 1.95))
+                bets.push(new Bet(this.calculateAmountBet(multiplier, strategy), multiplier))
+            }
+            return bets
+        }    
+        // CATEGORY 3
+        if(profit > 0){
+            bets.push(new Bet(this.calculateAmountBet(predictionRound, strategy), predictionRound))
+            return bets
+        }
+        const amount = this.calculateAmountBet(1.95, strategy)
+        bets.push(new Bet(amount, 1.95))
+        return bets
+    }
 }
 
 export class AggressivePlayer extends Player{
-    
+    PLAYER_TYPE: PlayerType = PlayerType.AGGRESSIVE
+    MIN_CATEGORY_PERCENTAGE_TO_BET: number = 55
+    MIN_AVERAGE_PREDICTION_IN_LIVE_TO_BET: number = 55
+    MIN_AVERAGE_PREDICTION_VALUES_IN_LIVE_TO_BET: number = 70
+    STOP_LOSS_PERCENTAGE: number = 20
+    TAKE_PROFIT_PERCENTAGE: number = 200
+}
+
+export class TightPlayer extends Player{
+    PLAYER_TYPE: PlayerType = PlayerType.TIGHT
+    MIN_CATEGORY_PERCENTAGE_TO_BET: number = 69
+    MIN_AVERAGE_PREDICTION_IN_LIVE_TO_BET: number = 69
+    MIN_AVERAGE_PREDICTION_VALUES_IN_LIVE_TO_BET: number = 69
+    STOP_LOSS_PERCENTAGE: number = 20
+    TAKE_PROFIT_PERCENTAGE: number = 50
+}
+
+export class LoosePlayer extends Player{
+    PLAYER_TYPE: PlayerType = PlayerType.LOOSE
+    MIN_CATEGORY_PERCENTAGE_TO_BET: number = 90
+    MIN_AVERAGE_PREDICTION_IN_LIVE_TO_BET: number = 90
+    MIN_AVERAGE_PREDICTION_VALUES_IN_LIVE_TO_BET: number = 90
+    STOP_LOSS_PERCENTAGE: number = 20
+    TAKE_PROFIT_PERCENTAGE: number = 50
 }

@@ -1,4 +1,4 @@
- export const GenerateRandomMultiplier = (min: number, max: number): number  => {
+ export const generateRandomMultiplier = (min: number, max: number): number  => {
     const precision = 100;
     const randomNum = Math.floor(
         Math.random() * (max * precision - min * precision) + 1 * precision
@@ -16,4 +16,35 @@ export const roundNumber = (num: number, decimalPlaces?: number, aprox?: boolean
         return Math.round(num * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces)
     }
     return parseFloat(num.toFixed(decimalPlaces))
+}
+
+
+const kellyFormula = (b: number, p:number, capital:number): number => {
+    /*
+    * The Kelly formula is a formula used to determine the optimal fraction of one's capital to bet on a given bet.
+    * The formula is: f* = (bp - q) / b
+    * @param b is the ratio of net gains to net losses (i.e., net gains per unit bet),
+    * @param p is the probability of winning the bet, and
+    * @param q is the probability of losing the bet (q = 1 - p).
+    * @param capital is the amount of money you have to bet.
+    * example: kellyFormula(2, 0.6, 1000)
+    */
+    const f = (b * p - (1 - p)) / b;
+    return roundNumber(capital * f, 2);
+}
+  
+const adaptiveKellyFormula = (b: number, p: number, R: number, capital: number): number => {
+    /*
+    * The Adaptive Kelly formula is a formula used to determine the optimal fraction of one's capital to bet on a given bet.
+    * The formula is: f* = (bp - q) / b * (1 + R)
+    * @param b is the ratio of net gains to net losses (i.e., net gains per unit bet),
+    * @param p is the probability of winning the bet, and
+    * @param q is the probability of losing the bet (q = 1 - p).
+    * @param R is a risk factor that varies with the volatility of the market,
+    * @param capital is the amount of money you have to bet.
+    * example: kellyFormula(2, 0.6, 0.1, 1000)
+    */
+    const f = (b * p - (1 - p)) / b;
+    const f2 = f * (1 + R);
+    return roundNumber(capital * f2, 2);
 }

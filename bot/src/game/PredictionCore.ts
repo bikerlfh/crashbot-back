@@ -3,7 +3,7 @@ import { Prediction } from "../api/models";
 
 export class PredictionCore{
     id: number
-    _averagePredictions: number
+    averagePredictionsOfModel: number
     predictionValues: number[] = []
     predictionRounds: number[] = []
     multiplierResults: number[] = []
@@ -20,7 +20,7 @@ export class PredictionCore{
         averagePredictions: number
     ){
         this.id = id
-        this._averagePredictions = averagePredictions
+        this.averagePredictionsOfModel = averagePredictions
         this.averagePredictionInLive = averagePredictions
     }
 
@@ -32,7 +32,7 @@ export class PredictionCore{
     ){
         this.predictionValues.push(prediction)
         this.predictionRounds.push(predictionRound)
-        this._averagePredictions = averagePredictions
+        this.averagePredictionsOfModel = averagePredictions
         if(this.categoryPercentages[predictionRound] === 0){
             this.categoryPercentages[predictionRound] = categoryPercentage
         }

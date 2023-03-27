@@ -7,10 +7,9 @@
  * de la siguiente forma: (?P<nombreParametro>), ejemplo en la url productoDetalle
  * @version 1.3
  */
-import { Multiplier } from '../game/core';
 import {Dictionary} from '../types/interfaces';
 import {APIRest} from './APIRest';
-import {Prediction, BetData} from './models';
+import {Prediction, BetData, PlayerStrategy} from './models';
 
 
 const URLS = {
@@ -19,6 +18,7 @@ const URLS = {
     homeBetDetail: 'home-bet/?P<nombreParametro>',
     addMultipliers: 'home-bet/multiplier/',
     getPrediction: 'predictions/predict/',
+    getStrategies: 'predictions/strategy/',
     updateBalance: 'customers/balance/',
     createBet: 'bets/',
     getBet: 'bets/?P<bet_id>',
@@ -84,6 +84,13 @@ export class AviatorBotAPI {
         }).then((response: any) => { 
             return response.predictions.map((prediction: any) => new Prediction(prediction));
         });
+    }
+    static requestGetStrategies = async (): Promise<PlayerStrategy[]>  => {
+        return await APIRest.get(URLS.getStrategies).then(
+            (response: any) => response.strategies.map(
+                (strategy: any) => new PlayerStrategy(strategy)
+            )
+        );
     }
     static requestUpdateBalance = async (customerId: number, homeBetId: number, amount: number) => {
         return await APIRest.patch(URLS.updateBalance, {

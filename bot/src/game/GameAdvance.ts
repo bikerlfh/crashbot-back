@@ -6,7 +6,8 @@ import { WebSocketClient } from "../ws/client"
 import { AviatorPage } from "../aviator/Aviator"
 import { Control } from '../aviator/BetControl';
 import { BetData } from "../api/models"
-import { GenerateRandomMultiplier, sleepNow, roundNumber } from "./utils"
+import { generateRandomMultiplier, sleepNow, roundNumber } from "./utils"
+import { PlayerType, Player } from "./player"
 
 
 export class Game {
@@ -21,6 +22,7 @@ export class Game {
     private initialized: boolean = false
     // automatic betting
     private autoPlay: boolean = false
+    private player: Player
     homeBet: HomeBet
     initialBalance: number = 0
     balance: number = 0
@@ -28,12 +30,13 @@ export class Game {
     bets: Bet[] = []
     
     
-    constructor(homeBet: HomeBet, autoPlay: boolean){
+    constructor(homeBet: HomeBet, autoPlay: boolean, playerType: PlayerType){
         this.homeBet = homeBet
         this.autoPlay = autoPlay
         this.aviatorPage = homeBet.aviatorPage       
         this.minimumBet = homeBet.minBet
         this.maximumBet = homeBet.maxBet
+        this.player = Player.getInstance(this.minimumBet, this.maximumBet, playerType)
         this.maximumWinForOneBet = this.maximumBet * 100
         this._prediction_model = PredictionModel.getInstance()
         // globals.homeBetId = this.homeBet.id
@@ -85,6 +88,8 @@ export class Game {
         console.log("reading the player's balance.....")
         this.initialBalance = await this.readBalanceToAviator()
         this.balance = this.initialBalance
+        console.log("loading the player.....")
+        await this.player.initialize(this.initialBalance)
         const multipliers = this.aviatorPage.multipliers
         this.multipliers = multipliers.map(item => new Multiplier(item))
         console.log("saving intial multipliers.....")
@@ -265,65 +270,12 @@ export class Game {
     }
 
     async getNextBet(): Promise<Bet[]>{
-        this.bets = []
         const prediction = await this.requestGetPrediction()
         if(prediction == null){
             return []
         }
-        const profit = this.balance - this.initialBalance
-        const categoryPrecentage = prediction.getCategoryPercentage()
-        const predictionRound = prediction.getPredictionRoundValue()
-        let predictionValue = prediction.getPreditionValue()
-        const averagePredictionValuesInLive = prediction.averagePredictionValuesInLive
-        const averagePredictionInLive = prediction.averagePredictionInLive
-        console.log(
-            "predictionRound: ", predictionRound,
-            "predictionValue: ", predictionValue,
-            "ValuesInLive: ", averagePredictionValuesInLive,
-            "InLive: ", averagePredictionInLive,
-            "categoryPrecentage: ", categoryPrecentage,
-        )
-        if(predictionValue < 0){
-            predictionValue = 1.1
-        }
-        if(predictionRound == 1){
-            if(averagePredictionValuesInLive < 70){
-                return []
-            }
-            this.bets.push(new Bet(this.calculateAmountBet(predictionValue), predictionValue))
-            return this.bets
-        }
-        if(predictionRound == 2){
-            if(averagePredictionInLive < 70){
-                if(profit < 0){
-                    return []
-                }
-                this.bets.push(new Bet(this.calculateAmountBet(predictionValue), predictionValue)) 
-                return this.bets
-            }
-            if(profit < 0){
-                this.bets.push(new Bet(this.calculateAmountBet(predictionRound), predictionRound))
-            }else{
-                const amount = this.calculateAmountBet(1.95)
-                this.bets.push(new Bet(amount, 1.95))
-                const amount2 = parseFloat((amount / 3).toFixed(2))
-                this.bets.push(new Bet(amount2, GenerateRandomMultiplier(2, 3)))
-            }
-            return this.bets
-        }    
-        if(averagePredictionInLive < 70){
-            if(profit > 0){
-                this.bets.push(new Bet(this.calculateAmountBet(predictionRound), predictionRound))
-                return this.bets
-            }
-            return []
-        }
-        const amount = this.calculateAmountBet(1.95)
-        this.bets.push(new Bet(amount, 1.95))
-        if(profit > 0){
-            const amount2 = parseFloat((amount / 3).toFixed(2))
-            this.bets.push(new Bet(amount2, 1.95))
-        }
+        this.bets = this.player.getNextBet(prediction)
+        console.log("bets: ", this.bets)
         return this.bets
     }
 }
