@@ -1,0 +1,50 @@
+[
+    {
+        "model": "predictions.Bot",
+        "pk": "1",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "name": "AggressiveOne",
+            "bot_type": "aggressive",
+            "is_active": true,
+            "min_category_percentage_to_bet": 55.0,
+            "min_average_prediction_in_live_to_bet": 55.0,
+            "min_average_prediction_values_in_live_to_bet": 55.0,
+            "stop_loss_percentage": 50.0,
+            "take_profit_percentage": 200.0
+        }
+    },
+    {
+        "model": "predictions.Bot",
+        "pk": "2",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "name": "TightOne",
+            "bot_type": "tight",
+            "is_active": true,
+            "min_category_percentage_to_bet": 69.0,
+            "min_average_prediction_in_live_to_bet": 69.0,
+            "min_average_prediction_values_in_live_to_bet": 69.0,
+            "stop_loss_percentage": 20.0,
+            "take_profit_percentage": 50.0
+        }
+    },
+    {
+        "model": "predictions.Bot",
+        "pk": "3",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "name": "LooseOne",
+            "bot_type": "loose",
+            "is_active": true,
+            "min_category_percentage_to_bet": 85.0,
+            "min_average_prediction_in_live_to_bet": 85.0,
+            "min_average_prediction_values_in_live_to_bet": 85.0,
+            "stop_loss_percentage": 20.0,
+            "take_profit_percentage": 50.0
+        }
+    }
+]

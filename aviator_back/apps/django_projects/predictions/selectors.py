@@ -6,7 +6,7 @@ from django.db.models import F, Q, QuerySet
 
 # Internal
 from apps.django_projects.predictions.constants import ModelStatus
-from apps.django_projects.predictions.models import ModelHomeBet, PlayerStrategy
+from apps.django_projects.predictions.models import ModelHomeBet, Bot
 
 
 def filter_model_home_bet(**kwargs) -> QuerySet[ModelHomeBet]:
@@ -58,5 +58,13 @@ def get_bets_models_by_average_predictions(
     return models
 
 
-def filter_player_strategy(**kwargs) -> QuerySet[PlayerStrategy]:
-    return PlayerStrategy.objects.filter(**kwargs).order_by("number_of_bets", "strategy_type")
+def filter_bot(
+    bot_id: Optional[int] = None,
+    is_active: Optional[bool] = None, **kwargs
+) -> QuerySet[Bot]:
+    kwargs = dict(**kwargs)
+    if bot_id is not None:
+        kwargs.update(id=bot_id)
+    if is_active is not None:
+        kwargs.update(is_active=is_active)
+    return Bot.objects.filter(**kwargs).prefetch_related("strategies")

@@ -107,30 +107,43 @@ class ModelHomeBetView(
         out_serializer = self.OutputSerializer(data=data, many=True)
         out_serializer.is_valid(raise_exception=True)
         return Response(data=out_serializer.validated_data)
-    
 
 
-class PlayerStrategyView(
+class BotView(
     APIErrorsMixin,
     APIView,
 ):
+    class InputSerializer(serializers.Serializer):
+        bot_id = serializers.IntegerField(required=False, allow_null=True)
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
-        strategy_type = serializers.CharField()
-        number_of_bets = serializers.IntegerField()
-        profit_percentage = serializers.FloatField()
-        min_balance_percentage_to_bet_amount = serializers.FloatField()
-        profit_percentage_to_bet_amount = serializers.FloatField()
-        others = serializers.JSONField(required=False, allow_null=True)
-        is_active = serializers.BooleanField()
+        name = serializers.CharField()
+        bot_type = serializers.CharField()
+        min_category_percentage_to_bet = serializers.FloatField()
+        min_average_prediction_in_live_to_bet = serializers.FloatField()
+        min_average_prediction_values_in_live_to_bet = serializers.FloatField()
+        stop_loss_percentage = serializers.FloatField()
+        take_profit_percentage = serializers.FloatField()
+        strategies = inline_serializer(
+            fields=dict(
+                number_of_bets=serializers.IntegerField(),
+                profit_percentage=serializers.FloatField(),
+                min_amount_percentage_to_bet=serializers.FloatField(),
+                profit_percentage_to_bet=serializers.FloatField(),
+                others=serializers.JSONField(required=False, allow_null=True),
+            ),
+            many=True,
+        )
 
     def get(self, request):
-        data = services.get_active_player_strategies()
+        in_serializer = self.InputSerializer(data=request.GET)
+        in_serializer.is_valid(raise_exception=True)
+        data = services.get_active_bots(**in_serializer.validated_data)
         out_serializer = self.OutputSerializer(data=data, many=True)
         out_serializer.is_valid(raise_exception=True)
         return Response(
-            data=dict(strategies=out_serializer.validated_data)
+            data=dict(bots=out_serializer.validated_data)
         )
 
 

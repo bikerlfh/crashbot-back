@@ -8,11 +8,10 @@ class ModelStatus(str, Enum):
     INACTIVE = "inactive"
 
 
-class StrategyType(str, Enum):
-    AGRESSIVE = "agressive"
+class BotType(str, Enum):
+    AGGRESSIVE = "aggressive"
     TIGHT = "tight"
-    LOOSE = "losse"
-    
+    LOOSE = "loose"
 
 
 DEFAULT_SEQ_LEN = int(getenv("DEFAULT_SEQ_LEN", 18))

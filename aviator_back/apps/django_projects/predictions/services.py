@@ -17,7 +17,7 @@ from apps.django_projects.predictions.constants import (
     PERCENTAGE_ACCEPTABLE,
     PERCENTAGE_MODEL_TO_INACTIVE,
     ModelStatus,
-    StrategyType,
+    BotType,
 )
 from apps.django_projects.predictions.models import (
     ModelCategoryResult,
@@ -350,17 +350,35 @@ def get_models_home_bet(
     return data
 
 
-def get_active_player_strategies() -> list[dict[str, any]]:
-    stratiegies = selectors.filter_player_strategy(
-        is_active=True
-    ).values(
-        "id", 
-        "strategy_type",
-        "number_of_bets", 
-        "profit_percentage", 
-        "min_balance_percentage_to_bet_amount",
-        "profit_percentage_to_bet_amount",
-        "others",
-        "is_active"
+def get_active_bots(
+    *,
+    bot_id: Optional[int] = None,
+) -> list[dict[str, any]]:
+    bots = selectors.filter_bot(
+        bot_id=bot_id, is_active=True
     )
-    return list(stratiegies)
+    bots_data = []
+    for bot in bots:
+        strategies = bot.strategies.filter(
+            is_active=True
+        ).order_by("number_of_bets", "profit_percentage")
+        bots_data.append(dict(
+            id=bot.id,
+            name=bot.name,
+            bot_type=bot.bot_type,
+            min_category_percentage_to_bet=bot.min_category_percentage_to_bet,
+            min_average_prediction_in_live_to_bet=bot.min_average_prediction_in_live_to_bet,
+            min_average_prediction_values_in_live_to_bet=bot.min_average_prediction_values_in_live_to_bet,
+            stop_loss_percentage=bot.stop_loss_percentage,
+            take_profit_percentage=bot.take_profit_percentage,
+            strategies=[
+                dict(
+                    number_of_bets=strategy.number_of_bets,
+                    profit_percentage=strategy.profit_percentage,
+                    min_amount_percentage_to_bet=strategy.min_amount_percentage_to_bet,
+                    profit_percentage_to_bet=strategy.profit_percentage_to_bet,
+                    others=strategy.others,
+                ) for strategy in strategies
+            ]
+        ))
+    return bots_data

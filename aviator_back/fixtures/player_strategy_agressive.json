@@ -1,0 +1,182 @@
+[
+    {
+        "model": "predictions.BotStrategy",
+        "pk": "25",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "number_of_bets": 0,
+            "profit_percentage": -50.0,
+            "min_amount_percentage_to_bet": 3.0,
+            "profit_percentage_to_bet": 0.0,
+            "others": null,
+            "is_active": true
+        }
+    },
+    {
+        "model": "predictions.BotStrategy",
+        "pk": "26",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "number_of_bets": 0,
+            "profit_percentage": 0,
+            "min_amount_percentage_to_bet": 8.0,
+            "profit_percentage_to_bet": 20.0,
+            "others": null,
+            "is_active": true
+        }
+    },
+    {
+        "model": "predictions.BotStrategy",
+        "pk": "27",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "number_of_bets": 0,
+            "profit_percentage": 10,
+            "min_amount_percentage_to_bet": 8.0,
+            "profit_percentage_to_bet": 25.0,
+            "others": null,
+            "is_active": true
+        }
+    },
+    {
+        "model": "predictions.BotStrategy",
+        "pk": "28",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "number_of_bets": 0,
+            "profit_percentage": 50,
+            "min_amount_percentage_to_bet": 8.0,
+            "profit_percentage_to_bet": 30.0,
+            "others": null,
+            "is_active": true
+        }
+    },
+    {
+        "model": "predictions.BotStrategy",
+        "pk": "29",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "number_of_bets": 10,
+            "profit_percentage": 0,
+            "min_amount_percentage_to_bet": 9.0,
+            "profit_percentage_to_bet": 20.0,
+            "others": null,
+            "is_active": true
+        }
+    },
+    {
+        "model": "predictions.BotStrategy",
+        "pk": "30",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "number_of_bets": 10,
+            "profit_percentage": 10,
+            "min_amount_percentage_to_bet": 9.0,
+            "profit_percentage_to_bet": 30.0,
+            "others": null,
+            "is_active": true
+        }
+    },
+    {
+        "model": "predictions.BotStrategy",
+        "pk": "31",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "number_of_bets": 10,
+            "profit_percentage": 30,
+            "min_amount_percentage_to_bet": 9.0,
+            "profit_percentage_to_bet": 50.0,
+            "others": null,
+            "is_active": true
+        }
+    },
+    {
+        "model": "predictions.BotStrategy",
+        "pk": "32",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "number_of_bets": 10,
+            "profit_percentage": 50,
+            "min_amount_percentage_to_bet": 9.0,
+            "profit_percentage_to_bet": 60.0,
+            "others": null,
+            "is_active": true
+        }
+    },
+    {
+        "model": "predictions.BotStrategy",
+        "pk": "33",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "number_of_bets": 50,
+            "profit_percentage": 0,
+            "min_amount_percentage_to_bet": 10.0,
+            "profit_percentage_to_bet": 20.0,
+            "others": null,
+            "is_active": true
+        }
+    },
+    {
+        "model": "predictions.BotStrategy",
+        "pk": "34",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "number_of_bets": 50,
+            "profit_percentage": 10,
+            "min_amount_percentage_to_bet": 10.0,
+            "profit_percentage_to_bet": 30.0,
+            "others": null,
+            "is_active": true
+        }
+    },
+    {
+        "model": "predictions.BotStrategy",
+        "pk": "35",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "number_of_bets": 50,
+            "profit_percentage": 30,
+            "min_amount_percentage_to_bet": 10.0,
+            "profit_percentage_to_bet": 50.0,
+            "others": null,
+            "is_active": true
+        }
+    },
+    {
+        "model": "predictions.BotStrategy",
+        "pk": "36",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "number_of_bets": 50,
+            "profit_percentage": 50,
+            "min_amount_percentage_to_bet": 10.0,
+            "profit_percentage_to_bet": 60.0,
+            "others": null,
+            "is_active": true
+        }
+    }
+]

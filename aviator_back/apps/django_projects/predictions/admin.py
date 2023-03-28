@@ -3,22 +3,28 @@ from django.contrib import admin
 from django.forms import CharField, ModelForm, ChoiceField
 
 # Internal
-from apps.django_projects.predictions.models import PlayerStrategy
-from apps.django_projects.predictions.constants import StrategyType
+from apps.django_projects.predictions.models import Bot, BotStrategy
+from apps.django_projects.predictions.constants import BotType
 from apps.utils.tools import enum_to_choices
 
 
-class PlayerStrategyAdmin(admin.ModelAdmin):
+class BotAdmin(admin.ModelAdmin):
     class StrategyForm(ModelForm):
-        strategy_type = ChoiceField(choices=enum_to_choices(StrategyType))
+        bot_type = ChoiceField(choices=enum_to_choices(BotType))
 
         class Meta:
-            model = PlayerStrategy
+            model = Bot
             fields = "__all__"
 
-    list_display = ["strategy_type", "number_of_bets", "profit_percentage", "is_active"]
-    list_filter = ["strategy_type", "is_active"]
+    list_display = ["name", "bot_type", "is_active"]
+    list_filter = ["bot_type", "is_active"]
     form = StrategyForm
 
 
-admin.site.register(PlayerStrategy, PlayerStrategyAdmin)
+class BotStrategyAdmin(admin.ModelAdmin):
+    list_display = ["bot", "number_of_bets", "profit_percentage", "is_active"]
+    list_filter = ["bot", "is_active"]
+
+
+admin.site.register(Bot, BotAdmin)
+admin.site.register(BotStrategy, BotStrategyAdmin)

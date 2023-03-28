@@ -1,11 +1,9 @@
-# Standard Library
-
 # Django
 from django.db import models
 
 # Internal
 from apps.django_projects.core.models import HomeBet
-from apps.django_projects.predictions.constants import ModelStatus, StrategyType
+from apps.django_projects.predictions.constants import ModelStatus, BotType
 from apps.prediction.constants import Category, ModelType
 from apps.utils.django.models import BaseModel
 from apps.utils.tools import enum_to_choices
@@ -56,18 +54,55 @@ class ModelCategoryResult(BaseModel):
         return self.correct_predictions + self.incorrect_predictions
 
 
-
-class PlayerStrategy(BaseModel):
-    strategy_type = models.CharField(
-        max_length=25,
-        default=StrategyType.LOOSE.value,
+class Bot(BaseModel):
+    name = models.CharField(max_length=50, unique=True)
+    bot_type = models.CharField(
+        max_length=15,
+        default=BotType.LOOSE.value,
     )
-    number_of_bets = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    min_category_percentage_to_bet = models.FloatField(
+        default=0,
+        help_text="Minimum percentage of correct predictions by category"
+    )
+    min_average_prediction_in_live_to_bet = models.FloatField(
+        default=0,
+        help_text="Minimum average prediction in live to bet"
+    )
+    min_average_prediction_values_in_live_to_bet = models.FloatField(
+        default=0,
+        help_text="Minimum average prediction values in live to bet"
+    )
+    stop_loss_percentage = models.FloatField(
+        default=0,
+        help_text="Stop loss percentage"
+    )
+    take_profit_percentage = models.FloatField(
+        default=0,
+        help_text="Take profit percentage"
+    )
+
+    class Meta:
+        db_table = "bot"
+
+    def __str__(self):
+        return self.name
+
+
+class BotStrategy(BaseModel):
+    bot = models.ForeignKey(
+        Bot, on_delete=models.PROTECT, related_name="strategies"
+    )
+    number_of_bets = models.IntegerField(
+        default=0,
+        help_text="Number of bets (maximum "
+                  "bet allowed by home bet)"
+    )
     profit_percentage = models.FloatField(default=0)
-    min_balance_percentage_to_bet_amount = models.FloatField(default=0)
-    profit_percentage_to_bet_amount = models.FloatField(default=0)
+    min_amount_percentage_to_bet = models.FloatField(default=0)
+    profit_percentage_to_bet = models.FloatField(default=0)
     others = models.JSONField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
     class Meta:
-        db_table = "player_strategy"
+        db_table = "bot_strategy"
