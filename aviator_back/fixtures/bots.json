@@ -7,12 +7,13 @@
             "updated_at": "2022-06-08 14:43",
             "name": "AggressiveOne",
             "bot_type": "aggressive",
+            "risk_factor": 0.5,
             "is_active": true,
-            "min_category_percentage_to_bet": 55.0,
-            "min_average_prediction_in_live_to_bet": 55.0,
-            "min_average_prediction_values_in_live_to_bet": 55.0,
-            "stop_loss_percentage": 50.0,
-            "take_profit_percentage": 200.0
+            "min_category_percentage_to_bet": 0.55,
+            "min_average_prediction_in_live_to_bet": 0.55,
+            "min_average_prediction_values_in_live_to_bet": 0.55,
+            "stop_loss_percentage": 0.5,
+            "take_profit_percentage": 2.0
         }
     },
     {
@@ -23,12 +24,13 @@
             "updated_at": "2022-06-08 14:43",
             "name": "TightOne",
             "bot_type": "tight",
+            "risk_factor": 0.3,
             "is_active": true,
-            "min_category_percentage_to_bet": 69.0,
-            "min_average_prediction_in_live_to_bet": 69.0,
-            "min_average_prediction_values_in_live_to_bet": 69.0,
-            "stop_loss_percentage": 20.0,
-            "take_profit_percentage": 50.0
+            "min_category_percentage_to_bet": 0.69,
+            "min_average_prediction_in_live_to_bet": 0.69,
+            "min_average_prediction_values_in_live_to_bet": 0.69,
+            "stop_loss_percentage": 0.2,
+            "take_profit_percentage": 0.5
         }
     },
     {
@@ -39,12 +41,13 @@
             "updated_at": "2022-06-08 14:43",
             "name": "LooseOne",
             "bot_type": "loose",
+            "risk_factor": 0,
             "is_active": true,
-            "min_category_percentage_to_bet": 85.0,
-            "min_average_prediction_in_live_to_bet": 85.0,
-            "min_average_prediction_values_in_live_to_bet": 85.0,
-            "stop_loss_percentage": 20.0,
-            "take_profit_percentage": 50.0
+            "min_category_percentage_to_bet": 0.85,
+            "min_average_prediction_in_live_to_bet": 0.85,
+            "min_average_prediction_values_in_live_to_bet": 0.85,
+            "stop_loss_percentage": 0.2,
+            "take_profit_percentage": 0.5
         }
     }
 ]

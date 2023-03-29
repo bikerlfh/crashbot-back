@@ -353,9 +353,12 @@ def get_models_home_bet(
 def get_active_bots(
     *,
     bot_id: Optional[int] = None,
+    bot_type: Optional[str] = None,
 ) -> list[dict[str, any]]:
     bots = selectors.filter_bot(
-        bot_id=bot_id, is_active=True
+        bot_id=bot_id,
+        bot_type=bot_type,
+        is_active=True,
     )
     bots_data = []
     for bot in bots:
@@ -366,6 +369,7 @@ def get_active_bots(
             id=bot.id,
             name=bot.name,
             bot_type=bot.bot_type,
+            risk_factor=bot.risk_factor,
             min_category_percentage_to_bet=bot.min_category_percentage_to_bet,
             min_average_prediction_in_live_to_bet=bot.min_average_prediction_in_live_to_bet,
             min_average_prediction_values_in_live_to_bet=bot.min_average_prediction_values_in_live_to_bet,

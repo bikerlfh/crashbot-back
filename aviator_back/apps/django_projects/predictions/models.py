@@ -61,6 +61,7 @@ class Bot(BaseModel):
         default=BotType.LOOSE.value,
     )
     is_active = models.BooleanField(default=True)
+    risk_factor = models.FloatField(default=0.1)
     min_category_percentage_to_bet = models.FloatField(
         default=0,
         help_text="Minimum percentage of correct predictions by category"

@@ -1,4 +1,5 @@
 import { Prediction } from "../api/models";
+import { roundNumber } from "./utils";
 
 
 export class PredictionCore{
@@ -9,10 +10,10 @@ export class PredictionCore{
     multiplierResults: number[] = []
     averagePredictionValuesInLive: number = 0
     averagePredictionInLive: number = 0
-    categoryPercentages: {[key: number]: number} = {
-        1: 0,
-        2: 0,
-        3: 0,
+    categoryPercentages: {[key: number]: number|null} = {
+        1: null,
+        2: null,
+        3: null,
     }
 
     constructor(
@@ -33,7 +34,7 @@ export class PredictionCore{
         this.predictionValues.push(prediction)
         this.predictionRounds.push(predictionRound)
         this.averagePredictionsOfModel = averagePredictions
-        if(this.categoryPercentages[predictionRound] == 0){
+        if(this.categoryPercentages[predictionRound] === null){
             this.categoryPercentages[predictionRound] = categoryPercentage
         }
     }
@@ -60,7 +61,7 @@ export class PredictionCore{
             if(count === 0 || countI === 0){
                 continue;
             }
-            this.categoryPercentages[i] = (count / countI) * 100;
+            this.categoryPercentages[i] = roundNumber(count / countI, 2);
         }
     }
 
@@ -75,8 +76,8 @@ export class PredictionCore{
                 correcValuesCount++;
             }
         }
-        this.averagePredictionInLive = (correctCount / this.multiplierResults.length) * 100;
-        this.averagePredictionValuesInLive = (correcValuesCount / this.multiplierResults.length) * 100;
+        this.averagePredictionInLive = roundNumber(correctCount / this.multiplierResults.length, 2);
+        this.averagePredictionValuesInLive = roundNumber(correcValuesCount / this.multiplierResults.length, 2);
     }
 
     getPreditionValue(): number{
@@ -88,7 +89,7 @@ export class PredictionCore{
     }
 
     getCategoryPercentage(): number{
-        return this.categoryPercentages[this.getPredictionRoundValue()]
+        return this.categoryPercentages[this.getPredictionRoundValue()] || 0
     }
 }
 
@@ -111,24 +112,18 @@ export class PredictionModel{
             let prediction_ = this.predictions.find(
                 item => item.id == prediction.id
             )
-            if(prediction_){
-                prediction_.addPrediction(
-                    prediction.prediction,
-                    prediction.predictionRound,
-                    prediction.averagePredictions
-                )
-            }else{
+            if(!prediction_){
                 prediction_ = new PredictionCore(
                     prediction.id,
                     prediction.averagePredictions
                 )
-                prediction_.addPrediction(
-                    prediction.prediction,
-                    prediction.predictionRound,
-                    prediction.averagePredictions,
-                    prediction.categoryPercentage
-                )
-            }
+            }   
+            prediction_.addPrediction(
+                prediction.prediction,
+                prediction.predictionRound,
+                prediction.averagePredictions,
+                prediction.categoryPercentage
+            )
             new_predictions.push(prediction_)
         })
         this.predictions = new_predictions

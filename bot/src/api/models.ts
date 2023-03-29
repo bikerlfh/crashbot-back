@@ -38,24 +38,41 @@ export class BetData{
     }
 }
 
-export class PlayerStrategy{
-    id: number
-    strategyType: string
+
+export type BotStrategy = {
     numberOfBets: number
     profitPercentage: number
-    // minBalancePercentageToBetAmount: the percentage of the balance to create the bet amount
-    minBalancePercentageToBetAmount: number
-    // profitPercentageToBetAmount: the percentage of the profit to create the bet amount
-    profitPercentageToBetAmount: number
-    others?: any
+    minAmountPercentageToBet: number
+    profitPercentageToBet: number
+    others: number
+}
+
+export class Bot{
+    id: number
+    botType: string
+    riskFactor: number
+    minCategoryPercentageToBet: number
+    minAveragePredictionInLiveToBet: number
+    minAveragePredictionValuesInLiveToBet: number
+    stopLossPercentage: number
+    takeProfitPercentage: number
+    strategies: BotStrategy[]
 
     constructor(object: any){
         this.id = object.id
-        this.strategyType = object.strategy_type
-        this.numberOfBets = object.number_of_bets
-        this.profitPercentage = object.profit_percentage
-        this.minBalancePercentageToBetAmount = object.min_balance_percentage_to_bet_amount
-        this.profitPercentageToBetAmount = object.profit_percentage_to_bet_amount
-        this.others = object.others
+        this.botType = object.bot_type
+        this.riskFactor = object.risk_factor
+        this.minCategoryPercentageToBet = object.min_category_percentage_to_bet
+        this.minAveragePredictionInLiveToBet = object.min_average_prediction_in_live_to_bet
+        this.minAveragePredictionValuesInLiveToBet = object.min_average_prediction_values_in_live_to_bet
+        this.stopLossPercentage = object.stop_loss_percentage
+        this.takeProfitPercentage = object.take_profit_percentage
+        this.strategies = object.strategies.map((strategy: any) => ({
+            numberOfBets: strategy.number_of_bets,
+            profitPercentage: strategy.profit_percentage,
+            minAmountPercentageToBet: strategy.min_amount_percentage_to_bet,
+            profitPercentageToBet: strategy.profit_percentage_to_bet,
+            others: strategy.others
+        }))
     }
 }

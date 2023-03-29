@@ -17,7 +17,7 @@ export const roundNumber = (num: number, decimalPlaces?: number, aprox?: boolean
 }
 
 
-const kellyFormula = (b: number, p:number, capital:number): number => {
+export const kellyFormula = (b: number, p:number, capital: number): number => {
     /*
     * The Kelly formula is a formula used to determine the optimal fraction of one's capital to bet on a given bet.
     * The formula is: f* = (bp - q) / b
@@ -31,7 +31,7 @@ const kellyFormula = (b: number, p:number, capital:number): number => {
     return roundNumber(capital * f, 2);
 }
   
-const adaptiveKellyFormula = (b: number, p: number, R: number, capital: number): number => {
+export const adaptiveKellyFormula = (b: number, p: number, R: number, capital: number): number => {
     /*
     * The Adaptive Kelly formula is a formula used to determine the optimal fraction of one's capital to bet on a given bet.
     * The formula is: f* = (bp - q) / b * (1 + R)
@@ -42,7 +42,6 @@ const adaptiveKellyFormula = (b: number, p: number, R: number, capital: number):
     * @param capital is the amount of money you have to bet.
     * example: kellyFormula(2, 0.6, 0.1, 1000)
     */
-    const f = (b * p - (1 - p)) / b;
-    const f2 = f * (1 + R);
-    return roundNumber(capital * f2, 2);
+    const f = ((b * p - (1 - p)) / b) * (1 + R);
+    return roundNumber(capital * f, 2);
 }

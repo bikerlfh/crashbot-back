@@ -172,10 +172,10 @@ class AbstractBaseModel(abc.ABC):
         for key, value in self.average_info.categories_data.items():
             dict_value = value
             dict_value.percentage_predictions = utils.to_float(
-                (dict_value.correct_predictions / dict_value.count) * 100
+                (dict_value.correct_predictions / dict_value.count)  # * 100
             )
             dict_value.percentage_bets = utils.to_float(
-                (dict_value.correct_bets / dict_value.count) * 100
+                (dict_value.correct_bets / dict_value.count)  # * 100
             )
             if key == Category.CATEGORY_3.value:
                 continue

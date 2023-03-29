@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 
 # Internal
 from apps.django_projects.predictions import services
+from apps.django_projects.predictions.constants import BotType
 from apps.django_projects.predictions.constants import ModelStatus
 from apps.utils.django.mixin import APIErrorsMixin
 from apps.utils.rest.serializers import inline_serializer
@@ -115,11 +116,15 @@ class BotView(
 ):
     class InputSerializer(serializers.Serializer):
         bot_id = serializers.IntegerField(required=False, allow_null=True)
+        bot_type = serializers.ChoiceField(
+            choices=enum_to_choices(BotType), required=False
+        )
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
         name = serializers.CharField()
         bot_type = serializers.CharField()
+        risk_factor = serializers.FloatField()
         min_category_percentage_to_bet = serializers.FloatField()
         min_average_prediction_in_live_to_bet = serializers.FloatField()
         min_average_prediction_values_in_live_to_bet = serializers.FloatField()

@@ -82,36 +82,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"external_id\": \"12312312\",\n    \"customer_id\": 1,\n    \"home_bet_id\": 2,\n    \"prediction\": 2.2,\n    \"prediction_round\": 2,\n    \"multiplier\": 2.3,\n    \"amount\": 500\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8000/bets/",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"bets",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "process-bet",
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"bet_id\": 1,\n    \"multiplier\": 2.3\n}",
+							"raw": "{\n    \"customer_id\": 1,\n    \"home_bet_id\": 2,\n    \"bets\": [\n        {\n            \"external_id\": \"12313132223\",\n            \"prediction\": 2.1,\n            \"multiplier\": 2.54,\n            \"multiplier_result\": 1.03,\n            \"amount\": 200\n        },\n        {\n            \"external_id\": \"wqerq123123\",\n            \"prediction\": 2.1,\n            \"multiplier\": 2.54,\n            \"multiplier_result\": 1.03,\n            \"amount\": 500\n        }\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -292,7 +263,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"home_bet_id\":2,\n    \"multipliers_1\": [\n        17.76, 316.44,  2.79,  2.23,\n   1.37,   1.21,  1.59,  1.25,\n   2.62,   1.36,   2.1,  1.36,\n   1.94,   2.18,  4.16,  1.88,\n   2.23,   1.95, 38.73,     1,\n   1.29,  80.05,  1.82, 20.25,\n   3.37,1.88, 27.70,19.12,1.98,1.43, 1.51, 1.7,1,  1.42, 1.55, 5.24, 8.48, 1.24\n    ],\n    \"length_window\":10\n}",
+					"raw": "{\n    \"home_bet_id\":2,\n    \"model_home_bet_id_\": 84,\n    \"multipliers_1\": [\n        17.76, 316.44,  2.79,  2.23,\n   1.37,   1.21,  1.59,  1.25,\n   2.62,   1.36,   2.1,  1.36,\n   1.94,   2.18,  4.16,  1.88,\n   2.23,   1.95, 38.73,     1,\n   1.29,  80.05,  1.82, 20.25,\n   3.37,1.88, 27.70,19.12,1.98,1.43, 1.51, 1.7,1,  1.42, 1.55, 5.24, 8.48, 1.24\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -321,7 +292,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8000/predictions/models/?home_bet_id=1&status=active",
+					"raw": "http://localhost:8000/predictions/models/?home_bet_id=3&status=active",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -335,11 +306,51 @@
 					"query": [
 						{
 							"key": "home_bet_id",
-							"value": "1"
+							"value": "3"
 						},
 						{
 							"key": "status",
 							"value": "active"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get-bots",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"home_bet_id\":2,\n    \"model_home_bet_id_\": 84,\n    \"multipliers_1\": [\n        17.76, 316.44,  2.79,  2.23,\n   1.37,   1.21,  1.59,  1.25,\n   2.62,   1.36,   2.1,  1.36,\n   1.94,   2.18,  4.16,  1.88,\n   2.23,   1.95, 38.73,     1,\n   1.29,  80.05,  1.82, 20.25,\n   3.37,1.88, 27.70,19.12,1.98,1.43, 1.51, 1.7,1,  1.42, 1.55, 5.24, 8.48, 1.24\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/predictions/bots/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"predictions",
+						"bots",
+						""
+					],
+					"query": [
+						{
+							"key": "bot_id",
+							"value": "1",
+							"disabled": true
 						}
 					]
 				}

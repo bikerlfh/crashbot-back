@@ -7,8 +7,8 @@
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
             "number_of_bets": 0,
-            "profit_percentage": -50.0,
-            "min_amount_percentage_to_bet": 3.0,
+            "profit_percentage": -0.5,
+            "min_amount_percentage_to_bet": 0.03,
             "profit_percentage_to_bet": 0.0,
             "others": null,
             "is_active": true
@@ -23,8 +23,8 @@
             "bot_id": 1,
             "number_of_bets": 0,
             "profit_percentage": 0,
-            "min_amount_percentage_to_bet": 8.0,
-            "profit_percentage_to_bet": 20.0,
+            "min_amount_percentage_to_bet": 0.08,
+            "profit_percentage_to_bet": 0.2,
             "others": null,
             "is_active": true
         }
@@ -37,9 +37,9 @@
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
             "number_of_bets": 0,
-            "profit_percentage": 10,
-            "min_amount_percentage_to_bet": 8.0,
-            "profit_percentage_to_bet": 25.0,
+            "profit_percentage": 0.1,
+            "min_amount_percentage_to_bet": 0.08,
+            "profit_percentage_to_bet": 0.25,
             "others": null,
             "is_active": true
         }
@@ -52,9 +52,9 @@
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
             "number_of_bets": 0,
-            "profit_percentage": 50,
-            "min_amount_percentage_to_bet": 8.0,
-            "profit_percentage_to_bet": 30.0,
+            "profit_percentage": 0.5,
+            "min_amount_percentage_to_bet": 0.08,
+            "profit_percentage_to_bet": 0.3,
             "others": null,
             "is_active": true
         }
@@ -68,8 +68,8 @@
             "bot_id": 1,
             "number_of_bets": 10,
             "profit_percentage": 0,
-            "min_amount_percentage_to_bet": 9.0,
-            "profit_percentage_to_bet": 20.0,
+            "min_amount_percentage_to_bet": 0.09,
+            "profit_percentage_to_bet": 0.2,
             "others": null,
             "is_active": true
         }
@@ -82,9 +82,9 @@
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
             "number_of_bets": 10,
-            "profit_percentage": 10,
-            "min_amount_percentage_to_bet": 9.0,
-            "profit_percentage_to_bet": 30.0,
+            "profit_percentage": 0.1,
+            "min_amount_percentage_to_bet": 0.09,
+            "profit_percentage_to_bet": 0.3,
             "others": null,
             "is_active": true
         }
@@ -97,9 +97,9 @@
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
             "number_of_bets": 10,
-            "profit_percentage": 30,
-            "min_amount_percentage_to_bet": 9.0,
-            "profit_percentage_to_bet": 50.0,
+            "profit_percentage": 0.3,
+            "min_amount_percentage_to_bet": 0.09,
+            "profit_percentage_to_bet": 0.5,
             "others": null,
             "is_active": true
         }
@@ -112,9 +112,9 @@
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
             "number_of_bets": 10,
-            "profit_percentage": 50,
-            "min_amount_percentage_to_bet": 9.0,
-            "profit_percentage_to_bet": 60.0,
+            "profit_percentage": 0.5,
+            "min_amount_percentage_to_bet": 0.09,
+            "profit_percentage_to_bet": 0.6,
             "others": null,
             "is_active": true
         }
@@ -128,8 +128,8 @@
             "bot_id": 1,
             "number_of_bets": 50,
             "profit_percentage": 0,
-            "min_amount_percentage_to_bet": 10.0,
-            "profit_percentage_to_bet": 20.0,
+            "min_amount_percentage_to_bet": 0.1,
+            "profit_percentage_to_bet": 0.2,
             "others": null,
             "is_active": true
         }
@@ -142,9 +142,9 @@
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
             "number_of_bets": 50,
-            "profit_percentage": 10,
-            "min_amount_percentage_to_bet": 10.0,
-            "profit_percentage_to_bet": 30.0,
+            "profit_percentage": 0.1,
+            "min_amount_percentage_to_bet": 0.1,
+            "profit_percentage_to_bet": 0.3,
             "others": null,
             "is_active": true
         }
@@ -157,9 +157,9 @@
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
             "number_of_bets": 50,
-            "profit_percentage": 30,
-            "min_amount_percentage_to_bet": 10.0,
-            "profit_percentage_to_bet": 50.0,
+            "profit_percentage": 0.3,
+            "min_amount_percentage_to_bet": 0.1,
+            "profit_percentage_to_bet": 0.5,
             "others": null,
             "is_active": true
         }
@@ -172,9 +172,9 @@
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
             "number_of_bets": 50,
-            "profit_percentage": 50,
-            "min_amount_percentage_to_bet": 10.0,
-            "profit_percentage_to_bet": 60.0,
+            "profit_percentage": 0.5,
+            "min_amount_percentage_to_bet": 0.1,
+            "profit_percentage_to_bet": 0.6,
             "others": null,
             "is_active": true
         }

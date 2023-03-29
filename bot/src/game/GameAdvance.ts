@@ -7,7 +7,7 @@ import { AviatorPage } from "../aviator/Aviator"
 import { Control } from '../aviator/BetControl';
 import { BetData } from "../api/models"
 import { generateRandomMultiplier, sleepNow, roundNumber } from "./utils"
-import { PlayerType, Player } from "./player"
+import { BotType, Bot } from "./bot"
 
 
 export class Game {
@@ -20,7 +20,7 @@ export class Game {
     private initialized: boolean = false
     // automatic betting
     private autoPlay: boolean = false
-    private player: Player
+    private bot: Bot
     homeBet: HomeBet
     initialBalance: number = 0
     balance: number = 0
@@ -28,13 +28,13 @@ export class Game {
     bets: Bet[] = []
     
     
-    constructor(homeBet: HomeBet, autoPlay: boolean, playerType: PlayerType){
+    constructor(homeBet: HomeBet, autoPlay: boolean, botType: BotType){
         this.homeBet = homeBet
         this.autoPlay = autoPlay
         this.aviatorPage = homeBet.aviatorPage       
         this.minimumBet = homeBet.minBet
         this.maximumBet = homeBet.maxBet
-        this.player = Player.getInstance(this.minimumBet, this.maximumBet, playerType)
+        this.bot = new Bot(botType, this.minimumBet, this.maximumBet)
         this.maximumWinForOneBet = this.maximumBet * 100
         this._prediction_model = PredictionModel.getInstance()
         // globals.homeBetId = this.homeBet.id
@@ -87,7 +87,7 @@ export class Game {
         this.initialBalance = await this.readBalanceToAviator()
         this.balance = this.initialBalance
         console.log("loading the player.....")
-        await this.player.initialize(this.initialBalance)
+        await this.bot.initialize(this.initialBalance)
         const multipliers = this.aviatorPage.multipliers
         this.multipliers = multipliers.map(item => new Multiplier(item))
         console.log("saving intial multipliers.....")
@@ -156,7 +156,7 @@ export class Game {
          */
         await this.aviatorPage.waitNextGame()
         this.balance = await this.readBalanceToAviator()
-        this.player.updateBalance(this.balance)
+        this.bot.updateBalance(this.balance)
         this.addMultiplier(this.aviatorPage.multipliers.slice(-1)[0])
         this.bets = []
         console.clear()
@@ -215,6 +215,7 @@ export class Game {
             const profit = bet.evaluate(multiplier)
             this.balance += profit
         })
+        this.bot.evaluateBets(multiplier)
     }
 
     private addMultiplier(multiplier: number){
@@ -230,7 +231,7 @@ export class Game {
         if(prediction == null){
             return []
         }
-        this.bets = this.player.getNextBet(prediction)
+        this.bets = this.bot.getNextBet(prediction)
         console.log("bets: ", this.bets)
         return this.bets
     }

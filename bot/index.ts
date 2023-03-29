@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 import {Game} from './src/game/GameAdvance'
 import {HomeBets } from './src/constants';
-import {PlayerType} from './src/game/player';
+import {BotType} from './src/game/bot';
 
 
 (async () => {
@@ -21,29 +21,29 @@ import {PlayerType} from './src/game/player';
 		default:
 			homeBet = HomeBets.demo
 	}
-	let _playerTypeSelected = "2"
-	let playerTypeSelected = PlayerType.TIGHT
+	let _botTypeSelected = "2"
+	let botTypeSelected = BotType.TIGHT
 	let autoPlay = readlineSync.question("automatic play? [y/n]: ");
 	autoPlay = autoPlay == "y"
 	if(autoPlay){
-		_playerTypeSelected = readlineSync.question(
+		_botTypeSelected = readlineSync.question(
 			"which player type do you choose (default: tight)? [aggressive=1, tight=2, loose=3]: "
 		);
 	}
-	switch(_playerTypeSelected){
+	switch(_botTypeSelected){
 		case "1":
-			playerTypeSelected = PlayerType.AGGRESSIVE
+			botTypeSelected = BotType.AGGRESSIVE
 			break;
 		case "3":
-			playerTypeSelected = PlayerType.LOOSE
+			botTypeSelected = BotType.LOOSE
 			break;
 		default:
-			playerTypeSelected = PlayerType.TIGHT
+			botTypeSelected = BotType.TIGHT
 	}
 	console.clear()
 	while(true){
 		try{
-			const game = new Game(homeBet, autoPlay, playerTypeSelected)
+			const game = new Game(homeBet, autoPlay, botTypeSelected)
 			await game.initialize()
 			await game.play()
 		}catch(e){

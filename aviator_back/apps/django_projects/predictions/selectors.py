@@ -60,11 +60,14 @@ def get_bets_models_by_average_predictions(
 
 def filter_bot(
     bot_id: Optional[int] = None,
+    bot_type: Optional[str] = None,
     is_active: Optional[bool] = None, **kwargs
 ) -> QuerySet[Bot]:
     kwargs = dict(**kwargs)
     if bot_id is not None:
         kwargs.update(id=bot_id)
+    if bot_type is not None:
+        kwargs.update(bot_type=bot_type)
     if is_active is not None:
         kwargs.update(is_active=is_active)
     return Bot.objects.filter(**kwargs).prefetch_related("strategies")

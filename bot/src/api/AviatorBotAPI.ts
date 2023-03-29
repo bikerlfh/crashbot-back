@@ -9,7 +9,7 @@
  */
 import {Dictionary} from '../types/interfaces';
 import {APIRest} from './APIRest';
-import {Prediction, BetData, PlayerStrategy} from './models';
+import {Prediction, BetData, Bot} from './models';
 
 
 const URLS = {
@@ -18,7 +18,7 @@ const URLS = {
     homeBetDetail: 'home-bet/?P<nombreParametro>',
     addMultipliers: 'home-bet/multiplier/',
     getPrediction: 'predictions/predict/',
-    getStrategies: 'predictions/strategy/',
+    getBots: 'predictions/bots/?P<bot_type>',
     updateBalance: 'customers/balance/',
     createBet: 'bets/',
     getBet: 'bets/?P<bet_id>',
@@ -85,10 +85,12 @@ export class AviatorBotAPI {
             return response.predictions.map((prediction: any) => new Prediction(prediction));
         });
     }
-    static requestGetStrategies = async (): Promise<PlayerStrategy[]>  => {
-        return await APIRest.get(URLS.getStrategies).then(
-            (response: any) => response.strategies.map(
-                (strategy: any) => new PlayerStrategy(strategy)
+    static requestGetBots = async (botType: string): Promise<Bot[]>  => {
+        return await APIRest.get(makeURL(URLS.getBots, {
+            bot_type: botType
+        })).then(
+            (response: any) => response.bots.map(
+                (bot: any) => new Bot(bot)
             )
         );
     }
