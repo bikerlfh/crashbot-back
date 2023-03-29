@@ -8,9 +8,12 @@ export class PredictionCore{
     predictionValues: number[] = []
     predictionRounds: number[] = []
     multiplierResults: number[] = []
-    averagePredictionValuesInLive: number = 0
-    averagePredictionInLive: number = 0
     categoryPercentages: {[key: number]: number|null} = {
+        1: null,
+        2: null,
+        3: null,
+    }
+    categoryPercentagesValuesInLive: {[key: number]: number|null} = {
         1: null,
         2: null,
         3: null,
@@ -22,7 +25,6 @@ export class PredictionCore{
     ){
         this.id = id
         this.averagePredictionsOfModel = averagePredictions
-        this.averagePredictionInLive = averagePredictions
     }
 
     addPrediction(
@@ -37,24 +39,32 @@ export class PredictionCore{
         if(this.categoryPercentages[predictionRound] === null){
             this.categoryPercentages[predictionRound] = categoryPercentage
         }
+        if(this.categoryPercentagesValuesInLive[predictionRound] === null){
+            this.categoryPercentagesValuesInLive[predictionRound] = categoryPercentage
+        }
     }
 
     addMultiplierResult(multiplier: number){
         this.multiplierResults.push(multiplier)
-        this.calculateAveragePredictions()
+        this.calculateAveragePrediction()
         this.calculateCategoryPercentages()
     }
 
     calculateCategoryPercentages(){
         for(let i = 1; i <= 3; i++){
             let countI = 0
-            let count = 0;
+            let count = 0
+            let countValues = 0
             for (let j = 0; j < this.predictionRounds.length; j++){
-                const value = this.predictionRounds[j]
-                if(value == i){
+                const valueRound = this.predictionRounds[j]
+                const value = this.predictionValues[j]
+                if(valueRound == i){
                     countI +=1
-                    if(value <= this.multiplierResults[j]){
+                    if(valueRound <= this.multiplierResults[j]){
                         count++;
+                    }
+                    if(value <= this.multiplierResults[j]){
+                        countValues++;
                     }
                 }
             }
@@ -62,22 +72,18 @@ export class PredictionCore{
                 continue;
             }
             this.categoryPercentages[i] = roundNumber(count / countI, 2);
+            this.categoryPercentagesValuesInLive[i] = roundNumber(count / countI, 2);
         }
     }
 
-    calculateAveragePredictions(){
-        let correctCount = 0;
+    calculateAveragePrediction(){
         let correcValuesCount = 0;
         for (let i = 0; i < this.multiplierResults.length; i++) {
-            if (this.predictionRounds[i] <= this.multiplierResults[i]) {
-                correctCount++;
-            }
             if (this.predictionValues[i] <= this.multiplierResults[i]) {
                 correcValuesCount++;
             }
         }
-        this.averagePredictionInLive = roundNumber(correctCount / this.multiplierResults.length, 2);
-        this.averagePredictionValuesInLive = roundNumber(correcValuesCount / this.multiplierResults.length, 2);
+        this.averagePredictionsOfModel = roundNumber(correcValuesCount / this.multiplierResults.length, 2);
     }
 
     getPreditionValue(): number{
@@ -90,6 +96,9 @@ export class PredictionCore{
 
     getCategoryPercentage(): number{
         return this.categoryPercentages[this.getPredictionRoundValue()] || 0
+    }
+    geCategoryPercentageValueInLive(): number{
+        return this.categoryPercentagesValuesInLive[this.getPredictionRoundValue()] || 0
     }
 }
 
@@ -144,7 +153,7 @@ export class PredictionModel{
         }
         let bestPrediction = this.predictions[0]
         this.predictions.forEach(pre => {
-            if(pre.averagePredictionInLive > bestPrediction.averagePredictionInLive){
+            if(pre.averagePredictionsOfModel > bestPrediction.averagePredictionsOfModel){
                 bestPrediction = pre
             }
         })
