@@ -51,9 +51,10 @@ export class Bot{
     id: number
     botType: string
     riskFactor: number
+    minMultiplierToBet: number
     minCategoryPercentageToBet: number
-    minAveragePredictionInLiveToBet: number
-    minAveragePredictionValuesInLiveToBet: number
+    minCategoryPercentageValueInLiveToBet: number
+    minAveragePredictionModelInLiveToBet: number
     stopLossPercentage: number
     takeProfitPercentage: number
     strategies: BotStrategy[]
@@ -62,9 +63,10 @@ export class Bot{
         this.id = object.id
         this.botType = object.bot_type
         this.riskFactor = object.risk_factor
+        this.minMultiplierToBet = object.min_multiplier_to_bet
         this.minCategoryPercentageToBet = object.min_category_percentage_to_bet
-        this.minAveragePredictionInLiveToBet = object.min_average_prediction_in_live_to_bet
-        this.minAveragePredictionValuesInLiveToBet = object.min_average_prediction_values_in_live_to_bet
+        this.minCategoryPercentageValueInLiveToBet = object.min_category_percentage_value_in_live_to_bet
+        this.minAveragePredictionModelInLiveToBet = object.min_average_prediction_model_in_live_to_bet
         this.stopLossPercentage = object.stop_loss_percentage
         this.takeProfitPercentage = object.take_profit_percentage
         this.strategies = object.strategies.map((strategy: any) => ({

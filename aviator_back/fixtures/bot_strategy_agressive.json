@@ -23,7 +23,7 @@
             "bot_id": 1,
             "number_of_bets": 0,
             "profit_percentage": 0,
-            "min_amount_percentage_to_bet": 0.08,
+            "min_amount_percentage_to_bet": 0.03,
             "profit_percentage_to_bet": 0.2,
             "others": null,
             "is_active": true
@@ -38,7 +38,7 @@
             "bot_id": 1,
             "number_of_bets": 0,
             "profit_percentage": 0.1,
-            "min_amount_percentage_to_bet": 0.08,
+            "min_amount_percentage_to_bet": 0.03,
             "profit_percentage_to_bet": 0.25,
             "others": null,
             "is_active": true
@@ -53,7 +53,7 @@
             "bot_id": 1,
             "number_of_bets": 0,
             "profit_percentage": 0.5,
-            "min_amount_percentage_to_bet": 0.08,
+            "min_amount_percentage_to_bet": 0.05,
             "profit_percentage_to_bet": 0.3,
             "others": null,
             "is_active": true
@@ -68,7 +68,7 @@
             "bot_id": 1,
             "number_of_bets": 10,
             "profit_percentage": 0,
-            "min_amount_percentage_to_bet": 0.09,
+            "min_amount_percentage_to_bet": 0.05,
             "profit_percentage_to_bet": 0.2,
             "others": null,
             "is_active": true
@@ -83,7 +83,7 @@
             "bot_id": 1,
             "number_of_bets": 10,
             "profit_percentage": 0.1,
-            "min_amount_percentage_to_bet": 0.09,
+            "min_amount_percentage_to_bet": 0.05,
             "profit_percentage_to_bet": 0.3,
             "others": null,
             "is_active": true
@@ -98,7 +98,7 @@
             "bot_id": 1,
             "number_of_bets": 10,
             "profit_percentage": 0.3,
-            "min_amount_percentage_to_bet": 0.09,
+            "min_amount_percentage_to_bet": 0.05,
             "profit_percentage_to_bet": 0.5,
             "others": null,
             "is_active": true
@@ -113,7 +113,7 @@
             "bot_id": 1,
             "number_of_bets": 10,
             "profit_percentage": 0.5,
-            "min_amount_percentage_to_bet": 0.09,
+            "min_amount_percentage_to_bet": 0.05,
             "profit_percentage_to_bet": 0.6,
             "others": null,
             "is_active": true
@@ -128,7 +128,7 @@
             "bot_id": 1,
             "number_of_bets": 50,
             "profit_percentage": 0,
-            "min_amount_percentage_to_bet": 0.1,
+            "min_amount_percentage_to_bet": 0.05,
             "profit_percentage_to_bet": 0.2,
             "others": null,
             "is_active": true
@@ -143,7 +143,7 @@
             "bot_id": 1,
             "number_of_bets": 50,
             "profit_percentage": 0.1,
-            "min_amount_percentage_to_bet": 0.1,
+            "min_amount_percentage_to_bet": 0.05,
             "profit_percentage_to_bet": 0.3,
             "others": null,
             "is_active": true
@@ -158,7 +158,7 @@
             "bot_id": 1,
             "number_of_bets": 50,
             "profit_percentage": 0.3,
-            "min_amount_percentage_to_bet": 0.1,
+            "min_amount_percentage_to_bet": 0.05,
             "profit_percentage_to_bet": 0.5,
             "others": null,
             "is_active": true
@@ -173,7 +173,7 @@
             "bot_id": 1,
             "number_of_bets": 50,
             "profit_percentage": 0.5,
-            "min_amount_percentage_to_bet": 0.1,
+            "min_amount_percentage_to_bet": 0.05,
             "profit_percentage_to_bet": 0.6,
             "others": null,
             "is_active": true

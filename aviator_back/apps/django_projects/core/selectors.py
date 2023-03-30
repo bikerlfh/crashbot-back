@@ -48,3 +48,7 @@ def get_last_multipliers(
     multipliers = list(_multipliers)
     multipliers.reverse()
     return multipliers
+
+
+def count_home_bet_multipliers(home_bet_id: int) -> int:
+    return HomeBetMultiplier.objects.filter(home_bet_id=home_bet_id).count()

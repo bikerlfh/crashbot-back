@@ -62,17 +62,21 @@ class Bot(BaseModel):
     )
     is_active = models.BooleanField(default=True)
     risk_factor = models.FloatField(default=0.1)
+    min_multiplier_to_bet = models.FloatField(
+        default=1.5,
+        help_text="Minimum multiplier to bet"
+    )
     min_category_percentage_to_bet = models.FloatField(
         default=0,
         help_text="Minimum percentage of correct predictions by category"
     )
-    min_average_prediction_in_live_to_bet = models.FloatField(
+    min_category_percentage_value_in_live_to_bet = models.FloatField(
         default=0,
-        help_text="Minimum average prediction in live to bet"
+        help_text="Minimum category percentage value in live to bet"
     )
-    min_average_prediction_values_in_live_to_bet = models.FloatField(
+    min_average_prediction_model_in_live_to_bet = models.FloatField(
         default=0,
-        help_text="Minimum average prediction values in live to bet"
+        help_text="Minimum average prediction model in live to bet"
     )
     stop_loss_percentage = models.FloatField(
         default=0,

@@ -105,6 +105,7 @@ export class PredictionCore{
 export class PredictionModel{
     private static instance: PredictionModel;
     predictions: PredictionCore[] = []
+    private MAX_RESULTS_TO_EVALUATE = 15
 
     private constructor() { }
 
@@ -145,6 +146,13 @@ export class PredictionModel{
                 prediction.addMultiplierResult(multiplier)
             }
         })
+    }
+
+    evaluateModels(minBotAveragePredictionModel: number){
+        this.predictions = this.predictions.filter(p => 
+            p.averagePredictionsOfModel > minBotAveragePredictionModel || 
+            p.multiplierResults.length < this.MAX_RESULTS_TO_EVALUATE
+        );
     }
 
     getBestPrediction(): PredictionCore|null{

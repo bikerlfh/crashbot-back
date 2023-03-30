@@ -159,7 +159,7 @@ export class Game {
         this.bot.updateBalance(this.balance)
         this.addMultiplier(this.aviatorPage.multipliers.slice(-1)[0])
         this.bets = []
-        console.clear()
+        //console.clear()
     }
 
     private async sendBetsToAviator(bets : Bet[]){
@@ -227,12 +227,14 @@ export class Game {
     }
 
     async getNextBet(): Promise<Bet[]>{
+        this._prediction_model.evaluateModels(
+            this.bot.MIN_AVERAGE_PREDICTION_MODEL_IN_LIVE_TO_BET
+        )
         const prediction = await this.requestGetPrediction()
         if(prediction == null){
             return []
         }
         this.bets = this.bot.getNextBet(prediction)
-        console.log("bets: ", this.bets)
         return this.bets
     }
 }

@@ -16,8 +16,8 @@ from apps.django_projects.predictions.constants import (
     GENERATE_AUTOMATIC_MODEL_TYPES,
     PERCENTAGE_ACCEPTABLE,
     PERCENTAGE_MODEL_TO_INACTIVE,
+    DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL,
     ModelStatus,
-    BotType,
 )
 from apps.django_projects.predictions.models import (
     ModelCategoryResult,
@@ -238,7 +238,7 @@ def create_model_with_all_multipliers(
 def create_model_for_all_in_play_home_bet(
     *,
     home_bet_ids: Optional[set[int]] = None,
-) -> None:
+) -> list[ModelHomeBet]:
     """
     create model for all in-play home bets
     (multipliers created no more than 10 minutes ago)
@@ -247,11 +247,24 @@ def create_model_for_all_in_play_home_bet(
         home_bet_ids = core_selectors.filter_home_bet_in_play().values_list(
             "id", flat=True
         )
+    models = []
     for home_bet_id in home_bet_ids:
         bets_mod = selectors.get_bets_models_by_average_predictions(
             home_bet_id=home_bet_id, number_of_models=1
         ).first()
         if bets_mod and bets_mod.average_predictions >= PERCENTAGE_ACCEPTABLE:
+            continue
+        num_multipliers_train = bets_mod.others["num_multipliers_to_train"]
+        num_multipliers = core_selectors.count_home_bet_multipliers(
+            home_bet_id=home_bet_id
+        )
+        diff_multipliers = num_multipliers - num_multipliers_train
+        if diff_multipliers < DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL:
+            logger.info(
+                f"create_model_for_all_in_play_home_bet :: "
+                f"home bet {home_bet_id} has {diff_multipliers} "
+                f"multipliers to train, skip"
+            )
             continue
         for model_type_ in GENERATE_AUTOMATIC_MODEL_TYPES:
             model = create_model_with_all_multipliers(
@@ -259,10 +272,12 @@ def create_model_for_all_in_play_home_bet(
                 seq_len=DEFAULT_SEQ_LEN,
                 model_type=ModelType(model_type_),
             )
+            models.append(model)
             logger.info(
                 f"create_model_for_all_in_play_home_bet :: "
                 f"model {model.id} ({model_type_}) created"
             )
+    return models
 
 
 def generate_category_results_of_models():
@@ -299,8 +314,15 @@ def generate_category_results_of_models():
     if not home_bet_ids_:
         return
     # create models for home bets with no active models
-    create_model_for_all_in_play_home_bet(home_bet_ids=home_bet_ids_)
+    models_created = create_model_for_all_in_play_home_bet(home_bet_ids=home_bet_ids_)
+    home_bet_ids_created = {
+        model.home_bet_id for model in models_created
+    }
     # inactive models with average predictions < PERCENTAGE_MODEL_TO_INACTIVE
+    models_to_inactive = [
+        model_ for model_ in models_to_inactive
+        if model_.home_bet_id in home_bet_ids_created
+    ]
     for model in models_to_inactive:
         model.status = ModelStatus.INACTIVE.value
         model.save()
@@ -370,9 +392,10 @@ def get_active_bots(
             name=bot.name,
             bot_type=bot.bot_type,
             risk_factor=bot.risk_factor,
+            min_multiplier_to_bet=bot.min_multiplier_to_bet,
             min_category_percentage_to_bet=bot.min_category_percentage_to_bet,
-            min_average_prediction_in_live_to_bet=bot.min_average_prediction_in_live_to_bet,
-            min_average_prediction_values_in_live_to_bet=bot.min_average_prediction_values_in_live_to_bet,
+            min_category_percentage_value_in_live_to_bet=bot.min_category_percentage_value_in_live_to_bet,
+            min_average_prediction_model_in_live_to_bet=bot.min_average_prediction_model_in_live_to_bet,
             stop_loss_percentage=bot.stop_loss_percentage,
             take_profit_percentage=bot.take_profit_percentage,
             strategies=[
