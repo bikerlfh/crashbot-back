@@ -188,8 +188,8 @@ export class Game {
         }
         while(this.initialized){
             await this.waitNextGame()
+            await this.getNextBet()
             if(this.autoPlay){
-                await this.getNextBet()
                 await this.sendBetsToAviator(this.bets)
             }
         }
@@ -235,6 +235,7 @@ export class Game {
             return []
         }
         this.bets = this.bot.getNextBet(prediction)
+        console.log("bets:", this.bets)
         return this.bets
     }
 }

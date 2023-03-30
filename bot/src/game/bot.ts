@@ -221,11 +221,9 @@ export class Bot{
             amount = usedAmount / 3
         }
         console.log("******** GOOD PROFIT ********")
-        console.log("strategy", strategy)
-        console.log("minBet", minBet)
-        console.log("amount", amount)
+        console.log("minBet: ", minBet, "; amount: ", amount)
         amount = adaptiveKellyFormula(multiplier, probability, this.RISK_FACTOR, amount)
-        console.log("adaptiveKellyFormula", amount)
+        console.log("kelly amount", amount)
         if(amount > 0){
             amount = this.validateBetAmount(amount)
         }
