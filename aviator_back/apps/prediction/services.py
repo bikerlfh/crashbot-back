@@ -66,9 +66,10 @@ def evaluate_model_home_bet(
     return average_info
 
 
-def extract_multipliers_to_csv(*, home_bet_id: int) -> str:
-    multipliers = core_selectors.get_last_multipliers(home_bet_id=home_bet_id)
-    data = utils.transform_multipliers_to_data(multipliers)
+def extract_multipliers_to_csv(*, home_bet_id: int, convert_to_data: Optional[bool] = False) -> str:
+    data = core_selectors.get_last_multipliers(home_bet_id=home_bet_id)
+    if convert_to_data:
+        data = utils.transform_multipliers_to_data(data)
     file_path = f"{DATA_EXPORT_PATH}data_{home_bet_id}_{len(data)}.csv"
     np.savetxt(
         file_path,

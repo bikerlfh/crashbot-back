@@ -6,6 +6,7 @@ from django.core.management import BaseCommand
 
 # Internal
 from apps.django_projects.predictions import services
+from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.prediction.constants import ModelType
 
 logger = logging.getLogger(__name__)
@@ -28,7 +29,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         home_bet_id = options["home_bet_id"]
-        seq_len = options["seq_len"] or 18
+        seq_len = options["seq_len"] or DEFAULT_SEQ_LEN
         model_type = ModelType(options["model_type"])
         model_home_bet = services.create_model_with_all_multipliers(
             home_bet_id=home_bet_id,

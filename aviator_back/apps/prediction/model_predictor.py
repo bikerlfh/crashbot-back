@@ -89,8 +89,6 @@ class ModelPredictor:
             )
             if value < 1:
                 value = 1
-            if value < 1:
-                value = 1
             category_data.count += 1
             if value_round == next_value:
                 category_data.correct_predictions += 1

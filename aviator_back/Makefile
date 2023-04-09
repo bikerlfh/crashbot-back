@@ -43,10 +43,13 @@ load-fixtures: ## loaddata
 	docker compose run --rm --entrypoint=python worker manage.py loaddata fixtures/*.json
 
 create-model: ## create a sequential model
-	docker compose run --rm --entrypoint=python worker manage.py create_model ${home_bet_id} ${seq_len} ${model_type}
+	docker compose run --gpus all -t nvidia/cuda --rm --entrypoint=python worker manage.py create_model ${home_bet_id} ${model_type} ${seq_len}
 
 generate-category-result: ## generate category result for all models
 	docker compose run --rm --entrypoint=python worker manage.py generate_category_results
+
+export-multipliers-to-csv: ## export multipliers to csv
+	docker compose run --rm --entrypoint=python worker manage.py export_multipliers_to_csv ${home_bet_id}
 
 create-super-user: ## loaddata
 	docker compose run --rm --entrypoint=python worker manage.py createsuperuser

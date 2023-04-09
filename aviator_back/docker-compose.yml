@@ -64,6 +64,13 @@ services:
       - redis
     links:
       - redis
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
   telegram_bot:
     tty: true
     stdin_open: true

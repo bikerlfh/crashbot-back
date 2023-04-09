@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.prediction.constants import ModelType
 from apps.prediction.models.base import AbstractBaseModel
+from apps.prediction.models.constants import EPOCHS_SEQUENTIAL, EPOCHS_SEQUENTIAL_LSTM
 from apps.prediction import utils
 
 
@@ -28,7 +29,7 @@ class SequentialModel(AbstractBaseModel):
         model_type: ModelType,
         seq_len: Optional[int] = DEFAULT_SEQ_LEN,
     ):
-        self._epochs = 3000
+        self._epochs = 2500
         super(SequentialModel, self).__init__(
             model_type=model_type, seq_len=seq_len
         )
@@ -42,10 +43,11 @@ class SequentialModel(AbstractBaseModel):
                 model.add(Dropout(0.2))
                 model.add(Dense(16, activation="relu"))
                 model.add(Dense(1))
+                self._epochs = EPOCHS_SEQUENTIAL
             case ModelType.SEQUENTIAL_LSTM:
                 model.add(LSTM(units=32, input_shape=(self.seq_len, 1)))
                 model.add(Dense(units=1))
-                self._epochs = 4000
+                self._epochs = EPOCHS_SEQUENTIAL_LSTM
             case _:
                 raise ValueError("Invalid model type")
         model.compile(loss="mse", optimizer="adam")

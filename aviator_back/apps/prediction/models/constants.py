@@ -1,0 +1,5 @@
+from os import getenv
+
+
+EPOCHS_SEQUENTIAL_LSTM = int(getenv("EPOCHS_SEQUENTIAL_LSTM", 2500))
+EPOCHS_SEQUENTIAL = int(getenv("EPOCHS_SEQUENTIAL", 3000))
