@@ -52,6 +52,7 @@ export class Bot{
     botType: string
     riskFactor: number
     minMultiplierToBet: number
+    minMultiplierToRecoverLosses: number
     minCategoryPercentageToBet: number
     minCategoryPercentageValueInLiveToBet: number
     minAveragePredictionModelInLiveToBet: number
@@ -65,6 +66,7 @@ export class Bot{
         this.riskFactor = object.risk_factor
         this.minMultiplierToBet = object.min_multiplier_to_bet
         this.minCategoryPercentageToBet = object.min_category_percentage_to_bet
+        this.minMultiplierToRecoverLosses = object.min_multiplier_to_recover_losses
         this.minCategoryPercentageValueInLiveToBet = object.min_category_percentage_value_in_live_to_bet
         this.minAveragePredictionModelInLiveToBet = object.min_average_prediction_model_in_live_to_bet
         this.stopLossPercentage = object.stop_loss_percentage

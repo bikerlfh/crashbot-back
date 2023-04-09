@@ -1,4 +1,4 @@
-import { generateRandomMultiplier, roundNumber, kellyFormula, adaptiveKellyFormula } from "./utils"
+import { generateRandomMultiplier, roundNumber, adaptiveKellyFormula, formatNumberToMultiple } from "./utils"
 import { BotStrategy } from "../api/models"
 import { PredictionCore } from "./PredictionCore"
 import { Bet } from "./core"
@@ -23,6 +23,7 @@ export class Bot{
     BOT_TYPE: BotType = BotType.LOOSE
     RISK_FACTOR: number = 0.1 // 0.1 = 10%
     MIN_MULTIPLIER_TO_BET: number = 1.5
+    MIN_MULTIPLIER_TO_RECOVER_LOSSES: number = 2.0
     MIN_CATEGORY_PERCENTAGE_TO_BET: number = 0.8 // 0.8 = 80%
     MIN_CATEGORY_PERCENTAGE_VALUE_IN_LIVE_TO_BET: number = 0.8 // 0.8 = 80%
     MIN_AVERAGE_PREDICTION_MODEL_IN_LIVE_TO_BET: number = 0.8 // 0.8 = 80%
@@ -30,7 +31,7 @@ export class Bot{
     TAKE_PROFIT_PERCENTAGE: number = 0
 
     private STRATEGIES: BotStrategy[] = []
-    
+    private amountMultiple: number|null = null
     private initialBalance: number = 0
     private balance: number = 0
     private stopLoss: number = 0
@@ -44,11 +45,13 @@ export class Bot{
     constructor(
         botType: BotType,
         minimumBet: number = 0,
-        maximumBet: number = 0
+        maximumBet: number = 0,
+        amountMultiple?: number
     ){
         this.BOT_TYPE = botType
         this.minimumBet = minimumBet
         this.maximumBet = maximumBet
+        this.amountMultiple = amountMultiple || null
     }
 
     async initialize(balance: number){
@@ -64,6 +67,8 @@ export class Bot{
         this.MIN_AVERAGE_PREDICTION_MODEL_IN_LIVE_TO_BET = bot.minAveragePredictionModelInLiveToBet
         this.RISK_FACTOR = bot.riskFactor
         this.MIN_MULTIPLIER_TO_BET = bot.minMultiplierToBet
+        this.MIN_MULTIPLIER_TO_RECOVER_LOSSES = bot.minMultiplierToRecoverLosses
+        
         this.STOP_LOSS_PERCENTAGE = bot.stopLossPercentage
         this.TAKE_PROFIT_PERCENTAGE = bot.takeProfitPercentage
         this.STRATEGIES = bot.strategies
@@ -73,6 +78,7 @@ export class Bot{
         console.log("Bot type: ", this.BOT_TYPE)
         console.log("Bot risk factor: ", this.RISK_FACTOR)
         console.log("Bot min multiplier to bet: ", this.MIN_MULTIPLIER_TO_BET)
+        console.log("Bot min multiplier to recover losses: ", this.MIN_MULTIPLIER_TO_RECOVER_LOSSES)
         console.log("Bot min category percentage to bet: ", this.MIN_CATEGORY_PERCENTAGE_TO_BET)
         console.log("Bot min category percentage value in live to bet: ", this.MIN_CATEGORY_PERCENTAGE_VALUE_IN_LIVE_TO_BET)
         console.log("Bot min average prediction model in live to bet: ", this.MIN_AVERAGE_PREDICTION_MODEL_IN_LIVE_TO_BET)
@@ -91,7 +97,11 @@ export class Bot{
         if(amount > this.balance){
             amount = this.balance
         }
-        return roundNumber(amount, 0)
+        amount = roundNumber(amount, 0)
+        if(this.amountMultiple){
+            amount = formatNumberToMultiple(amount, this.amountMultiple)
+        }
+        return amount
     }
 
     private getStrategy(numberOfBets: number): BotStrategy|undefined{
@@ -167,7 +177,8 @@ export class Bot{
 
     private calculateAmountToRecoverLosses(multiplier: number, probability: number, strategy: BotStrategy): Bet[]{
         const profit = this.getProfit()
-        if(profit >= 0 || multiplier < this.MIN_MULTIPLIER_TO_BET){
+        if(profit >= 0 || multiplier < this.MIN_MULTIPLIER_TO_RECOVER_LOSSES){
+            console.log("no min multiplier to recover losses")
             return []
         }
         let amount = (Math.abs(profit) / (multiplier - 1))
@@ -228,7 +239,7 @@ export class Bot{
             amount = this.validateBetAmount(amount)
         }
         console.log("validateBetAmount", amount)
-        console.log("*****************************")
+        console.log("*****************************\n")
         return amount
     }
 

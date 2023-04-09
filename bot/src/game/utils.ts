@@ -8,12 +8,30 @@ export const sleepNow = (delay: number) => new Promise((resolve) => setTimeout(r
 
 
 export const roundNumber = (num: number, decimalPlaces?: number, aprox?: boolean) => {
+    /*
+    * @param num is the number to round
+    * @param decimalPlaces is the number of decimal places to round to
+    * @param aprox is a boolean to round the number to the nearest integer
+    * example: roundNumber(1.2345, 2, true)
+    * example: roundNumber(1.2345, 2, false)
+    * example: roundNumber(1.2345, 2)
+    * example: roundNumber(1.2345)
+    */
     decimalPlaces = decimalPlaces || 0
     aprox = aprox || false
     if(aprox){
         return Math.round(num * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces)
     }
     return parseFloat(num.toFixed(decimalPlaces))
+}
+
+export const formatNumberToMultiple = (num: number, multiple: number): number => {
+    /*
+    * @param num is the number to format
+    * @param multiple is the multiple to format the number
+    * example: formatNumerToMultiple(1.2345, 100)
+    */
+    return Math.round(num / multiple) * multiple
 }
 
 

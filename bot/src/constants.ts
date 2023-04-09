@@ -14,6 +14,7 @@ export class HomeBet{
     id: number
     minBet: number
     maxBet: number
+    amountMultiple: number|null = null
     aviatorPage: AviatorDemo|AviatorBetPlay|AviatorOneWin
     username: string|null
     password: string|null
@@ -41,12 +42,14 @@ export const HomeBets: Dictionary<HomeBet> = {
         maxBet: 50000, 
         username: process.env.BET_PLAY_USERNAME,
         password: process.env.BET_PLAY_PASSWORD,
+        amountMultiple: 100,
         aviatorPage: new AviatorBetPlay("https://betplay.com.co/slots")
     }),
     oneWin: new HomeBet({
         id: 3,
         minBet: 500,
         maxBet: 500000, 
+        amountMultiple: 100,
         username: process.env.ONE_WIN_USERNAME,
         password: process.env.ONE_WIN_PASSWORD,
         aviatorPage: new AviatorOneWin("https://1wslue.top/casino/")
@@ -55,6 +58,7 @@ export const HomeBets: Dictionary<HomeBet> = {
         id: 4,
         minBet: 500,
         maxBet: 500000, 
+        amountMultiple: 100,
         aviatorPage: new AviatorDemo("https://www.rivalo.co")
     }),
 }

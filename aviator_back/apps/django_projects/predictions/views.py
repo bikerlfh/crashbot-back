@@ -126,6 +126,7 @@ class BotView(
         bot_type = serializers.CharField()
         risk_factor = serializers.FloatField()
         min_multiplier_to_bet = serializers.FloatField()
+        min_multiplier_to_recover_losses = serializers.FloatField()
         min_category_percentage_to_bet = serializers.FloatField()
         min_category_percentage_value_in_live_to_bet = serializers.FloatField()
         min_average_prediction_model_in_live_to_bet = serializers.FloatField()

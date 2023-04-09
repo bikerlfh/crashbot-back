@@ -66,6 +66,10 @@ class Bot(BaseModel):
         default=1.5,
         help_text="Minimum multiplier to bet"
     )
+    min_multiplier_to_recover_losses = models.FloatField(
+        default=2.0,
+        help_text="Minimum multiplier to recover losses"
+    )
     min_category_percentage_to_bet = models.FloatField(
         default=0,
         help_text="Minimum percentage of correct predictions by category"

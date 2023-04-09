@@ -91,7 +91,7 @@ export class Game {
         const multipliers = this.aviatorPage.multipliers
         this.multipliers = multipliers.map(item => new Multiplier(item))
         console.log("saving intial multipliers.....")
-        this.requestSaveMultipliers(multipliers)
+        await this.requestSaveMultipliers(multipliers)
         this._ws_client.setOnMessage(this.wsOnMessage.bind(this))
         this.initialized = true
         //console.clear()
@@ -105,11 +105,11 @@ export class Game {
         return await this.aviatorPage.readBalance() || 0
     }
 
-    private requestSaveMultipliers(multipliers: number[]){
+    private async requestSaveMultipliers(multipliers: number[]){
         /*
         * Save the multipliers in the database
         */
-        AviatorBotAPI.requestSaveMultipliers(this.homeBet.id, multipliers).catch(
+        await AviatorBotAPI.requestSaveMultipliers(this.homeBet.id, multipliers).catch(
             error => {
                 console.error("error in requestSaveMultipliers:", error)
             }
@@ -157,7 +157,7 @@ export class Game {
         await this.aviatorPage.waitNextGame()
         this.balance = await this.readBalanceToAviator()
         this.bot.updateBalance(this.balance)
-        this.addMultiplier(this.aviatorPage.multipliers.slice(-1)[0])
+        await this.addMultiplier(this.aviatorPage.multipliers.slice(-1)[0])
         this.bets = []
         //console.clear()
     }
@@ -218,11 +218,11 @@ export class Game {
         this.bot.evaluateBets(multiplier)
     }
 
-    private addMultiplier(multiplier: number){
+    private async addMultiplier(multiplier: number){
         this._prediction_model.addMultiplierResult(multiplier)
         this.evaluateBets(multiplier)
         this.multipliers.push(new Multiplier(multiplier))
-        this.requestSaveMultipliers([multiplier])
+        await this.requestSaveMultipliers([multiplier])
         this.requestSaveBets(this.bets)
     }
 

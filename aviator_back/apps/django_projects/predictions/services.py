@@ -393,6 +393,7 @@ def get_active_bots(
             bot_type=bot.bot_type,
             risk_factor=bot.risk_factor,
             min_multiplier_to_bet=bot.min_multiplier_to_bet,
+            min_multiplier_to_recover_losses=bot.min_multiplier_to_recover_losses,
             min_category_percentage_to_bet=bot.min_category_percentage_to_bet,
             min_category_percentage_value_in_live_to_bet=bot.min_category_percentage_value_in_live_to_bet,
             min_average_prediction_model_in_live_to_bet=bot.min_average_prediction_model_in_live_to_bet,
