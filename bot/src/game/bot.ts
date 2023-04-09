@@ -201,6 +201,7 @@ export class Bot{
         if(amount > this.balance){
             amount = this.balance
         }
+        amount = this.validateBetAmount(amount)
         if(amount < this.maximumBet && amount < this.balance){
             if(multiplier >= 2){
                 const amount1 = roundNumber(amount / 2, 0)
@@ -224,6 +225,9 @@ export class Bot{
         usedAmount = usedAmount || 0
         let profit = this.getProfit()
         const balance = this.initialBalance - usedAmount
+        if(balance <= 0){
+            return 0
+        }
         const minBet = balance * (strategy.minAmountPercentageToBet)
         let amount = 0
         if(usedAmount == 0){

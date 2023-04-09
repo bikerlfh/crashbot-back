@@ -38,7 +38,7 @@ export const HomeBets: Dictionary<HomeBet> = {
     }),
     betplay: new HomeBet({
         id: 2,
-        minBet: 5000,
+        minBet: 500,
         maxBet: 50000, 
         username: process.env.BET_PLAY_USERNAME,
         password: process.env.BET_PLAY_PASSWORD,
