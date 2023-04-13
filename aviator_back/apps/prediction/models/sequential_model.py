@@ -60,7 +60,7 @@ class SequentialModel(AbstractBaseModel):
         multipliers: list[Decimal],
         test_size: Optional[float] = 0.2,
         epochs: Optional[int] = None,
-    ) -> Tuple[str, float]:
+    ) -> Tuple[str, dict]:
         data = utils.transform_multipliers_to_data(multipliers)
         self._epochs = epochs or self._epochs
         X, y = self._split_data_to_train(data=data)  # NOQA
@@ -69,15 +69,18 @@ class SequentialModel(AbstractBaseModel):
         )
         model = self._compile_model()
         model.fit(X_train, y_train, epochs=self._epochs, batch_size=32)
-        mse = model.evaluate(X_test, y_test)
+        lost = model.evaluate(X_test, y_test)
         name, model_path = self._generate_model_path_to_save(
             home_bet_id=home_bet_id
         )
         model.save(model_path)
+        metrics = dict(
+            lost=lost,
+        )
         print("---------------------------------------------")
-        print(f"--------MODEL: {name} ERROR: {mse}----------")
+        print(f"--------MODEL: {name} ERROR: {lost}----------")
         print("---------------------------------------------")
-        return name, mse
+        return name, metrics
 
     def load_model(self, *, name: str) -> None:
         model_path = self._get_model_path(name=name)
@@ -86,5 +89,5 @@ class SequentialModel(AbstractBaseModel):
         self.model = load_model(model_path)
 
     def predict(self, *, data: list[int]) -> Decimal:
-        next_num = self.model.predict(np.array([data[-self.seq_len :]]))[0][0]
+        next_num = self.model.predict(np.array([data[-self.seq_len:]]))[0][0]
         return round(next_num, 2)

@@ -1,4 +1,5 @@
 # Standard Library
+import json
 import logging
 from datetime import datetime
 from decimal import Decimal
@@ -215,20 +216,22 @@ def create_model_with_all_multipliers(
         )
         return
 
-    name, loss_error = prediction_services.create_model(
+    name, metrics = prediction_services.create_model(
         home_bet_id=home_bet_id,
         multipliers=multipliers,
         model_type=model_type,
         seq_len=seq_len,
     )
+    breakpoint()
     model_home_bet = create_model_home_bet(
         home_bet_id=home_bet_id,
         name=name,
         model_type=model_type,
         seq_len=seq_len,
         others=dict(
-            loss_error=float(loss_error),
             num_multipliers_to_train=len(multipliers),
+            # metrics=json.dumps(metrics),
+            metrics=metrics,
         ),
     )
     generate_category_result_of_model(model_home_bet_id=model_home_bet.id)

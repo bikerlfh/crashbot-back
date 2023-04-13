@@ -47,11 +47,15 @@ def get_bets_models_by_average_predictions(
     number_of_models: Optional[int] = 3,
     model_home_bet_id: Optional[int] = None
 ) -> QuerySet[ModelHomeBet]:
+    filter_ = dict(
+        home_bet_id=home_bet_id,
+        status=ModelStatus.ACTIVE.value
+    )
+    if model_home_bet_id is not None:
+        filter_.update(id=model_home_bet_id)
+        filter_.pop("status")
     models = (
-        ModelHomeBet.objects.filter(
-            Q(status=ModelStatus.ACTIVE.value) | Q(id=model_home_bet_id),
-            home_bet_id=home_bet_id,
-        )
+        ModelHomeBet.objects.filter(**filter_)
         .prefetch_related("category_results")
         .order_by("-average_predictions")[:number_of_models]
     )

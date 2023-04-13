@@ -5,6 +5,7 @@ from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.django_projects.predictions.models import ModelHomeBet
 from apps.prediction.constants import ModelType
 from apps.prediction.models.sequential_model import SequentialModel
+from apps.prediction.models.gru_model import GRUModel
 from apps.prediction.models.transformer_model import TransformerModel
 from apps.prediction.models.base import AbstractBaseModel, AverageInfo
 from apps.prediction import utils
@@ -48,6 +49,10 @@ class CoreModel:
                 model = SequentialModel(
                     model_type=ModelType.SEQUENTIAL_LSTM, seq_len=seq_len
                 )
+            case ModelType.GRU:
+                model = GRUModel(
+                    model_type=ModelType.GRU, seq_len=seq_len
+                )
             case ModelType.TRANSFORMER:
                 model = TransformerModel(seq_len=seq_len)
             case _:
@@ -63,14 +68,14 @@ class CoreModel:
         multipliers: list[Decimal],
         test_size: Optional[float] = 0.2,
         epochs: Optional[int] = None,
-    ) -> Tuple[str, float]:
+    ) -> Tuple[str, dict]:
         """
         Trains a model and returns the path to the model and the loss
         @param home_bet_id: The id of the home bet
         @param multipliers: The multipliers to train the model on
         @param test_size: The size of the test data
         @param epochs: The number of epochs to train the model
-        @return: The name to the model and the loss error
+        @return: The name to the model and the loss error and accurracy
         """
         return self.model.train(
             home_bet_id=home_bet_id,

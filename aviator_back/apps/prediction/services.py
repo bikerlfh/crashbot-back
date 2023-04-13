@@ -21,21 +21,21 @@ def create_model(
     multipliers: list[Decimal],
     model_type: ModelType,
     seq_len: Optional[int] = DEFAULT_SEQ_LEN,
-) -> Tuple[str, float]:
+) -> Tuple[str, dict]:
     """
     Creates a model
     @param home_bet_id: The id of the home bet
     @param multipliers: The multipliers to train the model on
     @param model_type: The type of the model
     @param seq_len: The sequence length of the model
-    @return: The name to the model and the loss error
+    @return: The name to the model and the loss error and accuracy
     """
     core_model = CoreModel(model_type=model_type, seq_len=seq_len)
-    name, loss = core_model.train(
+    name, metrics = core_model.train(
         home_bet_id=home_bet_id,
         multipliers=multipliers,
     )
-    return name, loss
+    return name, metrics
 
 
 def predict(

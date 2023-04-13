@@ -48,6 +48,9 @@ class AbstractBaseModel(abc.ABC):
     ):
         self.model_type = model_type
         self.seq_len = seq_len
+        # number of classes (categories of multipliers "1", "2", "3")
+        # indexing starts at 0, so we need 4 classes
+        self.num_classes = 4
         self.average_info = AverageInfo(
             average_predictions=0,
             average_bets=0,
@@ -88,14 +91,14 @@ class AbstractBaseModel(abc.ABC):
         multipliers: list[Decimal],
         test_size: Optional[float] = 0.2,
         epochs: Optional[int] = None,
-    ) -> Tuple[str, float]:
+    ) -> Tuple[str, dict]:
         """
         train the model
         @param home_bet_id: the home bet id
         @param multipliers: list of multipliers
         @param test_size: the test size
         @param epochs: the number of epochs
-        @return: model_name, loss
+        @return: model_name, metrics
         """
         ...
 

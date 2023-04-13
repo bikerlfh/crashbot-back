@@ -16,7 +16,7 @@ class BotType(str, Enum):
 
 DEFAULT_SEQ_LEN = int(getenv("DEFAULT_SEQ_LEN", 18))
 GENERATE_AUTOMATIC_MODEL_TYPES = getenv(
-    "GENERATE_AUTOMATIC_MODEL_TYPES", "sequential,sequential_lstm"
+    "GENERATE_AUTOMATIC_MODEL_TYPES", "sequential,gru,sequential_lstm"
 ).split(",")
 # AVERAGE_PERCENTAGE_ACCEPTABLE
 PERCENTAGE_ACCEPTABLE = float(getenv("AVERAGE_PERCENTAGE_ACCEPTABLE", 85))
