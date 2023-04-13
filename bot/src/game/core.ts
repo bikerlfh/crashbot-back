@@ -55,3 +55,27 @@ export class Average{
         return parseFloat(this.profit.toFixed(2))
     }
  }
+ 
+
+ export class PredictionData{
+    constructor(
+        public predictionRound: number,
+        public predictionValue: number,
+        public categoryPrecentage: number,
+        public categoryPercentageValueInLive: number,
+        public averagePredictionsOfModel: number,
+        public inCategoryPrecentage: boolean,
+        public inCategoryPercentageValueInLive: boolean,
+        public inAveragePredictionsOfModel: boolean
+    ){}
+
+    printData(){
+        console.log("prediction: ", this.predictionValue, " (", this.predictionRound, ")")
+        console.log("categoryPrecentage: ", this.categoryPrecentage)
+        console.log("categoryPercentageValueInLive: ", this.categoryPercentageValueInLive)
+        console.log("averagePredictionsOfModel: ",this. averagePredictionsOfModel)
+        console.log("inCategoryPercentageValueInLive: ", this.inCategoryPercentageValueInLive)
+        console.log("inCategoryPrecentage: ", this.inCategoryPrecentage)
+        console.log("inAveragePredictionsOfModel: ", this.inAveragePredictionsOfModel)
+    }
+ }

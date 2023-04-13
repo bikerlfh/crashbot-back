@@ -1,7 +1,7 @@
 import { generateRandomMultiplier, roundNumber, adaptiveKellyFormula, formatNumberToMultiple } from "./utils"
 import { BotStrategy } from "../api/models"
 import { PredictionCore } from "./PredictionCore"
-import { Bet } from "./core"
+import { Bet, PredictionData } from "./core"
 import { AviatorBotAPI } from "../api/AviatorBotAPI"
 
 
@@ -40,7 +40,7 @@ export class Bot{
     private maximumBet: number
     private bets: Bet[] = []
     // betting amount lossess in order
-    private betAmountLosses: number[] = []
+    private amountsLost: number[] = []
 
     constructor(
         botType: BotType,
@@ -88,20 +88,15 @@ export class Bot{
     }
 
     private validateBetAmount(amount: number): number{
-        if(amount < this.minimumBet){
-            amount = this.minimumBet
-        }
-        else if(amount > this.maximumBet){
-            amount = this.maximumBet
-        }
-        if(amount > this.balance){
-            amount = this.balance
-        }
-        amount = roundNumber(amount, 0)
+        // if amount < minimumBet, set amount = minimumBet
+        let finalAmount = Math.max(amount, this.minimumBet)
+        // get the min amount between amount, maximumBet and balance
+        finalAmount = Math.min(amount, this.maximumBet, this.balance)
+        finalAmount = roundNumber(amount, 0)
         if(this.amountMultiple){
-            amount = formatNumberToMultiple(amount, this.amountMultiple)
+            finalAmount = formatNumberToMultiple(amount, this.amountMultiple)
         }
-        return amount
+        return finalAmount
     }
 
     private getStrategy(numberOfBets: number): BotStrategy|undefined{
@@ -113,18 +108,18 @@ export class Bot{
     }
 
     private addLoss(amount: number){
-        this.betAmountLosses.push(amount)
+        this.amountsLost.push(amount)
     }
 
     private removeLoss(amount: number){
         let totalLoss = amount
-        for(let i = this.betAmountLosses.length - 1; i >= 0; i--){
-            if(this.betAmountLosses[i] > totalLoss){
-                this.betAmountLosses[i] -= totalLoss
+        for(let i = this.amountsLost.length - 1; i >= 0; i--){
+            if(this.amountsLost[i] > totalLoss){
+                this.amountsLost[i] -= totalLoss
                 break
             }
-            totalLoss -= this.betAmountLosses[i]
-            this.betAmountLosses.pop()
+            totalLoss -= this.amountsLost[i]
+            this.amountsLost.pop()
         }
     }
 
@@ -175,45 +170,74 @@ export class Bot{
         this.balance = balance
     }
 
-    private calculateAmountToRecoverLosses(multiplier: number, probability: number, strategy: BotStrategy): Bet[]{
+    private getPredictionData(prediction: PredictionCore): PredictionData{
+        const categoryPrecentage = prediction.getCategoryPercentage()
+        const categoryPercentageValueInLive = prediction.geCategoryPercentageValueInLive()
+        const averagePredictionsOfModel = prediction.averagePredictionsOfModel
+        const inCategoryPercentageValueInLive = categoryPercentageValueInLive >= this.MIN_CATEGORY_PERCENTAGE_VALUE_IN_LIVE_TO_BET
+        const inCategoryPrecentage = categoryPrecentage >= this.MIN_CATEGORY_PERCENTAGE_TO_BET
+        const inAveragePredictionsOfModel = averagePredictionsOfModel >= this.MIN_AVERAGE_PREDICTION_MODEL_IN_LIVE_TO_BET
+        const predictionData = new PredictionData(
+            prediction.getPredictionRoundValue(),
+            prediction.getPreditionValue(),
+            categoryPrecentage,
+            categoryPercentageValueInLive,
+            averagePredictionsOfModel,
+            inCategoryPrecentage,
+            inCategoryPercentageValueInLive,
+            inAveragePredictionsOfModel
+        )
+        return predictionData
+    }
+
+    private calculateRecoveryAmount(amountLost: number, multiplier: number): number {
+        /*
+        * calculate the amount to recover the losses
+        * @param {number} profit the profit of bot
+        * @param {number} multiplier the multiplier
+        * @return {number} the amount to recover the losses
+        */
+        return Math.abs(amountLost) / (multiplier - 1);
+    }
+
+    private getBetRecoveryAmount(multiplier: number, probability: number, strategy: BotStrategy): number{
+        /*
+        * adjust the bet recovery amount
+        * @param {number} amount the amount to recover the losses
+        * @param {number} multiplier the multiplier
+        */
+        const profit = this.getProfit()
+        const minBet = this.balance * strategy.minAmountPercentageToBet
+        const amountToRecoverLosses = this.calculateRecoveryAmount(profit, multiplier)
+        // calculate the amount to bet to recover last amount loss
+        const lastAmountLosse = this.calculateRecoveryAmount(this.amountsLost.slice(-1)[0], multiplier)
+        // calculates the maximum amount allowed to recover in a single bet 
+        const maxRecoveryAmount = this.maximumBet * 0.5 // 50% of maximum bet (this can be a parameter of the bot)
+        const amount = Math.min(amountToRecoverLosses, lastAmountLosse, maxRecoveryAmount, this.balance)
+        const kellyAmount = adaptiveKellyFormula(multiplier, probability, this.RISK_FACTOR, amount)
+        return Math.max(Math.min(amount, kellyAmount), minBet)
+    }
+
+    private generateRecoveryBets(multiplier: number, probability: number, strategy: BotStrategy): Bet[]{
+        const bets: Bet[] = []
         const profit = this.getProfit()
         if(profit >= 0 || multiplier < this.MIN_MULTIPLIER_TO_RECOVER_LOSSES){
-            console.log("no min multiplier to recover losses")
             return []
         }
-        let amount = (Math.abs(profit) / (multiplier - 1))
-        console.log("******** BAD PROFIT ********")
-        console.log("amountToRecover", amount)
-        console.log("betAmountLosses", this.betAmountLosses)
-        this.bets = []
-        if(amount >= this.maximumBet){
-            amount = (this.betAmountLosses.slice(-1)[0] / (multiplier - 1))
-        }
-        const minBet = this.balance * strategy.minAmountPercentageToBet
-        console.log("minBet", minBet)
-        if(amount > minBet){
-            amount = adaptiveKellyFormula(multiplier, probability, this.RISK_FACTOR, amount)
-            console.log("adaptiveKellyFormula", amount)
-        }
-        if(amount > this.maximumBet){
-            amount = this.maximumBet * 0.5
-        }
-        if(amount > this.balance){
-            amount = this.balance
-        }
+        let amount = this.getBetRecoveryAmount(multiplier, probability, strategy)
         amount = this.validateBetAmount(amount)
-        if(amount < this.maximumBet && amount < this.balance){
-            if(multiplier >= 2){
-                const amount1 = roundNumber(amount / 2, 0)
-                const multiplier1 = roundNumber((multiplier / 2) * 1.5, 2)
-                this.bets.push(new Bet(amount1, multiplier1))
-                this.bets.push(new Bet(amount1, multiplier1))
-            }else{
-                this.bets.push(new Bet(amount, multiplier))
+        if(multiplier >= 2){
+            amount = roundNumber(amount / 2, 0)
+            if(this.amountMultiple){
+                amount = formatNumberToMultiple(amount, this.amountMultiple)
             }
+            const multiplier1 = roundNumber((multiplier / 2) * 1.5, 2)
+            bets.push(new Bet(amount, multiplier1))
+            bets.push(new Bet(amount, multiplier1))
+        }else{
+            bets.push(new Bet(amount, multiplier))
         }
-        this.bets = this.bets.filter((b)=> b.amount > 0)
-        return this.bets
+        return bets.filter((b)=> b.amount > 0)
     }
 
     calculateAmountBet(
@@ -228,7 +252,11 @@ export class Bot{
         if(balance <= 0){
             return 0
         }
-        const minBet = balance * (strategy.minAmountPercentageToBet)
+        let minBet = balance * (strategy.minAmountPercentageToBet)
+        // the balance is too high
+        if(minBet > this.maximumBet){
+            minBet = this.maximumBet * 0.2
+        }
         let amount = 0
         if(usedAmount == 0){
             amount = minBet + profit * (strategy.profitPercentageToBet)
@@ -248,25 +276,35 @@ export class Bot{
     }
 
     private generateBets(
-        prediction: PredictionCore,
+        predictionData: PredictionData,
         strategy: BotStrategy,
     ): Bet[]{
         this.bets = []
         const profit = this.getProfit()
-        const categoryPrecentage = prediction.getCategoryPercentage()
-        const predictionRound = prediction.getPredictionRoundValue()
-        let predictionValue = prediction.getPreditionValue()
-        const categoryPercentageValueInLive = prediction.geCategoryPercentageValueInLive()
-        const inCategoryPercentageValueInLive = categoryPercentageValueInLive >= this.MIN_CATEGORY_PERCENTAGE_VALUE_IN_LIVE_TO_BET
+        const categoryPrecentage = predictionData.categoryPrecentage
+        const predictionRound = predictionData.predictionRound
+        const predictionValue = predictionData.predictionValue
+        // const inCategoryPercentageValueInLive = predictionData.inCategoryPercentageValueInLive
         let amount: number = 0
         let multiplier: number = 0
         if(profit < 0){
             let multiplier = predictionRound == 1? predictionValue: 2
-            this.bets = this.calculateAmountToRecoverLosses(multiplier, categoryPrecentage, strategy)
+            this.bets = this.generateRecoveryBets(multiplier, categoryPrecentage, strategy)
             return this.bets
         }
-        // profit >= 0
-        switch(predictionRound){
+        if(predictionRound == 1){
+            amount = this.calculateAmountBet(predictionValue, categoryPrecentage, strategy)
+            this.bets.push(new Bet(amount, predictionValue))
+        }
+        else{
+            // to categories 2 and 3
+            amount = this.calculateAmountBet(1.95, categoryPrecentage, strategy)
+                this.bets.push(new Bet(amount, 1.95))
+                multiplier = generateRandomMultiplier(2, 3)
+                const amount_2 = this.calculateAmountBet(multiplier, categoryPrecentage, strategy, amount)
+                this.bets.push(new Bet(amount_2, multiplier))
+        }
+        /*switch(predictionRound){
             case 1:
                 amount = this.calculateAmountBet(predictionValue, categoryPrecentage, strategy)
                 this.bets.push(new Bet(amount, predictionValue))
@@ -284,7 +322,8 @@ export class Bot{
                 amount = this.calculateAmountBet(multiplier, categoryPrecentage, strategy)
                 this.bets.push(new Bet(amount, multiplier))
                 break
-        }
+            
+        }*/
         this.bets = this.bets.filter((b)=> b.amount > 0)
         return this.bets
     }
@@ -302,23 +341,9 @@ export class Bot{
             return []
         }
         const profit = this.getProfit()
-        const categoryPrecentage = prediction.getCategoryPercentage()
-        const predictionRound = prediction.getPredictionRoundValue()
-        let predictionValue = prediction.getPreditionValue()
-        const categoryPercentageValueInLive = prediction.geCategoryPercentageValueInLive()
-        const averagePredictionsOfModel = prediction.averagePredictionsOfModel
-        console.log("\nprofit: ", profit)
-        console.log("predictionRound: ", predictionRound)
-        console.log("predictionValue: ", predictionValue)
-        console.log("categoryPrecentage: ", categoryPrecentage)
-        console.log("categoryPercentageValueInLive: ", categoryPercentageValueInLive)
-        console.log("averagePredictionsOfModel: ", averagePredictionsOfModel)
-        const inCategoryPercentageValueInLive = categoryPercentageValueInLive >= this.MIN_CATEGORY_PERCENTAGE_VALUE_IN_LIVE_TO_BET
-        console.log("inCategoryPercentageValueInLive: ", inCategoryPercentageValueInLive)
-        const inCategoryPrecentage = categoryPrecentage >= this.MIN_CATEGORY_PERCENTAGE_TO_BET
-        console.log("inCategoryPrecentage: ", inCategoryPrecentage)
-        const inAveragePredictionsOfModel = averagePredictionsOfModel >= this.MIN_AVERAGE_PREDICTION_MODEL_IN_LIVE_TO_BET
-        console.log("inAveragePredictionsOfModel: ", inAveragePredictionsOfModel)
+        const predictionData = this.getPredictionData(prediction)
+        console.log("\n\nprofit: ", profit)
+        predictionData.printData()
         if(this.inStopLoss()){
             console.log("player :: Stop loss reached")
             return []
@@ -327,24 +352,24 @@ export class Bot{
             console.log("player :: Take profit reached")
             return []
         }
-        if(!inCategoryPrecentage){
+        if(!predictionData.inCategoryPrecentage){
             return []
         }
-        if(predictionValue < this.MIN_MULTIPLIER_TO_BET){
+        if(!predictionData.inAveragePredictionsOfModel){
+            return []
+        }
+        if(predictionData.predictionValue < this.MIN_MULTIPLIER_TO_BET){
             console.log("Bot :: Prediction value is too low")
             return []
         }
         // CATEGORY 1
-        if(predictionRound == 1){
-            if(!inCategoryPercentageValueInLive || predictionValue < 1.2){
+        if(predictionData.predictionRound == 1){
+            if(!predictionData.inCategoryPercentageValueInLive){
                 return []
             }
-            return this.generateBets(prediction, strategy)
-        }
-        if(!inAveragePredictionsOfModel){
-            return []
+            return this.generateBets(predictionData, strategy)
         }
         // CATEGORY 2 and 3
-        return this.generateBets(prediction, strategy)
+        return this.generateBets(predictionData, strategy)
     }
 }

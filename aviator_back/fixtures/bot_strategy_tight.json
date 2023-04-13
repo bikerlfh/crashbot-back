@@ -9,7 +9,7 @@
             "number_of_bets": 0,
             "profit_percentage": -0.2,
             "min_amount_percentage_to_bet": 0.03,
-            "profit_percentage_to_bet": 0.05,
+            "profit_percentage_to_bet": 0.0,
             "others": null,
             "is_active": true
         }
