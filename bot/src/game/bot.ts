@@ -227,7 +227,7 @@ export class Bot{
         let amount = this.getBetRecoveryAmount(multiplier, probability, strategy)
         amount = this.validateBetAmount(amount)
         if(multiplier >= 2){
-            amount = roundNumber(amount / 2, 0)
+            amount = roundNumber(amount / 1.5, 0)
             if(this.amountMultiple){
                 amount = formatNumberToMultiple(amount, this.amountMultiple)
             }
@@ -299,10 +299,10 @@ export class Bot{
         else{
             // to categories 2 and 3
             amount = this.calculateAmountBet(1.95, categoryPrecentage, strategy)
-                this.bets.push(new Bet(amount, 1.95))
-                multiplier = generateRandomMultiplier(2, 3)
-                const amount_2 = this.calculateAmountBet(multiplier, categoryPrecentage, strategy, amount)
-                this.bets.push(new Bet(amount_2, multiplier))
+            this.bets.push(new Bet(amount, 1.95))
+            multiplier = generateRandomMultiplier(2, 3)
+            const amount_2 = this.calculateAmountBet(multiplier, categoryPrecentage, strategy, amount)
+            this.bets.push(new Bet(amount_2, multiplier))
         }
         /*switch(predictionRound){
             case 1:

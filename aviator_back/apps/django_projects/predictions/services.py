@@ -222,7 +222,6 @@ def create_model_with_all_multipliers(
         model_type=model_type,
         seq_len=seq_len,
     )
-    breakpoint()
     model_home_bet = create_model_home_bet(
         home_bet_id=home_bet_id,
         name=name,

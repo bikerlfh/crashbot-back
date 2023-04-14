@@ -85,16 +85,14 @@ class GRUModel(AbstractBaseModel):
         print(f"--------MODEL: {name} LOSS: {loss} ACCURRACY: {accuracy}----------")
         print("-------------------------------------------------------------------")
         # generate others metrics
-        y_pred_prob = model.predict(x_test)
-        y_pred = np.argmax(y_pred_prob, axis=1)
+        y_pred_prob = model.predict(x_test) # NOQA
+        y_pred = np.argmax(y_pred_prob, axis=1) # NOQA
         y_true = np.argmax(y_test, axis=1)
         precision = precision_score(y_true, y_pred, average='weighted')
         recall = recall_score(y_true, y_pred, average='weighted')
         f1 = f1_score(y_true, y_pred, average='weighted')
-        # Calcular la matriz de confusión
+        # calculate specificity
         cm = confusion_matrix(y_true, y_pred)
-
-        # Calcular la especificidad a partir de la matriz de confusión
         specificity = cm.diagonal() / cm.sum(axis=1)
         metrics = dict(
             loss=loss,

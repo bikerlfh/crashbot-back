@@ -50,7 +50,7 @@ class AbstractBaseModel(abc.ABC):
         self.seq_len = seq_len
         # number of classes (categories of multipliers "1", "2", "3")
         # indexing starts at 0, so we need 4 classes
-        self.num_classes = 4
+        self.num_classes = 3
         self.average_info = AverageInfo(
             average_predictions=0,
             average_bets=0,

@@ -143,7 +143,8 @@ export class Game {
         /*
         * Get the prediction from the database
         */
-        const predictions = await AviatorBotAPI.requestPrediction(this.homeBet.id).catch(
+       const multipliers = this.multipliers.map(item => item.multiplier)
+        const predictions = await AviatorBotAPI.requestPrediction(this.homeBet.id, multipliers).catch(
             error => { return [] }
         )
         this._prediction_model.addPredictions(predictions)
