@@ -10,9 +10,9 @@
             "risk_factor": 0.1,
             "min_multiplier_to_bet": 1.2,
             "is_active": true,
-            "min_category_percentage_to_bet": 0.55,
-            "min_category_percentage_value_in_live_to_bet": 0.55,
-            "min_average_prediction_model_in_live_to_bet": 0.55,
+            "min_category_percentage_to_bet": 0.5,
+            "min_category_percentage_value_in_live_to_bet": 0.5,
+            "min_average_prediction_model_in_live_to_bet": 0.5,
             "stop_loss_percentage": 0.5,
             "take_profit_percentage": 0.5
         }

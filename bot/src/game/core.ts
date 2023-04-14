@@ -1,3 +1,9 @@
+export enum BotType{
+    AGGRESSIVE = "aggressive",
+    TIGHT = "tight",
+    LOOSE = "loose",
+}
+
 export class Multiplier{
     multiplier: number
     category: number

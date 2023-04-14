@@ -1,0 +1,205 @@
+import { BotStrategy } from "../../api/models"
+import { PredictionCore } from "../PredictionCore"
+import { Bet, PredictionData } from "../core"
+import { BotType } from "../core"
+import { formatNumberToMultiple } from "../utils"
+import { BotBase } from "./base"
+import {roundNumber} from "../utils"
+
+
+
+export class Bot extends BotBase{
+    /*
+    * The Bot class is a class used to determine the optimal fraction of one's capital to bet on a given bet. 
+    */
+    constructor(
+        botType: BotType,
+        minimumBet: number = 0,
+        maximumBet: number = 0,
+        amountMultiple?: number
+    ){
+        super(botType, minimumBet, maximumBet, amountMultiple)
+    }
+
+    async initialize(balance: number){
+        await super.initialize(balance)
+    }
+
+    getBetRecoveryAmount(multiplier: number, probability: number, strategy: BotStrategy): number{
+        return super.getBetRecoveryAmount(multiplier, probability, strategy)
+    }
+
+    generateRecoveryBets(multiplier: number, probability: number, strategy: BotStrategy): Bet[]{
+        return super.generateRecoveryBets(multiplier, probability, strategy)
+    }
+
+    calculateAmountBet(
+        multiplier: number, 
+        probability: number,
+        strategy: BotStrategy, 
+        usedAmount?: number
+    ): number{
+        return super.calculateAmountBet(multiplier, probability, strategy, usedAmount)
+    }
+
+    generateBets(
+        predictionData: PredictionData,
+        strategy: BotStrategy,
+    ): Bet[]{
+        return super.generateBets(predictionData, strategy)
+    }
+
+    getNextBet(prediction: PredictionCore): Bet[]{
+       return super.getNextBet(prediction)
+    }
+}
+
+
+export class BotStatic extends BotBase{
+    /*
+    * The BotStatic class is a class used to determine the optimal fraction of one's capital to bet on a given bet.
+    * this Bot is use to bet in the game, it's necesary that the custormer select the two amonunt to bet (max and min)
+    * in the control 1 the bot will bet the max amount of money that the customer select 
+    * in the control 2 the bot will bet the min amount of money that the customer select
+    * the min amount of bet should be less than the max amount of bet / 3 example: max bet = 300, min bet = 300/3 = 100
+    */
+    private _maxBetAmount: number = 0
+    private _minBetAmount: number = 0
+
+    constructor(
+        botType: BotType,
+        minimumBet: number = 0,
+        maximumBet: number = 0,
+        amountMultiple?: number
+    ){
+        /*
+        * @param botType: BotType bot type
+        * @param minimumBet: number minimum bet allowed by home bet
+        * @param maximumBet: number maximum bet allowed by home bet
+        * @param minBetAmount: number minimum bet amount allowed by customer
+        * @param maxBetAmount: number maximum bet amount allowed by customer
+        * @param amountMultiple?: number
+        */
+        super(botType, minimumBet, maximumBet, amountMultiple)
+       
+        if(this.amountMultiple){
+            this._maxBetAmount = formatNumberToMultiple(this._maxBetAmount, this.amountMultiple)
+            this._minBetAmount = formatNumberToMultiple(this._minBetAmount, this.amountMultiple)
+        }
+    }
+
+    async initialize(balance: number){
+        console.log("initializing bot static")
+        await super.initialize(balance)
+        // add the minimum and maximum bet
+        let readlineSync = require('readline-sync');
+        while(this._maxBetAmount <= 0 || this._maxBetAmount > balance){
+            this._maxBetAmount = parseFloat(readlineSync.question(
+                "type the max amount of bet " +
+                "(this amount can not be higth that the balance " + balance + "): "
+            ));
+        }
+        this._minBetAmount = this._maxBetAmount / 3   
+        if(this.amountMultiple){
+            this._maxBetAmount = formatNumberToMultiple(this._maxBetAmount, this.amountMultiple)
+            this._minBetAmount = formatNumberToMultiple(this._minBetAmount, this.amountMultiple)
+        }
+        
+        console.log("max bet amount: ", this._maxBetAmount)
+        console.log("min bet amount: ", this._minBetAmount)
+    }
+
+    protected getBetRecoveryAmount(multiplier: number, probability: number, strategy: BotStrategy): number{
+        /*
+        * adjust the bet recovery amount
+        * @param {number} amount the amount to recover the losses
+        * @param {number} multiplier the multiplier
+        */
+        const profit = this.getProfit()
+        const minBet = this.balance * strategy.minAmountPercentageToBet
+        const amountToRecoverLosses = this.calculateRecoveryAmount(profit, multiplier)
+        // calculate the amount to bet to recover last amount loss
+        const lastAmountLosse = this.calculateRecoveryAmount(this.amountsLost.slice(-1)[0], multiplier)
+        // calculates the maximum amount allowed to recover in a single bet 
+        const maxRecoveryAmount = this.maximumBet * 0.5 // 50% of maximum bet (this can be a parameter of the bot)
+        const amount = Math.min(amountToRecoverLosses, lastAmountLosse, maxRecoveryAmount, this.balance)
+        // const kellyAmount = adaptiveKellyFormula(multiplier, probability, this.RISK_FACTOR, amount)
+        return Math.max(amount, minBet, this.minimumBet)
+    }
+
+    generateRecoveryBets(multiplier: number, probability: number, strategy: BotStrategy): Bet[]{
+        const bets: Bet[] = []
+        let amount = this.getBetRecoveryAmount(multiplier, probability, strategy)
+        amount = this.validateBetAmount(amount)
+        if(multiplier >= 2){
+            amount = roundNumber(amount / 1.5, 0)
+            if(this.amountMultiple){
+                amount = formatNumberToMultiple(amount, this.amountMultiple)
+            }
+            const multiplier1 = roundNumber((multiplier / 2) * 1.5, 2)
+            bets.push(new Bet(amount, multiplier1))
+            bets.push(new Bet(amount, multiplier1))
+        }else{
+            bets.push(new Bet(amount, multiplier))
+        }
+        return bets.filter((b)=> b.amount > 0)
+    }
+
+    generateBets(
+        predictionData: PredictionData,
+        strategy: BotStrategy,
+    ): Bet[]{
+        this.bets = []
+        const profit = this.getProfit()
+        const categoryPrecentage = predictionData.categoryPrecentage
+        if(profit < 0){
+            // always the multiplier to recover losses is 2
+            this.bets = this.generateRecoveryBets(2, categoryPrecentage, strategy)
+            return this.bets
+        }
+        // to category 2
+        this.bets.push(new Bet(this._maxBetAmount, 1.95))
+        this.bets.push(new Bet(this._minBetAmount, 2))
+        this.bets = this.bets.filter((b)=> b.amount > 0)
+        return this.bets
+    }
+
+    getNextBet(prediction: PredictionCore): Bet[]{
+        if(prediction == null){
+            return []
+        }
+        const numberOfBet = this.getNumberOfBets()
+        const strategy = this.getStrategy(numberOfBet)
+        if(!strategy){
+            console.warn(
+                "No strategy found for profit percentage: ", this.getProfitPercent()
+            )
+            return []
+        }
+        const profit = this.getProfit()
+        const predictionData = this.getPredictionData(prediction)
+        console.log("\n\nprofit: ", profit)
+        predictionData.printData()
+        if(this.inStopLoss()){
+            console.log("player :: Stop loss reached")
+            return []
+        }
+        if(this.inTakeProfit()){
+            console.log("player :: Take profit reached")
+            return []
+        }
+        if(!predictionData.inCategoryPrecentage){
+            return []
+        }
+        if(predictionData.predictionValue < this.MIN_MULTIPLIER_TO_BET){
+            console.log("Bot :: Prediction value is too low")
+            return []
+        }
+        // CATEGORY 1 not bet
+        if(predictionData.predictionRound == 1){
+            return []
+        }
+        // CATEGORY 2
+        return this.generateBets(predictionData, strategy)
+    }
+}

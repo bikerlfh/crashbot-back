@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 import {Game} from './src/game/GameAdvance'
 import {HomeBets } from './src/constants';
-import {BotType} from './src/game/bot';
+import {BotType} from './src/game/core';
 
 
 (async () => {
@@ -41,13 +41,11 @@ import {BotType} from './src/game/bot';
 			botTypeSelected = BotType.TIGHT
 	}
 	console.clear()
-	while(true){
-		try{
-			const game = new Game(homeBet, autoPlay, botTypeSelected)
-			await game.initialize()
-			await game.play()
-		}catch(e){
-			console.log(e)
-		}
+	const game = new Game(homeBet, autoPlay, botTypeSelected, true)
+	try{
+		await game.initialize()
+		await game.play()
+	}catch(e){
+		console.log(e)
 	}
 })();

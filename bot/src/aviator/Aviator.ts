@@ -1,5 +1,6 @@
 import playwright from "playwright";
 import {BetControl, Control} from "./BetControl"
+import { sleepNow } from "../game/utils";
 
 export class AviatorPage{
     _browser: playwright.Browser|null = null
@@ -172,6 +173,7 @@ export class AviatorPage{
                     console.log("waitNextGame :: new multiplier:", lastMultiplier)
                     return
                 }
+                await sleepNow(1000)
             }
             catch (e) {
                 if (e instanceof playwright.errors.TimeoutError) {

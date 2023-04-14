@@ -1,4 +1,5 @@
 import playwright from "playwright";
+import { roundNumber } from "../game/utils";
 
 export enum Control{
     Control1=1,
@@ -102,15 +103,13 @@ export class BetControl{
         if(!autoCashOutMultiplier){
             throw "buttons null autoCashOutMultiplier"
         }
-        /*
-        const value = parseFloat(parseFloat(await autoCashOutMultiplier.inputValue({timeout: 500})).toFixed(0))
+        const value = roundNumber(parseFloat(await autoCashOutMultiplier.inputValue({timeout: 1000})), 0)
         if(value != multiplier){
-            await autoCashOutMultiplier.fill("", {timeout: 500})
+            await autoCashOutMultiplier.fill("", {timeout: 1000})
             await autoCashOutMultiplier.type(multiplier.toString(), {delay: 100})
         }
-        */
-        await autoCashOutMultiplier.fill("", {timeout: 500})
-        await autoCashOutMultiplier.type(multiplier.toString(), {delay: 100})
+        //await autoCashOutMultiplier.fill("", {timeout: 500})
+        //await autoCashOutMultiplier.type(multiplier.toString(), {delay: 100})
     }
     
     async updateAmount(amount: number, control:Control){
@@ -121,9 +120,9 @@ export class BetControl{
         if(input == null){
             throw "updateAmount :: input null"
         }
-        const value = parseFloat(parseFloat(await input.inputValue({timeout: 500})).toFixed(0))
+        const value = roundNumber(parseFloat(await input.inputValue({timeout: 1000})), 0)
         if(value != amount){
-            await input.fill("", {timeout: 500})
+            await input.fill("", {timeout: 1000})
             await input.type(amount.toString(), {delay: 100})
         }
        // await this.aviatorPage.waitForTimeout(500);

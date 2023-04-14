@@ -6,8 +6,10 @@ import { WebSocketClient } from "../ws/client"
 import { AviatorPage } from "../aviator/Aviator"
 import { Control } from '../aviator/BetControl';
 import { BetData } from "../api/models"
-import { generateRandomMultiplier, sleepNow, roundNumber } from "./utils"
-import { BotType, Bot } from "./bot"
+import { sleepNow, roundNumber } from "./utils"
+import { BotType } from "./core"
+import { BotBase } from "./bots/base"
+import { Bot, BotStatic } from "./bots/bots"
 
 
 export class Game {
@@ -20,7 +22,7 @@ export class Game {
     private initialized: boolean = false
     // automatic betting
     private autoPlay: boolean = false
-    private bot: Bot
+    private bot: Bot|BotStatic
     homeBet: HomeBet
     initialBalance: number = 0
     balance: number = 0
@@ -28,13 +30,18 @@ export class Game {
     bets: Bet[] = []
     
     
-    constructor(homeBet: HomeBet, autoPlay: boolean, botType: BotType){
+    constructor(homeBet: HomeBet, autoPlay: boolean, botType: BotType, useBotStatic?: boolean){
         this.homeBet = homeBet
         this.autoPlay = autoPlay
         this.aviatorPage = homeBet.aviatorPage       
         this.minimumBet = homeBet.minBet
         this.maximumBet = homeBet.maxBet
-        this.bot = new Bot(botType, this.minimumBet, this.maximumBet)
+        if(!useBotStatic){
+            this.bot = new Bot(botType, this.minimumBet, this.maximumBet)
+        }
+        else{
+            this.bot = new BotStatic(botType, this.minimumBet, this.maximumBet)
+        }
         this.maximumWinForOneBet = this.maximumBet * 100
         this._prediction_model = PredictionModel.getInstance()
         // globals.homeBetId = this.homeBet.id
@@ -225,6 +232,9 @@ export class Game {
         this.multipliers.push(new Multiplier(multiplier))
         await this.requestSaveMultipliers([multiplier])
         this.requestSaveBets(this.bets)
+        // remove the first multiplier
+        this.multipliers = this.multipliers.slice(1)
+        console.log("multipliers:", this.multipliers.map(item => item.multiplier))
     }
 
     async getNextBet(): Promise<Bet[]>{
