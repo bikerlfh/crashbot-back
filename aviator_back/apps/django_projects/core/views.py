@@ -2,7 +2,7 @@
 from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from rest_framework.permissions import IsAuthenticated
 # Internal
 from apps.django_projects.core import services
 from apps.utils.django.mixin import APIErrorsMixin
@@ -12,6 +12,8 @@ class HomeBetView(
     APIErrorsMixin,
     APIView,
 ):
+    permission_classes = [IsAuthenticated]
+
     class InputSerializer(serializers.Serializer):
         home_bet_id = serializers.IntegerField(required=False)
 
@@ -43,6 +45,8 @@ class HomeBetMultiplierView(
     APIErrorsMixin,
     APIView,
 ):
+    permission_classes = [IsAuthenticated]
+
     class InputGetSerializer(serializers.Serializer):
         home_bet_id = serializers.IntegerField()
         count = serializers.IntegerField(required=False)
@@ -55,7 +59,7 @@ class HomeBetMultiplierView(
 
     class OutputSerializer(serializers.Serializer):
         multipliers = serializers.ListSerializer(
-            child=serializers.DecimalField(max_digits=10, decimal_places=2)
+            child=serializers.FloatField()
         )
 
     def get(self, request):

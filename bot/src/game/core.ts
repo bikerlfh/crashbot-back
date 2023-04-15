@@ -12,13 +12,16 @@ export class Multiplier{
         this.multiplier = multiplier
         if(multiplier < 2){
             this.category = 1
+        }else{
+            this.category = 2
         }
-        else if(multiplier < 10){
+        // TODO add more categories
+        /*else if(multiplier < 10){
             this.category = 2
         }
         else{
             this.category = 3
-        }
+        }*/
     }
 }
 

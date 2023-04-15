@@ -159,8 +159,8 @@ def predict(
         multipliers = core_selectors.get_last_multipliers(
             home_bet_id=home_bet_id, count=max_
         )
-    if not multipliers:
-        raise ValidationError("no multipliers")
+        if not multipliers:
+            raise ValidationError("no multipliers")
     predictions = []
     for model_home_bet in models:
         prediction_value = prediction_services.predict(

@@ -2,10 +2,13 @@
 from typing import Optional
 
 # Django
-from django.db.models import F, Q, QuerySet
+from django.db.models import F, QuerySet
 
 # Internal
-from apps.django_projects.predictions.constants import ModelStatus
+from apps.django_projects.predictions.constants import (
+    ModelStatus,
+    NUMBER_OF_MODELS_TO_PREDICT
+)
 from apps.django_projects.predictions.models import ModelHomeBet, Bot
 
 
@@ -44,9 +47,10 @@ def filter_model_home_bet_by_home_bet_id(
 def get_bets_models_by_average_predictions(
     *,
     home_bet_id: int,
-    number_of_models: Optional[int] = 3,
+    number_of_models: Optional[int] = None,
     model_home_bet_id: Optional[int] = None
 ) -> QuerySet[ModelHomeBet]:
+    number_of_models = number_of_models or NUMBER_OF_MODELS_TO_PREDICT
     filter_ = dict(
         home_bet_id=home_bet_id,
         status=ModelStatus.ACTIVE.value

@@ -11,17 +11,22 @@ import {Dictionary} from '../types/interfaces';
 import {APIRest} from './APIRest';
 import {Prediction, BetData, Bot} from './models';
 
+import { ApiService } from './APIAxios';
+const apiService = new ApiService();
 
 const URLS = {
     /** Authentication **/
+    login: '/api/token/',
+    tokenRefresh: '/api/token/refresh/',
+    tokenVerify: '/api/token/verify/',
     homeBet: 'home-bet/',
     homeBetDetail: 'home-bet/?P<nombreParametro>',
     addMultipliers: 'home-bet/multiplier/',
     getPrediction: 'predictions/predict/',
-    getBots: 'predictions/bots/?P<bot_type>',
+    getBots: 'predictions/bots/?bot_type=<bot_type>',
     updateBalance: 'customers/balance/',
     createBet: 'bets/',
-    getBet: 'bets/?P<bet_id>',
+    getBet: 'bets/?bet_id=<bet_id>',
     // gameDetail: 'games/<gameId>/',
 };
 
@@ -54,20 +59,37 @@ const makeURL = (url: string, params: Dictionary<any>) =>{
                 url += (url.indexOf('?') === -1 ? "?" : "&") + key + "=" + params[key];
         }
     }
+    console.log(url)
     return url;
 };
 
 export class AviatorBotAPI {
+    static requestLogin = async (username: string, password: string) => {
+        return await apiService.post(URLS.login, {
+            username: username,
+            password: password
+        })
+    }
+    static requestTokenRefresh = async (token: string) => {
+        return await apiService.post(URLS.tokenRefresh, {
+            refresh: token
+        });
+    }
+    static requestTokenVerify = async (token: string) => {
+        return await apiService.post(URLS.tokenVerify, {
+            token: token
+        });
+    }
     static requestHomeBet = async () => {
-        return await APIRest.get(URLS.homeBet);
+        return await apiService.get(URLS.homeBet);
     }
     static requestHomeBetDetail = async (homeBetId: number) => {
-        return await APIRest.get(makeURL(URLS.homeBetDetail, {
+        return await apiService.get(makeURL(URLS.homeBetDetail, {
             home_bet_id: homeBetId
         }));
     }
     static requestSaveMultipliers = (homeBetId: number, multipliers: number[]) => {
-        return APIRest.post(URLS.addMultipliers, {
+        return apiService.post(URLS.addMultipliers, {
             home_bet_id: homeBetId,
             multipliers: multipliers
         });
@@ -77,25 +99,25 @@ export class AviatorBotAPI {
         multipliers?: number[], 
         modelId?: number
     ): Promise<Prediction[]> => {
-        return await APIRest.post(URLS.getPrediction, {
+        return await apiService.post(URLS.getPrediction, {
             home_bet_id: homeBetId,
             multipliers: multipliers || null,
             model_home_bet_id: modelId || null
         }).then((response: any) => { 
-            return response.predictions.map((prediction: any) => new Prediction(prediction));
+            return response.data.predictions.map((prediction: any) => new Prediction(prediction));
         });
     }
     static requestGetBots = async (botType: string): Promise<Bot[]>  => {
-        return await APIRest.get(makeURL(URLS.getBots, {
+        return await apiService.get(makeURL(URLS.getBots, {
             bot_type: botType
         })).then(
-            (response: any) => response.bots.map(
+            (response: any) => response.data.bots.map(
                 (bot: any) => new Bot(bot)
             )
         );
     }
     static requestUpdateBalance = async (customerId: number, homeBetId: number, amount: number) => {
-        return await APIRest.patch(URLS.updateBalance, {
+        return await apiService.patch(URLS.updateBalance, {
             customer_id: customerId,
             home_bet_id: homeBetId,
             amount: amount
@@ -104,15 +126,17 @@ export class AviatorBotAPI {
     static requestCreateBet = async (
         customerId: number, 
         homeBetId: number,
+        balance: number,
         bets: BetData[]
     ) => {
-        return await APIRest.post(URLS.createBet, {
+        return await apiService.post(URLS.createBet, {
             customer_id: customerId,
             home_bet_id: homeBetId,
+            balance_amount: balance,
             bets: bets.map((bet) => bet.toDict())
         });
     }
     static requestGetBet = async (betId:number) => {
-        return await APIRest.get(makeURL(URLS.createBet, {bet_id: betId}));
+        return await apiService.get(makeURL(URLS.createBet, {bet_id: betId}));
     }
 }

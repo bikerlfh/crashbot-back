@@ -2,7 +2,7 @@
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from rest_framework.permissions import IsAuthenticated
 # Internal
 from apps.django_projects.predictions import services
 from apps.django_projects.predictions.constants import BotType
@@ -16,6 +16,8 @@ class PredictionView(
     APIErrorsMixin,
     APIView,
 ):
+    permission_classes = [IsAuthenticated]
+
     class InputSerializer(serializers.Serializer):
         home_bet_id = serializers.IntegerField()
         multipliers = serializers.ListSerializer(

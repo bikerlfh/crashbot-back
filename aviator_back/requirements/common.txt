@@ -11,4 +11,5 @@ celery==5.2.7
 channels[daphne]==4.0.0
 channels_redis==4.0.0
 torch==2.0.0
+djangorestframework-simplejwt==5.2.2
 # torchvision==0.15.0

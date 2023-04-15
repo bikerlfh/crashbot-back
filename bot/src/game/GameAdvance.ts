@@ -23,6 +23,7 @@ export class Game {
     // automatic betting
     private autoPlay: boolean = false
     private bot: Bot|BotStatic
+    private customerId: number = 0
     homeBet: HomeBet
     initialBalance: number = 0
     balance: number = 0
@@ -31,6 +32,8 @@ export class Game {
     
     
     constructor(homeBet: HomeBet, autoPlay: boolean, botType: BotType, useBotStatic?: boolean){
+        // TODO: add correct customerId
+        this.customerId =  1
         this.homeBet = homeBet
         this.autoPlay = autoPlay
         this.aviatorPage = homeBet.aviatorPage       
@@ -140,8 +143,9 @@ export class Game {
             )
         })
         AviatorBotAPI.requestCreateBet(
-            1,
+            this.customerId,
             this.homeBet.id,
+            this.balance,
             betsToSave
         ).catch(error => {console.error("error in requestSaveBets:", error)})
     }

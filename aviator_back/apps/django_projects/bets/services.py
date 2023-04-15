@@ -12,12 +12,14 @@ def create_bets(
     *,
     customer_id: int,
     home_bet_id: int,
+    balance_amount: int,
     bets: list[dict[str, any]],
 ) -> list[Bet]:
     """
     Create multiple bets for a customer
     @param customer_id: Customer ID
     @param home_bet_id: Home Bet ID
+    @param balance_amount: Balance amount
     @param bets: List of bets (
         external_id: str,
         prediction: float,
@@ -61,16 +63,17 @@ def create_bets(
             status=status,
         ))
     bets = Bet.objects.bulk_create(bet_list)
+    balance.amount = balance_amount
+    balance.save()
     return bets
 
 
-def get_bet(*, bet_id: int) -> dict[str, any]:
+def get_bet(*, bet_id: int, user_id: int) -> dict[str, any]:
     bet_data = (
-        selectors.filter_bet(id=bet_id)
+        selectors.filter_bet_owner(bet_id=bet_id, user_id=user_id)
         .values(
             "id",
             "prediction",
-            "prediction_round",
             "amount",
             "multiplier",
             "multiplier_result",

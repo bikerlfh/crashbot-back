@@ -18,7 +18,8 @@
  */
 import {Dictionary} from '../types/interfaces';
 import {APIMethod} from '../types/common';
-import {APIKey, APIUrl, HTTPStatus} from './constants';
+import {APIUrl, HTTPStatus} from './constants';
+import axios from 'axios';
 
 /**
 * format parameters to stringify
@@ -53,14 +54,14 @@ export let APIRest = {
        let config: Dictionary<any> = {
            method: method,
            headers: {
-               'Content-Type': 'application/json',
+               'Content-Type': 'application/json'
            },
            body: body? JSON.stringify(body) : null,
            timeout: 5000,
        };
        
        if(token !== null)
-           config['headers']['Authorization'] = 'token ' + token;
+           config['headers']['Authorization'] = 'Bearer ' + token;
        url =  APIUrl + url;
        return fetch(url, config)
            .then(response => {

@@ -132,7 +132,6 @@ export class AviatorPage{
         // app-bubble-multiplier
         // app-payout-item
         let items = await this._historyGame.locator('app-bubble-multiplier.payout.ng-star-inserted').all();
-        // items.slice().reverse().forEach(async (item) => {
         items.reverse().forEach(async (item) => {
             const multiplier = await item.textContent();
             if(multiplier !== null){
@@ -155,9 +154,28 @@ export class AviatorPage{
         if(this._historyGame == null){
             throw "waitNextGame :: no historyGame"
         }
+        const lastMultiplierSaved = this.multipliers.slice(-1)[0]
+        let lastMultiplierContent = null
+        let locator = null
+        let lastMultiplier = null
+        await this._historyGame.locator('app-bubble-multiplier').first().waitFor({timeout: 1000})    
+        do{
+            locator = this._historyGame.locator('app-bubble-multiplier').first()
+            lastMultiplierContent = await locator.textContent({timeout:1000})
+            lastMultiplier = lastMultiplierContent? this._formatMultiplier(lastMultiplierContent): lastMultiplierSaved;
+            if(lastMultiplierSaved != lastMultiplier){
+                this.multipliers.push(lastMultiplier)
+                console.log("waitNextGame :: new multiplier:", lastMultiplier)
+                this.multipliers = this.multipliers.slice(1)
+                return
+            }
+            await sleepNow(200)
+        } while(true);
+
+        /*
         while(true){
             try{
-                const len_multipliers: number = this.multipliers.length - 1
+                
                 let locator = this._historyGame.locator('app-bubble-multiplier').first()
                 if(locator == null){
                     continue
@@ -181,6 +199,6 @@ export class AviatorPage{
                 }
             }
         }
+        */
     }
-
 }
