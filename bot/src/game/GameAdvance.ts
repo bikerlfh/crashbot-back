@@ -13,6 +13,7 @@ import { Bot, BotStatic } from "./bots/bots"
 
 
 export class Game {
+    private MAX_MULTIPLIERS_TO_SAVE: number = 10
     private aviatorPage: AviatorPage
     private minimumBet: number = 0
     private maximumBet: number = 0
@@ -28,6 +29,7 @@ export class Game {
     initialBalance: number = 0
     balance: number = 0
     multipliers: Multiplier[] = []
+    multipliersToSave: number[] = []
     bets: Bet[] = []
     
     
@@ -98,10 +100,9 @@ export class Game {
         this.balance = this.initialBalance
         console.log("loading the player.....")
         await this.bot.initialize(this.initialBalance)
-        const multipliers = this.aviatorPage.multipliers
-        this.multipliers = multipliers.map(item => new Multiplier(item))
-        console.log("saving intial multipliers.....")
-        await this.requestSaveMultipliers(multipliers)
+        this.multipliersToSave = this.aviatorPage.multipliers
+        this.multipliers = this.multipliersToSave.map(item => new Multiplier(item))
+        await this.requestSaveMultipliers()
         this._ws_client.setOnMessage(this.wsOnMessage.bind(this))
         this.initialized = true
         //console.clear()
@@ -115,12 +116,22 @@ export class Game {
         return await this.aviatorPage.readBalance() || 0
     }
 
-    private async requestSaveMultipliers(multipliers: number[]){
+    private async requestSaveMultipliers(){
         /*
         * Save the multipliers in the database
         */
-        await AviatorBotAPI.requestSaveMultipliers(this.homeBet.id, multipliers).catch(
-            error => {
+        if(this.multipliersToSave.length < this.MAX_MULTIPLIERS_TO_SAVE){
+            return
+        }
+        console.log("saving multipliers.....")
+        console.log("multipliers to save:", this.multipliersToSave);
+        await AviatorBotAPI.requestSaveMultipliers(this.homeBet.id, this.multipliersToSave).then(
+            (response) => {
+                this.multipliersToSave = []
+                console.log("multipliers saved:", response.data.multipliers);
+            }
+        ).catch(
+            (error) => {
                 console.error("error in requestSaveMultipliers:", error)
             }
         )
@@ -142,11 +153,15 @@ export class Game {
                 bet.multiplierResult
             )
         })
+        console.log("saving bets.....")
         AviatorBotAPI.requestCreateBet(
-            this.customerId,
             this.homeBet.id,
             this.balance,
             betsToSave
+        ).then(
+            (response) => {
+                console.log("bets saved:", response.data);
+            }
         ).catch(error => {console.error("error in requestSaveBets:", error)})
     }
 
@@ -154,7 +169,7 @@ export class Game {
         /*
         * Get the prediction from the database
         */
-       const multipliers = this.multipliers.map(item => item.multiplier)
+        const multipliers = this.multipliers.map(item => item.multiplier)
         const predictions = await AviatorBotAPI.requestPrediction(this.homeBet.id, multipliers).catch(
             error => { return [] }
         )
@@ -186,7 +201,7 @@ export class Game {
             const control = index == 0? Control.Control1: Control.Control2
             console.log("sending bet to aviator %d * %d control: %s", bet.amount, bet.multiplier, control)
             await this.aviatorPage.bet(bet.amount, bet.multiplier, control)
-            await sleepNow(2000)
+            await sleepNow(1000)
         }
     }
 
@@ -234,11 +249,11 @@ export class Game {
         this._prediction_model.addMultiplierResult(multiplier)
         this.evaluateBets(multiplier)
         this.multipliers.push(new Multiplier(multiplier))
-        await this.requestSaveMultipliers([multiplier])
+        this.multipliersToSave.push(multiplier)
         this.requestSaveBets(this.bets)
+        this.requestSaveMultipliers()
         // remove the first multiplier
         this.multipliers = this.multipliers.slice(1)
-        console.log("multipliers:", this.multipliers.map(item => item.multiplier))
     }
 
     async getNextBet(): Promise<Bet[]>{

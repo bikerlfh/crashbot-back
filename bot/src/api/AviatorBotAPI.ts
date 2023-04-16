@@ -12,6 +12,7 @@ import {APIRest} from './APIRest';
 import {Prediction, BetData, Bot} from './models';
 
 import { ApiService } from './APIAxios';
+import { HTTPStatus } from './constants';
 const apiService = new ApiService();
 
 const URLS = {
@@ -59,7 +60,6 @@ const makeURL = (url: string, params: Dictionary<any>) =>{
                 url += (url.indexOf('?') === -1 ? "?" : "&") + key + "=" + params[key];
         }
     }
-    console.log(url)
     return url;
 };
 
@@ -92,6 +92,11 @@ export class AviatorBotAPI {
         return apiService.post(URLS.addMultipliers, {
             home_bet_id: homeBetId,
             multipliers: multipliers
+        }).then((response: any) => {
+            if(response.status === HTTPStatus.UNAUTHORIZED){
+                console.log(`Unauthorized ${response.request.path}`);
+            }
+            return response;
         });
     }
     static requestPrediction = async (
@@ -104,17 +109,23 @@ export class AviatorBotAPI {
             multipliers: multipliers || null,
             model_home_bet_id: modelId || null
         }).then((response: any) => { 
+            if(response.status === HTTPStatus.UNAUTHORIZED){
+                return []
+            }
             return response.data.predictions.map((prediction: any) => new Prediction(prediction));
         });
     }
     static requestGetBots = async (botType: string): Promise<Bot[]>  => {
         return await apiService.get(makeURL(URLS.getBots, {
             bot_type: botType
-        })).then(
-            (response: any) => response.data.bots.map(
+        })).then((response: any) => {
+            if(response.status === HTTPStatus.UNAUTHORIZED){
+                return []
+            }
+            return response.data.bots.map(
                 (bot: any) => new Bot(bot)
             )
-        );
+        });
     }
     static requestUpdateBalance = async (customerId: number, homeBetId: number, amount: number) => {
         return await apiService.patch(URLS.updateBalance, {
@@ -124,13 +135,11 @@ export class AviatorBotAPI {
         });
     }
     static requestCreateBet = async (
-        customerId: number, 
         homeBetId: number,
         balance: number,
         bets: BetData[]
     ) => {
         return await apiService.post(URLS.createBet, {
-            customer_id: customerId,
             home_bet_id: homeBetId,
             balance_amount: balance,
             bets: bets.map((bet) => bet.toDict())

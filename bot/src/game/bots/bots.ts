@@ -99,7 +99,7 @@ export class BotStatic extends BotBase{
                 "(this amount can not be higth that the balance " + balance + "): "
             ));
         }
-        this._minBetAmount = this._maxBetAmount / 3   
+        this._minBetAmount = roundNumber(this._maxBetAmount / 3, 0)
         if(this.amountMultiple){
             this._maxBetAmount = formatNumberToMultiple(this._maxBetAmount, this.amountMultiple)
             this._minBetAmount = formatNumberToMultiple(this._minBetAmount, this.amountMultiple)
@@ -122,12 +122,13 @@ export class BotStatic extends BotBase{
         const lastAmountLosse = this.calculateRecoveryAmount(this.amountsLost.slice(-1)[0], multiplier)
         // calculates the maximum amount allowed to recover in a single bet 
         const maxRecoveryAmount = this.maximumBet * 0.5 // 50% of maximum bet (this can be a parameter of the bot)
-        const amount = Math.min(amountToRecoverLosses, lastAmountLosse, maxRecoveryAmount, this.balance)
+        let amount = Math.min(amountToRecoverLosses, maxRecoveryAmount, this.balance)
+        amount = amount >= maxRecoveryAmount ? lastAmountLosse : amount
         // const kellyAmount = adaptiveKellyFormula(multiplier, probability, this.RISK_FACTOR, amount)
         return Math.max(amount, minBet, this.minimumBet)
     }
 
-    generateRecoveryBets(multiplier: number, probability: number, strategy: BotStrategy): Bet[]{
+    /*generateRecoveryBets(multiplier: number, probability: number, strategy: BotStrategy): Bet[]{
         const bets: Bet[] = []
         let amount = this.getBetRecoveryAmount(multiplier, probability, strategy)
         amount = this.validateBetAmount(amount)
@@ -142,6 +143,14 @@ export class BotStatic extends BotBase{
         }else{
             bets.push(new Bet(amount, multiplier))
         }
+        return bets.filter((b)=> b.amount > 0)
+    }*/
+
+    generateRecoveryBets(multiplier: number, probability: number, strategy: BotStrategy): Bet[]{
+        const bets: Bet[] = []
+        let amount = this.getBetRecoveryAmount(multiplier, probability, strategy)
+        amount = this.validateBetAmount(amount)
+        bets.push(new Bet(amount, multiplier))
         return bets.filter((b)=> b.amount > 0)
     }
 

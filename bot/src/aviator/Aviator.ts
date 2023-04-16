@@ -28,7 +28,7 @@ export class AviatorPage{
             console.log("_click :: box or page does't exists")
             return
         }
-        // await this._page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {steps: 5})
+        await this._page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {steps: 50})
         await this._page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, {delay: 50});
     }
     
@@ -41,12 +41,15 @@ export class AviatorPage{
         if(!this._page ){
             throw "_getAppGame :: page is null"
         }
+        
+        let _appGame = null
         while(true){
             try {
-                // this._appGame = this._page.locator("app-game").first()
-                const _appGame = this._page.locator("app-game").first()
+                await this._page.locator("app-game").first().waitFor({ timeout: 50000 })
+                _appGame = this._page.locator("app-game").first();
+                // _appGame = this._page.locator("app-game").first()
                 await _appGame.locator(".result-history").waitFor({
-                    timeout: 30000
+                    timeout: 50000
                 });
                 return _appGame
             } catch (e) {
@@ -135,12 +138,12 @@ export class AviatorPage{
         items.reverse().forEach(async (item) => {
             const multiplier = await item.textContent();
             if(multiplier !== null){
-                const value = this._formatMultiplier(multiplier)
-                this.multipliers.push(value);
+                // const value = this._formatMultiplier(multiplier)
+                this.multipliers.push(this._formatMultiplier(multiplier));
             }
         })
         await this._page.waitForTimeout(2000);
-        console.log("multiplier aviator:", this.multipliers)
+        //console.log("multiplier aviator:", this.multipliers)
     }
 
     async bet(amount: number, multiplier: number, control: Control){
@@ -171,34 +174,5 @@ export class AviatorPage{
             }
             await sleepNow(200)
         } while(true);
-
-        /*
-        while(true){
-            try{
-                
-                let locator = this._historyGame.locator('app-bubble-multiplier').first()
-                if(locator == null){
-                    continue
-                }
-                let lastMultiplierContent = await locator.textContent({timeout:1000})
-                if(!lastMultiplierContent){
-                    console.log("waitNextGame :: lastMultiplierContent not exists")
-                    continue
-                }
-                const lastMultiplier = this._formatMultiplier(lastMultiplierContent)
-                if(this.multipliers[len_multipliers] != lastMultiplier){
-                    this.multipliers.push(lastMultiplier)
-                    console.log("waitNextGame :: new multiplier:", lastMultiplier)
-                    return
-                }
-                await sleepNow(1000)
-            }
-            catch (e) {
-                if (e instanceof playwright.errors.TimeoutError) {
-                    console.log("waitNextGame :: error timeout")
-                }
-            }
-        }
-        */
     }
 }

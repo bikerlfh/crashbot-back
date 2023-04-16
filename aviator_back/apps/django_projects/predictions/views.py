@@ -62,6 +62,8 @@ class ModelHomeBetView(
     APIErrorsMixin,
     APIView,
 ):
+    permission_classes = [IsAuthenticated]
+
     class InputSerializer(serializers.Serializer):
         home_bet_id = serializers.IntegerField()
         status = serializers.ChoiceField(
@@ -116,6 +118,8 @@ class BotView(
     APIErrorsMixin,
     APIView,
 ):
+    permission_classes = [IsAuthenticated]
+
     class InputSerializer(serializers.Serializer):
         bot_id = serializers.IntegerField(required=False, allow_null=True)
         bot_type = serializers.ChoiceField(

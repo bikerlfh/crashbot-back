@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import {APIUrl, HTTPStatus} from './constants';
 import { LocalStorage } from 'node-localstorage';
+import { rawListeners } from 'process';
 
 export class ApiService {
 	private readonly httpClient: AxiosInstance;
@@ -18,10 +19,17 @@ export class ApiService {
 		this.localStorage = new LocalStorage('./storage');
 	}
 	private mapError(error: AxiosError): any{
+		const res = error.response
+		if(res?.status === HTTPStatus.INTERNAL_ERROR){
+			throw "internal server error"
+		}
+		if(res?.status === HTTPStatus.UNAUTHORIZED){
+			console.log(`¡UNAUTHORIZED api request :: ${error.request?.path}!`)
+		}
 		const response = {
-			status: error.response?.status,
-			statusText: error.response?.statusText,
-			data: error.response?.data
+			status: res?.status,
+			statusText: res?.statusText,
+			data: res?.data
 		}
 		return response
 	}
@@ -80,16 +88,13 @@ export class ApiService {
 
 	private addAuthHeader(config?: AxiosRequestConfig): AxiosRequestConfig {
 		const token = this.localStorage.getItem('token');
-
 		if (!token) {
 			return config || {};
 		}
-
 		const headers = {
 			...config?.headers,
-			Authorization: `token ${token}`,
+			Authorization: `Bearer ${token}`,
 		};
-
 		return { ...config, headers };
 	}
 }

@@ -13,10 +13,12 @@ class BetView(APIErrorsMixin, APIView):
     permission_classes = [IsAuthenticated]
 
     class InputGETSerializer(serializers.Serializer):
-        bet_id = serializers.IntegerField()
+        home_bet_id = serializers.IntegerField(required=False)
+        status = serializers.CharField(required=False)
 
     class OutputGETSerializer(serializers.Serializer):
         id = serializers.IntegerField(source="bet_id")
+        home_bet_id = serializers.IntegerField()
         prediction = serializers.FloatField()
         amount = serializers.FloatField()
         multiplier = serializers.FloatField()
@@ -25,9 +27,10 @@ class BetView(APIErrorsMixin, APIView):
         status = serializers.CharField()
 
     class InputPOSTSerializer(serializers.Serializer):
-        customer_id = serializers.IntegerField()
         home_bet_id = serializers.IntegerField()
-        balance_amount = serializers.FloatField()
+        balance_amount = serializers.DecimalField(
+            max_digits=18, decimal_places=2
+        )
         bets = inline_serializer(
             fields=dict(
                 external_id=serializers.CharField(max_length=50),
@@ -43,13 +46,13 @@ class BetView(APIErrorsMixin, APIView):
         bet_id: serializers.IntegerField(source="id")
 
     def get(self, request):
-        serializer = self.InputGETSerializer(data=request.query_params)
-        serializer.is_valid(raise_exception=True)
-        bet_data = services.get_bet(
-            **serializer.validated_data,
+        in_serializer = self.InputGETSerializer(data=request.query_params)
+        in_serializer.is_valid(raise_exception=True)
+        bet_data = services.get_my_bets(
+            **in_serializer.validated_data,
             user_id=request.user.id
         )
-        output_serializer = self.OutputGETSerializer(data=bet_data)
+        output_serializer = self.OutputGETSerializer(data=bet_data, many=True)
         output_serializer.is_valid(raise_exception=True)
         return Response(
             data=output_serializer.validated_data, status=status.HTTP_200_OK
@@ -58,7 +61,10 @@ class BetView(APIErrorsMixin, APIView):
     def post(self, request):
         serializer = self.InputPOSTSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        bets = services.create_bets(**serializer.validated_data)
+        bets = services.create_bets(
+            **serializer.validated_data,
+            customer_id=request.user.customer.id
+        )
         bet_ids = [bet.id for bet in bets]
         return Response(
             data={"bet_ids": bet_ids}, status=status.HTTP_201_CREATED

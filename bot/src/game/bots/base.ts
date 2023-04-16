@@ -207,7 +207,8 @@ export class BotBase{
         const lastAmountLosse = this.calculateRecoveryAmount(this.amountsLost.slice(-1)[0], multiplier)
         // calculates the maximum amount allowed to recover in a single bet 
         const maxRecoveryAmount = this.maximumBet * 0.5 // 50% of maximum bet (this can be a parameter of the bot)
-        const amount = Math.min(amountToRecoverLosses, lastAmountLosse, maxRecoveryAmount, this.balance)
+        let amount = Math.min(amountToRecoverLosses, maxRecoveryAmount, this.balance)
+        amount = amount >= maxRecoveryAmount ? lastAmountLosse : amount
         const kellyAmount = adaptiveKellyFormula(multiplier, probability, this.RISK_FACTOR, amount)
         return Math.max(amount, kellyAmount, minBet)
     }

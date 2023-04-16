@@ -103,7 +103,7 @@ export class BetControl{
         if(!autoCashOutMultiplier){
             throw "buttons null autoCashOutMultiplier"
         }
-        const value = roundNumber(parseFloat(await autoCashOutMultiplier.inputValue({timeout: 1000})), 0)
+        const value = roundNumber(parseFloat(await autoCashOutMultiplier.inputValue({timeout: 1000})), 2)
         if(value != multiplier){
             await autoCashOutMultiplier.fill("", {timeout: 1000})
             await autoCashOutMultiplier.type(multiplier.toString(), {delay: 100})

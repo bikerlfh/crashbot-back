@@ -1,3 +1,4 @@
+from typing import Optional
 # Django
 from rest_framework.exceptions import ValidationError
 
@@ -68,11 +69,21 @@ def create_bets(
     return bets
 
 
-def get_bet(*, bet_id: int, user_id: int) -> dict[str, any]:
+def get_my_bets(
+    *,
+    user_id: int,
+    home_bet_id: Optional[int] = None,
+    status: Optional[str] = None,
+) -> list[dict]:
     bet_data = (
-        selectors.filter_bet_owner(bet_id=bet_id, user_id=user_id)
+        selectors.filter_bets_by_user_id(
+            user_id=user_id,
+            home_bet_id=home_bet_id,
+            status=status
+        )
         .values(
             "id",
+            "home_bet_id",
             "prediction",
             "amount",
             "multiplier",
@@ -80,8 +91,7 @@ def get_bet(*, bet_id: int, user_id: int) -> dict[str, any]:
             "profit_amount",
             "status",
         )
-        .first()
     )
     if not bet_data:
-        raise ValidationError("Bet does not exist")
-    return bet_data
+        raise ValidationError("Bets does not exists")
+    return list(bet_data)

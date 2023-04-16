@@ -43,12 +43,39 @@ def get_last_multipliers(
         .values_list("multiplier", flat=True)
         .order_by("-id")[:count]
     )
-    if count is not None:
-        _multipliers = _multipliers[:count]
     multipliers = list(_multipliers)
     multipliers.reverse()
     return multipliers
 
 
-def count_home_bet_multipliers(home_bet_id: int) -> int:
-    return HomeBetMultiplier.objects.filter(home_bet_id=home_bet_id).count()
+def get_today_multipliers(
+    *,
+    home_bet_id: int
+) -> list[Decimal]:
+    now = datetime.now().date()
+    filter_ = dict(
+        home_bet_id=home_bet_id,
+        multiplier_dt__date=now,
+    )
+    _multipliers = (
+        HomeBetMultiplier.objects.filter(**filter_)
+        .values_list("multiplier", flat=True)
+        .order_by("-id")
+    )
+    multipliers = list(_multipliers)
+    multipliers.reverse()
+    return multipliers
+
+
+def count_home_bet_multipliers(
+    *,
+    home_bet_id: int,
+    only_today: Optional[bool] = False
+) -> int:
+    filter_ = dict(
+        home_bet_id=home_bet_id,
+    )
+    if only_today:
+        now = datetime.now().date()
+        filter_.update(multiplier_dt__date=now)
+    return HomeBetMultiplier.objects.filter(**filter_).count()

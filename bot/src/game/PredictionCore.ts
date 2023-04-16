@@ -46,21 +46,25 @@ export class PredictionCore{
 
     addMultiplierResult(multiplier: number){
         this.multiplierResults.push(multiplier)
-        this.calculateAveragePrediction()
+        this.calculateAverageModelPrediction()
         this.calculateCategoryPercentages()
     }
 
     calculateCategoryPercentages(){
-        for(let i = 1; i <= 3; i++){
+        let roundMultiplier = 0
+        let valueRound = 0
+        let value = 0
+        for(let i = 1; i <= 2; i++){
             let countI = 0
             let count = 0
             let countValues = 0
             for (let j = 0; j < this.predictionRounds.length; j++){
-                const valueRound = this.predictionRounds[j]
-                const value = this.predictionValues[j]
+                valueRound = this.predictionRounds[j]
+                value = this.predictionValues[j]
                 if(valueRound == i){
                     countI +=1
-                    if(valueRound <= this.multiplierResults[j]){
+                    roundMultiplier = roundNumber(this.multiplierResults[j], 0)
+                    if(valueRound == roundMultiplier){
                         count++;
                     }
                     if(value <= this.multiplierResults[j]){
@@ -72,14 +76,16 @@ export class PredictionCore{
                 continue;
             }
             this.categoryPercentages[i] = roundNumber(count / countI, 2);
-            this.categoryPercentagesValuesInLive[i] = roundNumber(count / countI, 2);
+            this.categoryPercentagesValuesInLive[i] = roundNumber(countValues / countI, 2);
         }
     }
 
-    calculateAveragePrediction(){
+    calculateAverageModelPrediction(){
         let correcValuesCount = 0;
+        let roundMultiplier = 0
         for (let i = 0; i < this.multiplierResults.length; i++) {
-            if (this.predictionValues[i] <= this.multiplierResults[i]) {
+            roundMultiplier = roundNumber(this.multiplierResults[i], 0)
+            if (this.predictionValues[i] == roundMultiplier) {
                 correcValuesCount++;
             }
         }

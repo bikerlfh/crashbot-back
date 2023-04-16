@@ -155,7 +155,7 @@ def predict(
     if not models:
         raise ValidationError("no models")
     if not multipliers:
-        max_ = models.annotate(max=Max("seq_len")).first().max
+        max_ = models.aggregate(max=Max("seq_len"))["max"]
         multipliers = core_selectors.get_last_multipliers(
             home_bet_id=home_bet_id, count=max_
         )
@@ -208,7 +208,8 @@ def create_model_with_all_multipliers(
             f"home bet {home_bet_id} does not exists"
         )
         return
-    multipliers = core_selectors.get_last_multipliers(home_bet_id=home_bet_id)
+    # multipliers = core_selectors.get_last_multipliers(home_bet_id=home_bet_id)
+    multipliers = core_selectors.get_today_multipliers(home_bet_id=home_bet_id)
     if not multipliers:
         logger.warning(
             f"create_model_with_all_multipliers :: "

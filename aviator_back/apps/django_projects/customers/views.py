@@ -15,7 +15,7 @@ class CustomerBalanceView(APIErrorsMixin, APIView):
         home_bet_id = serializers.IntegerField()
 
     class OutputGETSerializer(serializers.Serializer):
-        amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+        amount = serializers.FloatField()
         # username = serializers.CharField()
         # password = serializers.CharField()
 
