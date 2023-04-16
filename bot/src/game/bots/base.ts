@@ -139,7 +139,7 @@ export class BotBase{
         * number of maximum bets that the bot can hold
         * @return {number} the number of bets
         */
-        return roundNumber(this.balance / this.maximumBet, 0)
+        return Math.floor(this.balance / this.maximumBet)
     }
 
     getProfit(): number{

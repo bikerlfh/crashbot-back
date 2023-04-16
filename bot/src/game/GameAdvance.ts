@@ -8,7 +8,6 @@ import { Control } from '../aviator/BetControl';
 import { BetData } from "../api/models"
 import { sleepNow, roundNumber } from "./utils"
 import { BotType } from "./core"
-import { BotBase } from "./bots/base"
 import { Bot, BotStatic } from "./bots/bots"
 
 
@@ -24,7 +23,6 @@ export class Game {
     // automatic betting
     private autoPlay: boolean = false
     private bot: Bot|BotStatic
-    private customerId: number = 0
     homeBet: HomeBet
     initialBalance: number = 0
     balance: number = 0
@@ -35,7 +33,6 @@ export class Game {
     
     constructor(homeBet: HomeBet, autoPlay: boolean, botType: BotType, useBotStatic?: boolean){
         // TODO: add correct customerId
-        this.customerId =  1
         this.homeBet = homeBet
         this.autoPlay = autoPlay
         this.aviatorPage = homeBet.aviatorPage       
@@ -92,18 +89,19 @@ export class Game {
         * - Open the browser
         */
         console.log("connecting to websocket.....")
-        this._ws_client = await WebSocketClient.getInstance()
+        // NOTE: activate when the websocket is ready
+        //this._ws_client = await WebSocketClient.getInstance()
+        //this._ws_client.setOnMessage(this.wsOnMessage.bind(this))
         console.log("opening home bet.....")
         await this.aviatorPage.open()
         console.log("reading the player's balance.....")
         this.initialBalance = await this.readBalanceToAviator()
         this.balance = this.initialBalance
         console.log("loading the player.....")
-        await this.bot.initialize(this.initialBalance)
         this.multipliersToSave = this.aviatorPage.multipliers
         this.multipliers = this.multipliersToSave.map(item => new Multiplier(item))
         await this.requestSaveMultipliers()
-        this._ws_client.setOnMessage(this.wsOnMessage.bind(this))
+        await this.bot.initialize(this.initialBalance)
         this.initialized = true
         //console.clear()
         console.log("Game initialized")
@@ -149,14 +147,14 @@ export class Game {
                 bet.externalId,
                 bet.prediction,
                 bet.multiplier,
-                bet.amount,
+                roundNumber(bet.amount, 2),
                 bet.multiplierResult
             )
         })
         console.log("saving bets.....")
         AviatorBotAPI.requestCreateBet(
             this.homeBet.id,
-            this.balance,
+            roundNumber(this.balance, 2),
             betsToSave
         ).then(
             (response) => {

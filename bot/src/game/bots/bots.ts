@@ -2,9 +2,10 @@ import { BotStrategy } from "../../api/models"
 import { PredictionCore } from "../PredictionCore"
 import { Bet, PredictionData } from "../core"
 import { BotType } from "../core"
-import { formatNumberToMultiple } from "../utils"
+import { adaptiveKellyFormula, formatNumberToMultiple } from "../utils"
 import { BotBase } from "./base"
 import {roundNumber} from "../utils"
+import { count } from "console"
 
 
 
@@ -81,11 +82,6 @@ export class BotStatic extends BotBase{
         * @param amountMultiple?: number
         */
         super(botType, minimumBet, maximumBet, amountMultiple)
-       
-        if(this.amountMultiple){
-            this._maxBetAmount = formatNumberToMultiple(this._maxBetAmount, this.amountMultiple)
-            this._minBetAmount = formatNumberToMultiple(this._minBetAmount, this.amountMultiple)
-        }
     }
 
     async initialize(balance: number){
@@ -104,7 +100,6 @@ export class BotStatic extends BotBase{
             this._maxBetAmount = formatNumberToMultiple(this._maxBetAmount, this.amountMultiple)
             this._minBetAmount = formatNumberToMultiple(this._minBetAmount, this.amountMultiple)
         }
-        
         console.log("max bet amount: ", this._maxBetAmount)
         console.log("min bet amount: ", this._minBetAmount)
     }
@@ -116,16 +111,26 @@ export class BotStatic extends BotBase{
         * @param {number} multiplier the multiplier
         */
         const profit = this.getProfit()
-        const minBet = this.balance * strategy.minAmountPercentageToBet
+        // NOTE: no use minBet by strategy
+        // const minBet = this.balance * strategy.minAmountPercentageToBet
         const amountToRecoverLosses = this.calculateRecoveryAmount(profit, multiplier)
+        if(amountToRecoverLosses <= this.minimumBet && multiplier >= 1.95){
+            return this.minimumBet
+        }
         // calculate the amount to bet to recover last amount loss
         const lastAmountLosse = this.calculateRecoveryAmount(this.amountsLost.slice(-1)[0], multiplier)
         // calculates the maximum amount allowed to recover in a single bet 
         const maxRecoveryAmount = this.maximumBet * 0.5 // 50% of maximum bet (this can be a parameter of the bot)
         let amount = Math.min(amountToRecoverLosses, maxRecoveryAmount, this.balance)
         amount = amount >= maxRecoveryAmount ? lastAmountLosse : amount
+        amount =  Math.max(amount, this.minimumBet)
+        // validation of new balance after bet recovery with the stop loss
+        const posibleLoss = Math.abs(profit) + amount
+        if(posibleLoss >= this.stopLoss){
+            amount = Math.min(Math.floor(amount * 0.3), lastAmountLosse)
+        }
         // const kellyAmount = adaptiveKellyFormula(multiplier, probability, this.RISK_FACTOR, amount)
-        return Math.max(amount, minBet, this.minimumBet)
+        return Math.max(amount, this.minimumBet)
     }
 
     /*generateRecoveryBets(multiplier: number, probability: number, strategy: BotStrategy): Bet[]{
@@ -162,13 +167,22 @@ export class BotStatic extends BotBase{
         const profit = this.getProfit()
         const categoryPrecentage = predictionData.categoryPrecentage
         if(profit < 0){
-            // always the multiplier to recover losses is 2
-            this.bets = this.generateRecoveryBets(2, categoryPrecentage, strategy)
+            // always the multiplier to recover losses is 1.95
+            this.bets = this.generateRecoveryBets(1.95, categoryPrecentage, strategy)
             return this.bets
         }
         // to category 2
-        this.bets.push(new Bet(this._maxBetAmount, 1.95))
-        this.bets.push(new Bet(this._minBetAmount, 2))
+        // if the profit is greater than 10% of the initial balance
+        const profitPercentage = this.getProfitPercent()
+        if(profitPercentage > 0.10){
+            const maxBetKellyAmount = adaptiveKellyFormula(1.95, categoryPrecentage, this.RISK_FACTOR, this._maxBetAmount)
+            const minBetKellyAmount = adaptiveKellyFormula(2, categoryPrecentage, this.RISK_FACTOR, this._minBetAmount)
+            this.bets.push(new Bet(Math.max(maxBetKellyAmount, this._maxBetAmount), 1.95))
+            this.bets.push(new Bet(Math.max(minBetKellyAmount, this._minBetAmount), 2))
+        }else{
+            this.bets.push(new Bet(this._maxBetAmount, 1.95))
+            this.bets.push(new Bet(this._minBetAmount, 2))
+        }
         this.bets = this.bets.filter((b)=> b.amount > 0)
         return this.bets
     }
@@ -177,6 +191,8 @@ export class BotStatic extends BotBase{
         if(prediction == null){
             return []
         }
+        const profit = this.getProfit()
+        const predictionData = this.getPredictionData(prediction)
         const numberOfBet = this.getNumberOfBets()
         const strategy = this.getStrategy(numberOfBet)
         if(!strategy){
@@ -185,8 +201,6 @@ export class BotStatic extends BotBase{
             )
             return []
         }
-        const profit = this.getProfit()
-        const predictionData = this.getPredictionData(prediction)
         console.log("\n\nprofit: ", profit)
         predictionData.printData()
         if(this.inStopLoss()){

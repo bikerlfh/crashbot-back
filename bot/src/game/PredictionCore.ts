@@ -64,6 +64,7 @@ export class PredictionCore{
                 if(valueRound == i){
                     countI +=1
                     roundMultiplier = roundNumber(this.multiplierResults[j], 0)
+                    roundMultiplier = roundMultiplier >= 2 ? 2 : roundMultiplier
                     if(valueRound == roundMultiplier){
                         count++;
                     }
