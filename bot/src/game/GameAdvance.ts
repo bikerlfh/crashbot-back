@@ -122,7 +122,6 @@ export class Game {
             return
         }
         console.log("saving multipliers.....")
-        console.log("multipliers to save:", this.multipliersToSave);
         await AviatorBotAPI.requestSaveMultipliers(this.homeBet.id, this.multipliersToSave).then(
             (response) => {
                 this.multipliersToSave = []

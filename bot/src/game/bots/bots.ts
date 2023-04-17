@@ -84,9 +84,13 @@ export class BotStatic extends BotBase{
         super(botType, minimumBet, maximumBet, amountMultiple)
     }
 
-    async initialize(balance: number){
+    async initialize(balance: number, autoPlay?: boolean){
+        autoPlay = autoPlay || false
         console.log("initializing bot static")
         await super.initialize(balance)
+        if(!autoPlay){
+            return
+        }
         // add the minimum and maximum bet
         let readlineSync = require('readline-sync');
         while(this._maxBetAmount <= 0 || this._maxBetAmount > balance){
