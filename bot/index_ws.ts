@@ -1,6 +1,13 @@
 import { createServer } from 'http';
 import { Server, Socket } from 'socket.io';
-import {loginEvent, verifyTokenEvent, autoPlayEvent, startBotEvent, closeGameEvent} from "./src/ws/events";
+import {
+    loginEvent,
+    verifyTokenEvent, 
+    autoPlayEvent, 
+    startBotEvent, 
+    closeGameEvent, 
+    setMaxAmountToBetEvent
+} from "./src/ws/events";
 import {createGlobals} from "./src/globals";
 
 const httpServer = createServer();
@@ -51,7 +58,7 @@ io.on('connection', (socket: Socket) => {
         socket.emit('autoPlay', msg)
     });
     socket.on('setMaxAmountToBet', (data: any) => {
-        const msg = autoPlayEvent(data)
+        const msg = setMaxAmountToBetEvent(data)
         socket.emit('autoPlay', msg)
     });
     socket.on('closeGame', (data: any) => {

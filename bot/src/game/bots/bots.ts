@@ -169,7 +169,6 @@ export class BotStatic extends BotBase{
             this.bets.push(new Bet(this._maxAmountToBet, 1.95))
             this.bets.push(new Bet(this._minAmountToBet, 2))
         }
-        console.log("encontro bets;: ", this.bets)
         this.bets = this.bets.filter((b)=> b.amount > 0)
         return this.bets
     }
@@ -210,7 +209,6 @@ export class BotStatic extends BotBase{
             return []
         }
         // CATEGORY 2
-        console.log("se va a la categoria 2")
         return this.generateBets(predictionData, strategy)
     }
 }
