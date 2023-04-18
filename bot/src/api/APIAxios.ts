@@ -20,8 +20,12 @@ export class ApiService {
 	}
 	private mapError(error: AxiosError): any{
 		const res = error.response
-		if(res?.status === HTTPStatus.INTERNAL_ERROR){
-			throw "internal server error"
+		if(!res || res?.status === HTTPStatus.INTERNAL_ERROR){
+			return {
+				status: HTTPStatus.INTERNAL_ERROR, 
+				statusText: "internal server error",
+				data: null
+			}
 		}
 		if(res?.status === HTTPStatus.UNAUTHORIZED){
 			console.log(`¡UNAUTHORIZED api request :: ${error.request?.path}!`)

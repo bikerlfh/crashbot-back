@@ -36,6 +36,13 @@ export class BotBase{
     // betting amount lossess in order
     protected amountsLost: number[] = []
 
+    /*
+    * only use for bots that want to bet a fixed amount
+    * the min amount of bet should be less than the max amount of bet / 3 example: max bet = 300, min bet = 300/3 = 100
+    */
+    protected _maxAmountToBet: number = 0
+    protected _minAmountToBet: number = 0
+
     constructor(
         botType: BotType,
         minimumBet: number = 0,
@@ -115,6 +122,27 @@ export class BotBase{
             totalLoss -= this.amountsLost[i]
             this.amountsLost.pop()
         }
+    }
+
+    protected getMinLostAmount(): number{
+        // return the min amount lost (the profit must be lower than 0)
+        return Math.min(...this.amountsLost)
+    }
+
+    setMaxAmountToBet(amount: number){
+        this._maxAmountToBet = roundNumber(amount, 0)
+        if(this._maxAmountToBet > this.balance){
+            console.log("maxAmountToBet is greater than balance(", this.balance, ")")
+            console.log("setting maxAmountToBet to balance")
+            this._maxAmountToBet = 0
+        }
+        this._minAmountToBet = roundNumber(this._maxAmountToBet / 3, 0)
+        if(this.amountMultiple){
+            this._maxAmountToBet = formatNumberToMultiple(this._maxAmountToBet, this.amountMultiple)
+            this._minAmountToBet = formatNumberToMultiple(this._minAmountToBet, this.amountMultiple)
+        }
+        console.log("max bet amount: ", this._maxAmountToBet)
+        console.log("min bet amount: ", this._minAmountToBet)
     }
 
     evaluateBets(multiplierResult: number){
@@ -204,7 +232,7 @@ export class BotBase{
         const minBet = this.balance * strategy.minAmountPercentageToBet
         const amountToRecoverLosses = this.calculateRecoveryAmount(profit, multiplier)
         // calculate the amount to bet to recover last amount loss
-        const lastAmountLosse = this.calculateRecoveryAmount(this.amountsLost.slice(-1)[0], multiplier)
+        const lastAmountLosse = this.calculateRecoveryAmount(this.getMinLostAmount(), multiplier)
         // calculates the maximum amount allowed to recover in a single bet 
         const maxRecoveryAmount = this.maximumBet * 0.5 // 50% of maximum bet (this can be a parameter of the bot)
         let amount = Math.min(amountToRecoverLosses, maxRecoveryAmount, this.balance)

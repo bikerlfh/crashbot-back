@@ -11,6 +11,7 @@ import { BotType } from "./core"
 import { Bot, BotStatic } from "./bots/bots"
 
 
+
 export class Game {
     private MAX_MULTIPLIERS_TO_SAVE: number = 10
     private aviatorPage: AviatorPage
@@ -21,8 +22,7 @@ export class Game {
     private _ws_client?: WebSocketClient
     private initialized: boolean = false
     // automatic betting
-    private autoPlay: boolean = false
-    private bot: Bot|BotStatic
+    bot: Bot|BotStatic
     homeBet: HomeBet
     initialBalance: number = 0
     balance: number = 0
@@ -31,10 +31,9 @@ export class Game {
     bets: Bet[] = []
     
     
-    constructor(homeBet: HomeBet, autoPlay: boolean, botType: BotType, useBotStatic?: boolean){
+    constructor(homeBet: HomeBet, botType: BotType, useBotStatic?: boolean){
         // TODO: add correct customerId
         this.homeBet = homeBet
-        this.autoPlay = autoPlay
         this.aviatorPage = homeBet.aviatorPage       
         this.minimumBet = homeBet.minBet
         this.maximumBet = homeBet.maxBet
@@ -105,6 +104,11 @@ export class Game {
         this.initialized = true
         //console.clear()
         console.log("Game initialized")
+    }
+
+    async close(){
+        await this.aviatorPage.close()
+        // TODO: clean all variables
     }
 
     async readBalanceToAviator(){
@@ -213,7 +217,8 @@ export class Game {
         while(this.initialized){
             await this.waitNextGame()
             await this.getNextBet()
-            if(this.autoPlay){
+            console.log("autoPlay:", (global as any).autoPlay, typeof((global as any).autoPlay))
+            if((global as any).autoPlay){
                 await this.sendBetsToAviator(this.bets)
             }
         }

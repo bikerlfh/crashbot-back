@@ -78,6 +78,15 @@ export class AviatorPage{
         await this._controls.init()
         console.log("aviator loaded")
     }
+
+    async close(){
+        if(!this._page){
+            return
+        }
+        await this._page.close()
+        await this._browser?.close()
+        // TODO: implment close session of home bet
+    }
     
     async readGameLimits(){
         if(this._appGame == null || this._page == null){

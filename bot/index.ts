@@ -65,8 +65,8 @@ async function login(): Promise<boolean> {
 	let _botTypeSelected = "2"
 	let botTypeSelected = BotType.TIGHT
 	let autoPlay = readlineSync.question("automatic play? [y/n]: ");
-	autoPlay = autoPlay == "y"
-	if(autoPlay){
+	(global as any).autoPlay = autoPlay == "y"
+	if((global as any).autoPlay){
 		_botTypeSelected = readlineSync.question(
 			"which player type do you choose (default: tight)? [aggressive=1, tight=2, loose=3]: "
 		);
@@ -82,7 +82,7 @@ async function login(): Promise<boolean> {
 			botTypeSelected = BotType.TIGHT
 	}
 	console.clear()
-	const game = new Game(homeBet, autoPlay, botTypeSelected, true)
+	const game = new Game(homeBet, botTypeSelected, true)
 	try{
 		await game.initialize()
 		await game.play()
