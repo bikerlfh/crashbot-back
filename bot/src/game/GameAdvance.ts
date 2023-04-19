@@ -9,7 +9,7 @@ import { BetData } from "../api/models"
 import { sleepNow, roundNumber } from "./utils"
 import { BotType } from "./core"
 import { Bot, BotStatic } from "./bots/bots"
-import {sentLogToGUI, LogCode} from "../globals"
+import {sendLogToGUI, LogCode} from "../globals"
 
 
 export class Game {
@@ -60,7 +60,10 @@ export class Game {
             const chatId = data.hasOwnProperty("chat_id")? data.chat_id: null
             const others = data.hasOwnProperty("others")? data.others: null
             if(!homeBetId || !minMultiplier || !maxMultiplier){
-                console.error("socketOnMessage: data incomplete")
+                sendLogToGUI({
+                    message: "socketOnMessage: data incomplete",
+                    data: data
+                }, LogCode.ERROR)
                 return
             }
             if(homeBetId != this.homeBet.id){
@@ -69,15 +72,15 @@ export class Game {
             }
             // TODO: fix this. Amount should be calculated from the multiplier
             //const amount = this.calculateAmountBet(minMultiplier)
-            const amount = this.validateBetAmount(roundNumber(this.balance * 0.1))
-            const amount2 = this.validateBetAmount(roundNumber(amount / 3))
+            const amount = this.bot.validateBetAmount(roundNumber(this.balance * 0.1))
+            const amount2 = this.bot.validateBetAmount(roundNumber(amount / 3))
             this.bets.push(new Bet(amount, minMultiplier))
             this.bets.push(new Bet(amount2, maxMultiplier))
             this.sendBetsToAviator(this.bets).then(() => {}).catch(error => {
                 this.bets = []
             })
         }catch(error){
-            console.error("socketOnMessage:", error)
+            sendLogToGUI(`socketOnMessage: ${error}`,  LogCode.ERROR)
         }
     }
 
@@ -87,28 +90,28 @@ export class Game {
         * - init the websocket
         * - Open the browser
         */
-        sentLogToGUI("connecting to websocket.....")
         // NOTE: activate when the websocket is ready
+        // sendLogToGUI("connecting to websocket.....")
         //this._ws_client = await WebSocketClient.getInstance()
         //this._ws_client.setOnMessage(this.wsOnMessage.bind(this))
-        sentLogToGUI("opening home bet.....")
+        sendLogToGUI("opening home bet.....")
         await this.aviatorPage.open()
-        sentLogToGUI("reading the player's balance.....")
+        sendLogToGUI("reading the player's balance.....")
         this.initialBalance = await this.readBalanceToAviator()
         this.balance = this.initialBalance
-        sentLogToGUI("loading the player.....")
+        sendLogToGUI("loading the player.....")
         this.multipliersToSave = this.aviatorPage.multipliers
         this.multipliers = this.multipliersToSave.map(item => new Multiplier(item))
         await this.requestSaveMultipliers()
         await this.bot.initialize(this.initialBalance)
         this.initialized = true
-        //console.clear()
-        sentLogToGUI("Game initialized")
+        sendLogToGUI("Game initialized")
     }
 
     async close(){
         await this.aviatorPage.close()
         // TODO: clean all variables
+        this.initialized = false
     }
 
     async readBalanceToAviator(){
@@ -125,15 +128,15 @@ export class Game {
         if(this.multipliersToSave.length < this.MAX_MULTIPLIERS_TO_SAVE){
             return
         }
-        sentLogToGUI("saving multipliers.....")
+        sendLogToGUI("saving multipliers.....")
         await AviatorBotAPI.requestSaveMultipliers(this.homeBet.id, this.multipliersToSave).then(
             (response) => {
                 this.multipliersToSave = []
-                sentLogToGUI("multipliers saved:" + response.data.multipliers);
+                sendLogToGUI(`multipliers saved: ${response.data.multipliers}`);
             }
         ).catch(
             (error) => {
-                sentLogToGUI(`error in requestSaveMultipliers: ${error}`, LogCode.ERROR)
+                sendLogToGUI(`error in requestSaveMultipliers: ${error}`, LogCode.ERROR)
             }
         )
     }
@@ -154,16 +157,18 @@ export class Game {
                 bet.multiplierResult
             )
         })
-        sentLogToGUI("saving bets.....")
+        sendLogToGUI("saving bets.....")
         AviatorBotAPI.requestCreateBet(
             this.homeBet.id,
             roundNumber(this.balance, 2),
             betsToSave
         ).then(
             (response) => {
-                sentLogToGUI("bets saved:" + response.data);
+                sendLogToGUI(`bets saved: [${response.data.bet_ids}]`);
             }
-        ).catch(error => {console.error("error in requestSaveBets:", error)})
+        ).catch(error => {
+            sendLogToGUI(`Error in requestSaveBets: ${error}`, LogCode.ERROR)
+        })
     }
 
     private async requestGetPrediction(): Promise<PredictionCore|null>{
@@ -172,7 +177,10 @@ export class Game {
         */
         const multipliers = this.multipliers.map(item => item.multiplier)
         const predictions = await AviatorBotAPI.requestPrediction(this.homeBet.id, multipliers).catch(
-            error => { return [] }
+            (error) => { 
+                sendLogToGUI(`Error in requestGetPrediction: ${error}`, LogCode.ERROR)
+                return [] 
+            }
         )
         this._prediction_model.addPredictions(predictions)
         return this._prediction_model.getBestPrediction()
@@ -187,7 +195,6 @@ export class Game {
         this.bot.updateBalance(this.balance)
         await this.addMultiplier(this.aviatorPage.multipliers.slice(-1)[0])
         this.bets = []
-        //console.clear()
     }
 
     private async sendBetsToAviator(bets : Bet[]){
@@ -200,18 +207,15 @@ export class Game {
         for (let index = 0; index < bets.length; index++) {
             const bet = bets[index];
             const control = index == 0? Control.Control1: Control.Control2
-            sentLogToGUI(`sending bet to aviator ${bet.amount} * ${ bet.multiplier} control: ${control}`)
+            sendLogToGUI(`sending bet to aviator ${bet.amount} * ${ bet.multiplier} control: ${control}`)
             await this.aviatorPage.bet(bet.amount, bet.multiplier, control)
             await sleepNow(1000)
         }
     }
 
     async play(){
-        /*
-        * Play the game
-        */
         if (!this.initialized){
-            console.error("The game is not initialized")
+            sendLogToGUI("The game is not initialized")
             return
         }
         while(this.initialized){
@@ -221,18 +225,6 @@ export class Game {
                 await this.sendBetsToAviator(this.bets)
             }
         }
-    }
-
-    private validateBetAmount(amount: number){
-        if(amount < this.minimumBet){
-            amount = this.minimumBet
-        }else if(amount > this.maximumBet){
-            amount = this.maximumBet
-        }
-        if(amount > this.balance){
-            amount = this.balance
-        }
-        return amount
     }
 
     private evaluateBets(multiplier: number){
@@ -263,10 +255,11 @@ export class Game {
         )
         const prediction = await this.requestGetPrediction()
         if(prediction == null){
+            sendLogToGUI("No prediction found")
             return []
         }
         this.bets = this.bot.getNextBet(prediction)
-        sentLogToGUI({message: "bets", bets: this.bets})
+        sendLogToGUI({bets: this.bets})
         return this.bets
     }
 }

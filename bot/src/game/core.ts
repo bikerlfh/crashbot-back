@@ -1,4 +1,4 @@
-import {sentLogToGUI} from "../globals"
+import {sendLogToGUI} from "../globals"
 
 
 export enum BotType{
@@ -82,12 +82,12 @@ export class Average{
     ){}
 
     printData(){
-        sentLogToGUI(`prediction: ${this.predictionValue}(${this.predictionRound})`)
-        sentLogToGUI(`categoryPrecentage: ${this.categoryPrecentage}`)
-        sentLogToGUI(`categoryPercentageValueInLive: ${this.categoryPercentageValueInLive}`)
-        sentLogToGUI(`averagePredictionsOfModel: ${this. averagePredictionsOfModel}`)
-        sentLogToGUI(`inCategoryPercentageValueInLive: ${this.inCategoryPercentageValueInLive}`)
-        sentLogToGUI(`inCategoryPrecentage: ${this.inCategoryPrecentage}`)
-        sentLogToGUI(`inAveragePredictionsOfModel: ${this.inAveragePredictionsOfModel}`)
+        sendLogToGUI(`prediction: ${this.predictionValue}(${this.predictionRound})`)
+        sendLogToGUI(`categoryPrecentage: ${this.categoryPrecentage}`)
+        sendLogToGUI(`categoryPercentageValueInLive: ${this.categoryPercentageValueInLive}`)
+        sendLogToGUI(`averagePredictionsOfModel: ${this. averagePredictionsOfModel}`)
+        sendLogToGUI(`inCategoryPercentageValueInLive: ${this.inCategoryPercentageValueInLive}`)
+        sendLogToGUI(`inCategoryPrecentage: ${this.inCategoryPrecentage}`)
+        sendLogToGUI(`inAveragePredictionsOfModel: ${this.inAveragePredictionsOfModel}`)
     }
  }

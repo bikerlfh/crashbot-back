@@ -1,7 +1,7 @@
 import playwright from "playwright";
 import {BetControl, Control} from "./BetControl"
 import { sleepNow } from "../game/utils";
-import {sentLogToGUI, LogCode} from "../globals"
+import {sendLogToGUI, LogCode} from "../globals"
 
 
 export class AviatorPage{
@@ -27,7 +27,7 @@ export class AviatorPage{
     async _click(element: playwright.Locator){
         const box = await element.boundingBox();
         if(!box || !this._page){
-            sentLogToGUI("page :: box or page does't exists", LogCode.ERROR)
+            sendLogToGUI("page :: box or page does't exists", LogCode.ERROR)
             return
         }
         await this._page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {steps: 50})
@@ -41,6 +41,10 @@ export class AviatorPage{
 
     async _getAppGame(): Promise<playwright.Locator>{
         if(!this._page ){
+            sendLogToGUI({
+                location: "AviatorPage",
+                message: "_getAppGame :: page is null"
+            }, LogCode.EXCEPTION)
             throw "_getAppGame :: page is null"
         }
         
@@ -56,9 +60,13 @@ export class AviatorPage{
                 return _appGame
             } catch (e) {
                 if (e instanceof playwright.errors.TimeoutError) {
-                    sentLogToGUI("page :: error timeout", LogCode.ERROR)
+                    sendLogToGUI("page :: error timeout", LogCode.ERROR)
                     continue
                 }
+                sendLogToGUI({
+                    location: "AviatorPage",
+                    message: `_getAppGame :: ${e}`
+                }, LogCode.EXCEPTION)
                 throw e
             }
         }
@@ -72,13 +80,13 @@ export class AviatorPage{
         await this._login()
         this._appGame = await this._getAppGame()
         this._historyGame = this._appGame.locator(".result-history");
-        sentLogToGUI("result history found")
+        sendLogToGUI("result history found")
         await this.readBalance()
         await this.readMultipliers()
         // await this.readGameLimits()
         this._controls = new BetControl(this._appGame);
         await this._controls.init()
-        sentLogToGUI("aviator loaded")
+        sendLogToGUI("aviator loaded")
     }
 
     async close(){
@@ -92,10 +100,18 @@ export class AviatorPage{
     
     async readGameLimits(){
         if(this._appGame == null || this._page == null){
+            sendLogToGUI({
+                location: "AviatorPage",
+                message: "readGameLimits :: _appGame or _page is null"
+            }, LogCode.EXCEPTION)
             throw "readGameLimits :: _appGame is null"
         }
         const menu = this._appGame.locator(".dropdown-toggle.user")
         if(menu == null){
+            sendLogToGUI({
+                location: "AviatorPage",
+                message: "readGameLimits :: menu is null"
+            }, LogCode.EXCEPTION)
             throw "readGameLimits :: menu is null"
         }
         await menu.click()
@@ -104,6 +120,10 @@ export class AviatorPage{
         // app-user-menu-dropdown
         const appUserMenu = this._appGame.locator("app-settings-menu")
         if(appUserMenu == null){
+            sendLogToGUI({
+                location: "AviatorPage",
+                message: "readGameLimits :: appusermenu is null"
+            }, LogCode.EXCEPTION)
             throw "readGameLimits :: appusermenu is null"
         }
         const listMenu = appUserMenu.locator(".list-menu").last()
@@ -116,22 +136,30 @@ export class AviatorPage{
         this.maximumWinForOneBet =  parseFloat((await limits[2].textContent())?.split(" ")[0] || "0")
         const buttonClose = this._page.locator("ngb-modal-window")
         await buttonClose.click()
-        sentLogToGUI(`minimumBet: ${this.minimumBet}`)
-        sentLogToGUI(`maximumBet: ${this.maximumBet}`)
-        sentLogToGUI(`maximumWinForOneBet: ${this.maximumWinForOneBet}`)
+        sendLogToGUI(`minimumBet: ${this.minimumBet}`)
+        sendLogToGUI(`maximumBet: ${this.maximumBet}`)
+        sendLogToGUI(`maximumWinForOneBet: ${this.maximumWinForOneBet}`)
         
     }
 
     async readBalance(): Promise<number | null>{
         if(this._appGame == null){
+            sendLogToGUI({
+                location: "AviatorPage",
+                message: "readBalance :: _appGame is null"
+            }, LogCode.EXCEPTION)
             throw "readBalance :: _appGame is null"
         }
         this._balanceElement = this._appGame.locator(".balance>div>.amount")
         if(this._balanceElement == null){
+            sendLogToGUI({
+                location: "AviatorPage",
+                message: "readBalance :: balance element is null"
+            }, LogCode.EXCEPTION)
             throw "balance element is null"
         }
         this.balance = parseFloat(await this._balanceElement.textContent() || "0")
-        sentLogToGUI(`balance: ${this.balance}`)
+        sendLogToGUI(`balance: ${this.balance}`)
         return this.balance
     }
 
@@ -141,6 +169,10 @@ export class AviatorPage{
 
     async readMultipliers(){
         if (!this._page || !this._historyGame){
+            sendLogToGUI({
+                location: "AviatorPage",
+                message: "readMultipliers :: the page or the history game not exists"
+            }, LogCode.EXCEPTION)
             throw "readMultipliers :: the page or the history game not exists"
         }
         // app-bubble-multiplier
@@ -154,11 +186,15 @@ export class AviatorPage{
             }
         })
         await this._page.waitForTimeout(2000);
-        //sentLogToGUI("multiplier aviator:", this.multipliers)
+        //sendLogToGUI("multiplier aviator:", this.multipliers)
     }
 
     async bet(amount: number, multiplier: number, control: Control){
         if(this._controls == null){
+            sendLogToGUI({
+                location: "AviatorPage",
+                message: "AviatorPage :: no _controls"
+            }, LogCode.EXCEPTION)
             throw "AviatorPage :: no _controls"
         }
         this._controls.bet(amount, multiplier, control)
@@ -166,6 +202,10 @@ export class AviatorPage{
 
     async waitNextGame(){
         if(this._historyGame == null){
+            sendLogToGUI({
+                location: "AviatorPage",
+                message: "waitNextGame :: no historyGame"
+            }, LogCode.EXCEPTION)
             throw "waitNextGame :: no historyGame"
         }
         const lastMultiplierSaved = this.multipliers.slice(-1)[0]
@@ -179,7 +219,7 @@ export class AviatorPage{
             lastMultiplier = lastMultiplierContent? this._formatMultiplier(lastMultiplierContent): lastMultiplierSaved;
             if(lastMultiplierSaved != lastMultiplier){
                 this.multipliers.push(lastMultiplier)
-                sentLogToGUI(`New multiplier: ${lastMultiplier}`)
+                sendLogToGUI(`New multiplier: ${lastMultiplier}`)
                 this.multipliers = this.multipliers.slice(1)
                 return
             }

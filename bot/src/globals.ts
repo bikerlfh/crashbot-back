@@ -22,16 +22,18 @@ export const enum LogCode {
     ERROR = 'error',
     WARNING = 'warning',
     SUCCESS = 'success',
+    INTERNAL = 'internal',
+    EXCEPTION = 'exception',
 } 
 
-export const sentLogToGUI = (data: any, code?: LogCode) => {
+export const sendLogToGUI = (data: any, code?: LogCode) => {
     /*
     * Send a log to the GUI
     * @param data: any (can be string or object)
     * @param code: string
     * @return void
-    * @example sentLogToGUI('Hello world', 'info')
-    * @example sentLogToGUI('Hello world')
+    * @example sendLogToGUI('Hello world', 'info')
+    * @example sendLogToGUI('Hello world')
     */
     code = code || LogCode.INFO;
     data = typeof data === 'string' ? {message: data} : data;
