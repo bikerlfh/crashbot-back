@@ -27,6 +27,7 @@ io.use((socket, next) => {
     socket.on('disconnect', () => {
         console.log('ws client disconnected');
         numConnections--;
+        closeGameEvent({});
     });
     next();
 });
@@ -44,7 +45,6 @@ io.on('connection', (socket: Socket) => {
         loginEvent(data).then((response: any) => {
             socket.emit('login', response)
         }).catch((error: any) => {
-            console.log("errr", error)
             socket.emit('login', JSON.stringify(error))
         });
     });
@@ -59,7 +59,7 @@ io.on('connection', (socket: Socket) => {
     });
     socket.on('setMaxAmountToBet', (data: any) => {
         const msg = setMaxAmountToBetEvent(data)
-        socket.emit('autoPlay', msg)
+        socket.emit('setMaxAmountToBet', msg)
     });
     socket.on('closeGame', (data: any) => {
         closeGameEvent(data).then((response: any) => {
@@ -71,5 +71,5 @@ io.on('connection', (socket: Socket) => {
 });
 
 httpServer.listen(3000, () => {
-    console.log('Servidor escuchando en el puerto 3000');
+    console.log('server running on port 3000');
 });

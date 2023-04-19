@@ -9,7 +9,7 @@ import { BetData } from "../api/models"
 import { sleepNow, roundNumber } from "./utils"
 import { BotType } from "./core"
 import { Bot, BotStatic } from "./bots/bots"
-
+import {sentLogToGUI, LogCode} from "../globals"
 
 
 export class Game {
@@ -87,23 +87,23 @@ export class Game {
         * - init the websocket
         * - Open the browser
         */
-        console.log("connecting to websocket.....")
+        sentLogToGUI("connecting to websocket.....")
         // NOTE: activate when the websocket is ready
         //this._ws_client = await WebSocketClient.getInstance()
         //this._ws_client.setOnMessage(this.wsOnMessage.bind(this))
-        console.log("opening home bet.....")
+        sentLogToGUI("opening home bet.....")
         await this.aviatorPage.open()
-        console.log("reading the player's balance.....")
+        sentLogToGUI("reading the player's balance.....")
         this.initialBalance = await this.readBalanceToAviator()
         this.balance = this.initialBalance
-        console.log("loading the player.....")
+        sentLogToGUI("loading the player.....")
         this.multipliersToSave = this.aviatorPage.multipliers
         this.multipliers = this.multipliersToSave.map(item => new Multiplier(item))
         await this.requestSaveMultipliers()
         await this.bot.initialize(this.initialBalance)
         this.initialized = true
         //console.clear()
-        console.log("Game initialized")
+        sentLogToGUI("Game initialized")
     }
 
     async close(){
@@ -125,15 +125,15 @@ export class Game {
         if(this.multipliersToSave.length < this.MAX_MULTIPLIERS_TO_SAVE){
             return
         }
-        console.log("saving multipliers.....")
+        sentLogToGUI("saving multipliers.....")
         await AviatorBotAPI.requestSaveMultipliers(this.homeBet.id, this.multipliersToSave).then(
             (response) => {
                 this.multipliersToSave = []
-                console.log("multipliers saved:", response.data.multipliers);
+                sentLogToGUI("multipliers saved:" + response.data.multipliers);
             }
         ).catch(
             (error) => {
-                console.error("error in requestSaveMultipliers:", error)
+                sentLogToGUI(`error in requestSaveMultipliers: ${error}`, LogCode.ERROR)
             }
         )
     }
@@ -154,14 +154,14 @@ export class Game {
                 bet.multiplierResult
             )
         })
-        console.log("saving bets.....")
+        sentLogToGUI("saving bets.....")
         AviatorBotAPI.requestCreateBet(
             this.homeBet.id,
             roundNumber(this.balance, 2),
             betsToSave
         ).then(
             (response) => {
-                console.log("bets saved:", response.data);
+                sentLogToGUI("bets saved:" + response.data);
             }
         ).catch(error => {console.error("error in requestSaveBets:", error)})
     }
@@ -200,7 +200,7 @@ export class Game {
         for (let index = 0; index < bets.length; index++) {
             const bet = bets[index];
             const control = index == 0? Control.Control1: Control.Control2
-            console.log("sending bet to aviator %d * %d control: %s", bet.amount, bet.multiplier, control)
+            sentLogToGUI(`sending bet to aviator ${bet.amount} * ${ bet.multiplier} control: ${control}`)
             await this.aviatorPage.bet(bet.amount, bet.multiplier, control)
             await sleepNow(1000)
         }
@@ -217,7 +217,6 @@ export class Game {
         while(this.initialized){
             await this.waitNextGame()
             await this.getNextBet()
-            console.log("autoPlay:", (global as any).autoPlay, typeof((global as any).autoPlay))
             if((global as any).autoPlay){
                 await this.sendBetsToAviator(this.bets)
             }
@@ -267,7 +266,7 @@ export class Game {
             return []
         }
         this.bets = this.bot.getNextBet(prediction)
-        console.log("bets:", this.bets)
+        sentLogToGUI({message: "bets", bets: this.bets})
         return this.bets
     }
 }

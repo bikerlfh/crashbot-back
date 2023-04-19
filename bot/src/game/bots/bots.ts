@@ -4,7 +4,7 @@ import { Bet, PredictionData } from "../core"
 import { BotType } from "../core"
 import { adaptiveKellyFormula } from "../utils"
 import { BotBase } from "./base"
-
+import {sentLogToGUI, LogCode} from "../../globals"
 
 
 export class Bot extends BotBase{
@@ -25,7 +25,7 @@ export class Bot extends BotBase{
     }
 
     setMaxAmountToBet(amount: number){
-        console.log("this bot not allowed to set maxAmountToBet.")
+        sentLogToGUI("this bot not allowed to set maxAmountToBet.")
     }
 
     getBetRecoveryAmount(multiplier: number, probability: number, strategy: BotStrategy): number{
@@ -85,7 +85,7 @@ export class BotStatic extends BotBase{
     }
 
     async initialize(balance: number){
-        console.log("initializing bot static")
+        sentLogToGUI("initializing bot static")
         await super.initialize(balance)
         this.setMaxAmountToBet((global as any).maxAmountToBet)
     }
@@ -182,26 +182,26 @@ export class BotStatic extends BotBase{
         const numberOfBet = this.getNumberOfBets()
         const strategy = this.getStrategy(numberOfBet)
         if(!strategy){
-            console.warn(
-                "No strategy found for profit percentage: ", this.getProfitPercent()
+            sentLogToGUI(
+                "No strategy found for profit percentage: " + this.getProfitPercent()
             )
             return []
         }
-        console.log("\n\nprofit: ", profit)
+        sentLogToGUI("profit: " + profit)
         predictionData.printData()
         if(this.inStopLoss()){
-            console.log("player :: Stop loss reached")
+            sentLogToGUI("Stop loss reached", LogCode.WARNING)
             return []
         }
         if(this.inTakeProfit()){
-            console.log("player :: Take profit reached")
+            sentLogToGUI("Take profit reached", LogCode.SUCCESS)
             return []
         }
         if(!predictionData.inCategoryPrecentage){
             return []
         }
         if(predictionData.predictionValue < this.MIN_MULTIPLIER_TO_BET){
-            console.log("Bot :: Prediction value is too low")
+            sentLogToGUI("Prediction value is too low")
             return []
         }
         // CATEGORY 1 not bet

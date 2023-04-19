@@ -1,6 +1,8 @@
 import playwright from 'playwright'
 import {AviatorPage} from './Aviator'
 import { HomeBets } from '../constants'
+import {sentLogToGUI, LogCode} from "../globals"
+
 
 export class AviatorOneWin extends AviatorPage{
     _frame: playwright.FrameLocator| null = null
@@ -38,7 +40,7 @@ export class AviatorOneWin extends AviatorPage{
                 return this._appGame
             } catch (e) {
                 if (e instanceof playwright.errors.TimeoutError) {
-                    console.log("_getAppGame :: error timeout")
+                    sentLogToGUI("page :: error timeout", LogCode.ERROR)
                     continue
                 }
                 throw e
@@ -74,9 +76,9 @@ export class AviatorOneWin extends AviatorPage{
         this.minimumBet = parseFloat((await limits[0].textContent())?.split(" ")[0] || "0")
         this.maximumBet = parseFloat((await limits[1].textContent())?.split(" ")[0] || "0")
         this.maximumWinForOneBet =  parseFloat((await limits[2].textContent())?.split(" ")[0] || "0")
-        console.log("minimumBet: ", this.minimumBet)
-        console.log("maximumBet: ", this.maximumBet)
-        console.log("maximumWinForOneBet: ", this.maximumWinForOneBet)
+        sentLogToGUI(`minimumBet: ${this.minimumBet}`)
+        sentLogToGUI(`maximumBet: ${this.maximumBet}`)
+        sentLogToGUI(`maximumWinForOneBet: ${this.maximumWinForOneBet}`)
         const buttonClose = this._frame.locator("ngb-modal-window")
         await buttonClose.click()
     }

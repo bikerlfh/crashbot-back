@@ -4,6 +4,7 @@ import { PredictionCore } from "../PredictionCore"
 import { Bet, PredictionData } from "../core"
 import { AviatorBotAPI } from "../../api/AviatorBotAPI"
 import {BotType} from "../core"
+import {sentLogToGUI, LogCode} from "../../globals"
 
 
 export class BotBase{
@@ -75,17 +76,17 @@ export class BotBase{
         this.STRATEGIES = bot.strategies
         this.stopLoss = this.initialBalance * (this.STOP_LOSS_PERCENTAGE)
         this.takeProfit = this.initialBalance * (this.TAKE_PROFIT_PERCENTAGE)
-        console.log("Bot initialized")
-        console.log("Bot type: ", this.BOT_TYPE)
-        console.log("Bot risk factor: ", this.RISK_FACTOR)
-        console.log("Bot min multiplier to bet: ", this.MIN_MULTIPLIER_TO_BET)
-        console.log("Bot min multiplier to recover losses: ", this.MIN_MULTIPLIER_TO_RECOVER_LOSSES)
-        console.log("Bot min category percentage to bet: ", this.MIN_CATEGORY_PERCENTAGE_TO_BET)
-        console.log("Bot min category percentage value in live to bet: ", this.MIN_CATEGORY_PERCENTAGE_VALUE_IN_LIVE_TO_BET)
-        console.log("Bot min average prediction model in live to bet: ", this.MIN_AVERAGE_PREDICTION_MODEL_IN_LIVE_TO_BET)
-        console.log("stopLoss: ", this.stopLoss)
-        console.log("takeProfit: ", this.takeProfit)
-        console.log("Bot strategies count: ", this.STRATEGIES.length)
+        sentLogToGUI("Bot initialized")
+        sentLogToGUI(`Bot type: ${this.BOT_TYPE}`)
+        sentLogToGUI(`Bot risk factor: ${this.RISK_FACTOR}`)
+        sentLogToGUI(`Bot min multiplier to bet: ${this.MIN_MULTIPLIER_TO_BET}`)
+        sentLogToGUI(`Bot min multiplier to recover losses: ${this.MIN_MULTIPLIER_TO_RECOVER_LOSSES}`)
+        sentLogToGUI(`Bot min category percentage to bet: ${this.MIN_CATEGORY_PERCENTAGE_TO_BET}`)
+        sentLogToGUI(`Bot min category percentage value in live to bet: ${this.MIN_CATEGORY_PERCENTAGE_VALUE_IN_LIVE_TO_BET}`)
+        sentLogToGUI(`Bot min average prediction model in live to bet: ${this.MIN_AVERAGE_PREDICTION_MODEL_IN_LIVE_TO_BET}`)
+        sentLogToGUI(`stopLoss: ${this.stopLoss}`)
+        sentLogToGUI(`takeProfit: ${this.takeProfit}`)
+        sentLogToGUI(`Bot strategies count: ${this.STRATEGIES.length}`)
     }
 
     protected validateBetAmount(amount: number): number{
@@ -132,8 +133,8 @@ export class BotBase{
     setMaxAmountToBet(amount: number){
         this._maxAmountToBet = roundNumber(amount, 0)
         if(this._maxAmountToBet > this.balance){
-            console.log("maxAmountToBet is greater than balance(", this.balance, ")")
-            console.log("setting maxAmountToBet to balance")
+            sentLogToGUI(`maxAmountToBet is greater than balance(${this.balance})`)
+            sentLogToGUI("setting maxAmountToBet to balance")
             this._maxAmountToBet = 0
         }
         this._minAmountToBet = roundNumber(this._maxAmountToBet / 3, 0)
@@ -141,8 +142,8 @@ export class BotBase{
             this._maxAmountToBet = formatNumberToMultiple(this._maxAmountToBet, this.amountMultiple)
             this._minAmountToBet = formatNumberToMultiple(this._minAmountToBet, this.amountMultiple)
         }
-        console.log("max bet amount: ", this._maxAmountToBet)
-        console.log("min bet amount: ", this._minAmountToBet)
+        sentLogToGUI(`max bet amount: ${this._maxAmountToBet}`)
+        sentLogToGUI(`min bet amount: ${this._minAmountToBet}`)
     }
 
     evaluateBets(multiplierResult: number){
@@ -332,21 +333,21 @@ export class BotBase{
         const numberOfBet = this.getNumberOfBets()
         const strategy = this.getStrategy(numberOfBet)
         if(!strategy){
-            console.warn(
-                "No strategy found for profit percentage: ", this.getProfitPercent()
+            sentLogToGUI(
+                `No strategy found for profit percentage: ${this.getProfitPercent()}`
             )
             return []
         }
         const profit = this.getProfit()
         const predictionData = this.getPredictionData(prediction)
-        console.log("\n\nprofit: ", profit)
+        sentLogToGUI(`profit: ${profit}`)
         predictionData.printData()
         if(this.inStopLoss()){
-            console.log("player :: Stop loss reached")
+            sentLogToGUI("Stop loss reached", LogCode.WARNING)
             return []
         }
         if(this.inTakeProfit()){
-            console.log("player :: Take profit reached")
+            sentLogToGUI("Take profit reached", LogCode.SUCCESS)
             return []
         }
         if(!predictionData.inCategoryPrecentage){
@@ -356,7 +357,7 @@ export class BotBase{
             return []
         }
         if(predictionData.predictionValue < this.MIN_MULTIPLIER_TO_BET){
-            console.log("Bot :: Prediction value is too low")
+            sentLogToGUI("Prediction value is too low")
             return []
         }
         // CATEGORY 1

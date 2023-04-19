@@ -1,3 +1,6 @@
+import {sentLogToGUI} from "../globals"
+
+
 export enum BotType{
     AGGRESSIVE = "aggressive",
     TIGHT = "tight",
@@ -79,12 +82,12 @@ export class Average{
     ){}
 
     printData(){
-        console.log("prediction: ", this.predictionValue, " (", this.predictionRound, ")")
-        console.log("categoryPrecentage: ", this.categoryPrecentage)
-        console.log("categoryPercentageValueInLive: ", this.categoryPercentageValueInLive)
-        console.log("averagePredictionsOfModel: ",this. averagePredictionsOfModel)
-        console.log("inCategoryPercentageValueInLive: ", this.inCategoryPercentageValueInLive)
-        console.log("inCategoryPrecentage: ", this.inCategoryPrecentage)
-        console.log("inAveragePredictionsOfModel: ", this.inAveragePredictionsOfModel)
+        sentLogToGUI(`prediction: ${this.predictionValue}(${this.predictionRound})`)
+        sentLogToGUI(`categoryPrecentage: ${this.categoryPrecentage}`)
+        sentLogToGUI(`categoryPercentageValueInLive: ${this.categoryPercentageValueInLive}`)
+        sentLogToGUI(`averagePredictionsOfModel: ${this. averagePredictionsOfModel}`)
+        sentLogToGUI(`inCategoryPercentageValueInLive: ${this.inCategoryPercentageValueInLive}`)
+        sentLogToGUI(`inCategoryPrecentage: ${this.inCategoryPrecentage}`)
+        sentLogToGUI(`inAveragePredictionsOfModel: ${this.inAveragePredictionsOfModel}`)
     }
  }

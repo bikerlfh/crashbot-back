@@ -1,6 +1,8 @@
 import playwright from "playwright";
 import {BetControl, Control} from "./BetControl"
 import { sleepNow } from "../game/utils";
+import {sentLogToGUI, LogCode} from "../globals"
+
 
 export class AviatorPage{
     _browser: playwright.Browser|null = null
@@ -25,7 +27,7 @@ export class AviatorPage{
     async _click(element: playwright.Locator){
         const box = await element.boundingBox();
         if(!box || !this._page){
-            console.log("_click :: box or page does't exists")
+            sentLogToGUI("page :: box or page does't exists", LogCode.ERROR)
             return
         }
         await this._page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {steps: 50})
@@ -54,7 +56,7 @@ export class AviatorPage{
                 return _appGame
             } catch (e) {
                 if (e instanceof playwright.errors.TimeoutError) {
-                    console.log("error timeout")
+                    sentLogToGUI("page :: error timeout", LogCode.ERROR)
                     continue
                 }
                 throw e
@@ -70,13 +72,13 @@ export class AviatorPage{
         await this._login()
         this._appGame = await this._getAppGame()
         this._historyGame = this._appGame.locator(".result-history");
-        console.log("result history found")
+        sentLogToGUI("result history found")
         await this.readBalance()
         await this.readMultipliers()
         // await this.readGameLimits()
         this._controls = new BetControl(this._appGame);
         await this._controls.init()
-        console.log("aviator loaded")
+        sentLogToGUI("aviator loaded")
     }
 
     async close(){
@@ -114,9 +116,9 @@ export class AviatorPage{
         this.maximumWinForOneBet =  parseFloat((await limits[2].textContent())?.split(" ")[0] || "0")
         const buttonClose = this._page.locator("ngb-modal-window")
         await buttonClose.click()
-        console.log("minimumBet: ", this.minimumBet)
-        console.log("maximumBet: ", this.maximumBet)
-        console.log("maximumWinForOneBet: ", this.maximumWinForOneBet)
+        sentLogToGUI(`minimumBet: ${this.minimumBet}`)
+        sentLogToGUI(`maximumBet: ${this.maximumBet}`)
+        sentLogToGUI(`maximumWinForOneBet: ${this.maximumWinForOneBet}`)
         
     }
 
@@ -129,7 +131,7 @@ export class AviatorPage{
             throw "balance element is null"
         }
         this.balance = parseFloat(await this._balanceElement.textContent() || "0")
-        console.log("balance: ", this.balance)
+        sentLogToGUI(`balance: ${this.balance}`)
         return this.balance
     }
 
@@ -152,7 +154,7 @@ export class AviatorPage{
             }
         })
         await this._page.waitForTimeout(2000);
-        //console.log("multiplier aviator:", this.multipliers)
+        //sentLogToGUI("multiplier aviator:", this.multipliers)
     }
 
     async bet(amount: number, multiplier: number, control: Control){
@@ -177,7 +179,7 @@ export class AviatorPage{
             lastMultiplier = lastMultiplierContent? this._formatMultiplier(lastMultiplierContent): lastMultiplierSaved;
             if(lastMultiplierSaved != lastMultiplier){
                 this.multipliers.push(lastMultiplier)
-                console.log("waitNextGame :: new multiplier:", lastMultiplier)
+                sentLogToGUI(`New multiplier: ${lastMultiplier}`)
                 this.multipliers = this.multipliers.slice(1)
                 return
             }
