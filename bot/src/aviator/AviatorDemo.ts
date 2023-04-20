@@ -1,16 +1,16 @@
 import playwright from 'playwright'
 import {AviatorPage} from './Aviator'
-import {sendLogToGUI, LogCode} from "../globals"
+import {sendDataToGUI, LogCode} from "../ws/gui_events"
 
 export class AviatorDemo extends AviatorPage{
     _frame: playwright.FrameLocator| null = null
 
     async _login(): Promise<void> {
         if(!this._page || !this._context){
-            sendLogToGUI({
+            sendDataToGUI.exception({
                 location: "AviatorDemo",
                 message: "_login :: page or context are null"
-            }, LogCode.EXCEPTION)
+            })
             throw "_login :: page or context are null"
         }
         await this._page.getByRole('button', { name: 'Play Demo' }).click();

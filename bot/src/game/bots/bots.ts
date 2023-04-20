@@ -4,7 +4,7 @@ import { Bet, PredictionData } from "../core"
 import { BotType } from "../core"
 import { adaptiveKellyFormula } from "../utils"
 import { BotBase } from "./base"
-import {sendLogToGUI, LogCode} from "../../globals"
+import {sendDataToGUI, LogCode} from "../../ws/gui_events"
 
 
 export class Bot extends BotBase{
@@ -25,7 +25,7 @@ export class Bot extends BotBase{
     }
 
     setMaxAmountToBet(amount: number){
-        sendLogToGUI("this bot not allowed to set maxAmountToBet.")
+        sendDataToGUI.log("this bot not allowed to set maxAmountToBet.")
     }
 
     getBetRecoveryAmount(multiplier: number, probability: number, strategy: BotStrategy): number{
@@ -86,7 +86,7 @@ export class BotStatic extends BotBase{
     }
 
     async initialize(balance: number){
-        sendLogToGUI("initializing bot static")
+        sendDataToGUI.log("initializing bot static")
         await super.initialize(balance)
         this._initialBalance = balance
         this.setMaxAmountToBet((global as any).maxAmountToBet)
@@ -128,7 +128,7 @@ export class BotStatic extends BotBase{
         // const minBet = this.balance * strategy.minAmountPercentageToBet
         const amountToRecoverLosses = this.calculateRecoveryAmount(profit, multiplier)
         if(amountToRecoverLosses < this.minimumBet){
-            sendLogToGUI(
+            sendDataToGUI.log(
                 `getBetRecoveryAmount :: amountToRecoverLosses <= this.minimumBet 
                 (${amountToRecoverLosses} <= ${this.minimumBet})`, 
                 LogCode.INTERNAL
@@ -146,7 +146,7 @@ export class BotStatic extends BotBase{
         const posibleLoss = Math.abs(profit) + amount
         if(posibleLoss >= this.stopLoss){
             amount = Math.min(Math.floor(amount * 0.3), lastAmountLosse)
-            sendLogToGUI(
+            sendDataToGUI.log(
                 `getBetRecoveryAmount :: posibleLoss >= this.stopLoss 
                 (${posibleLoss} >= ${this.stopLoss}) :: new amount=${amount}`,
                 LogCode.INTERNAL
@@ -154,7 +154,7 @@ export class BotStatic extends BotBase{
         }
         // const kellyAmount = adaptiveKellyFormula(multiplier, probability, this.RISK_FACTOR, amount)
         amount =  Math.max(amount, this.minimumBet)
-        sendLogToGUI({
+        sendDataToGUI.log({
             location: "BotStatic :: getBetRecoveryAmount",
             amount: amount,
         }, LogCode.INTERNAL)
@@ -163,7 +163,7 @@ export class BotStatic extends BotBase{
 
     generateRecoveryBets(multiplier: number, probability: number, strategy: BotStrategy): Bet[]{
         if(multiplier < this.MIN_MULTIPLIER_TO_RECOVER_LOSSES){
-            sendLogToGUI(
+            sendDataToGUI.log(
                 `multiplier is less than ${this.MIN_MULTIPLIER_TO_RECOVER_LOSSES}, 
                 no recovery bets`, LogCode.WARNING
             )
@@ -184,7 +184,7 @@ export class BotStatic extends BotBase{
         const profit = this.getProfit()
         const categoryPrecentage = predictionData.categoryPrecentage
         if(profit < 0){
-            sendLogToGUI("generateBets :: profit < 0", LogCode.INTERNAL)
+            sendDataToGUI.log("generateBets :: profit < 0", LogCode.INTERNAL)
             // always the multiplier to recover losses is 1.95
             this.bets = this.generateRecoveryBets(
                 this.MIN_MULTIPLIER_TO_RECOVER_LOSSES, 
@@ -197,7 +197,7 @@ export class BotStatic extends BotBase{
         // if the profit is greater than 10% of the initial balance
         const profitPercentage = this.getProfitPercent()
         if(profitPercentage > 0.10){
-            sendLogToGUI("generateBets :: profitPercentage > 0.10", LogCode.INTERNAL)
+            sendDataToGUI.log("generateBets :: profitPercentage > 0.10", LogCode.INTERNAL)
             const maxBetKellyAmount = adaptiveKellyFormula(1.95, categoryPrecentage, this.RISK_FACTOR, this._maxAmountToBet)
             const minBetKellyAmount = adaptiveKellyFormula(2, categoryPrecentage, this.RISK_FACTOR, this._minAmountToBet)
             this.bets.push(new Bet(Math.max(maxBetKellyAmount, this._maxAmountToBet), 1.95))
@@ -219,32 +219,32 @@ export class BotStatic extends BotBase{
         const numberOfBet = this.getNumberOfBets()
         const strategy = this.getStrategy(numberOfBet)
         if(!strategy){
-            sendLogToGUI(
+            sendDataToGUI.log(
                 "No strategy found for profit percentage: " + this.getProfitPercent()
             )
             return []
         }
-        sendLogToGUI("profit: " + profit)
+        sendDataToGUI.log("profit: " + profit)
         predictionData.printData()
         if(this.inStopLoss()){
-            sendLogToGUI("Stop loss reached", LogCode.WARNING)
+            sendDataToGUI.log("Stop loss reached", LogCode.WARNING)
             return []
         }
         if(this.inTakeProfit()){
-            sendLogToGUI("Take profit reached", LogCode.SUCCESS)
+            sendDataToGUI.log("Take profit reached", LogCode.SUCCESS)
             return []
         }
         if(!predictionData.inCategoryPrecentage){
-            sendLogToGUI("Prediction value is not in category precentage", LogCode.WARNING)
+            sendDataToGUI.log("Prediction value is not in category precentage", LogCode.WARNING)
             return []
         }
         if(predictionData.predictionValue < this.MIN_MULTIPLIER_TO_BET){
-            sendLogToGUI("Prediction value is too low", LogCode.WARNING)
+            sendDataToGUI.log("Prediction value is too low", LogCode.WARNING)
             return []
         }
         // CATEGORY 1 not bet
         if(predictionData.predictionRound == 1){
-            sendLogToGUI("Prediction round is 1", LogCode.WARNING)
+            sendDataToGUI.log("Prediction round is 1", LogCode.WARNING)
             return []
         }
         // CATEGORY 2

@@ -4,6 +4,7 @@ import {BotType} from "../game/core";
 import {HomeBets}  from "../constants";
 import {Game} from "../game/GameAdvance";
 import { Socket } from "socket.io";
+import { sendDataToGUI } from "./gui_events";
 
 
 export const verifyTokenEvent = async (): Promise<any> => {
@@ -93,6 +94,7 @@ export const startBotEvent =  async (data: any, socket: Socket): Promise<any> =>
 		await game.initialize()
 		await game.play()
 	}catch(e){
+        sendDataToGUI.sendError(e)
 		console.log(e)
 	}
 }

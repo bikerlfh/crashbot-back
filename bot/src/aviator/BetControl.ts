@@ -1,6 +1,6 @@
 import playwright from "playwright";
 import { roundNumber } from "../game/utils";
-import {sendLogToGUI, LogCode} from "../globals"
+import {sendDataToGUI, LogCode} from "../ws/gui_events"
 
 export enum Control{
     Control1=1,
@@ -45,19 +45,19 @@ export class BetControl{
 	    this._betControl_1 = bet_controls.first()
 	    this._betControl_2 = bet_controls.last()
         if(this._betControl_1 == null || this._betControl_2 == null){
-            sendLogToGUI({
+            sendDataToGUI.exception({
                 location: "BetControl",
                 message: "init :: no bet controls"
-            }, LogCode.EXCEPTION)
+            })
             throw "no bet controls"
         }
         const inputAppSpinner_1 = this._betControl_1.locator(".bet-block>app-spinner").first()
         const inputAppSpinner_2 = this._betControl_2.locator(".bet-block>app-spinner").first()
         if(inputAppSpinner_1 == null || inputAppSpinner_2 == null){
-            sendLogToGUI({
+            sendDataToGUI.exception({
                 location: "BetControl",
                 message: "init :: no inputAppSpinner_1 or inputAppSpinner_2"
-            }, LogCode.EXCEPTION)
+            })
             throw "no inputAppSpinner_1 or inputAppSpinner_2"
         }
         this._amountInput_1 = inputAppSpinner_1.locator("input").first()
@@ -65,17 +65,17 @@ export class BetControl{
         const buttonsSwitcher_1 = await this._betControl_1.locator("app-navigation-switcher>div>button").all()
         const buttonsSwitcher_2 = await this._betControl_2.locator("app-navigation-switcher>div>button").all()
         if(!buttonsSwitcher_1){
-            sendLogToGUI({
+            sendDataToGUI.exception({
                 location: "BetControl",
                 message: "init :: no buttonsSwitcher_1"
-            }, LogCode.EXCEPTION)
+            })
             throw "no buttonsSwitcher_1"
         }
         if(!buttonsSwitcher_2){
-            sendLogToGUI({
+            sendDataToGUI.exception({
                 location: "BetControl",
                 message: "init :: no buttonsSwitcher_2"
-            }, LogCode.EXCEPTION)
+            })
             throw "no buttonsSwitcher_2"
         }
         this._betSwitcherButton_1 = buttonsSwitcher_1[0]
@@ -91,33 +91,33 @@ export class BetControl{
         const cashOutSpinner_1 = this._betControl_1.locator(".cashout-spinner-wrapper").first()
         const cachOutSpinner_2 = this._betControl_2.locator(".cashout-spinner-wrapper").first()
         if(cashOutSpinner_1 == null){
-            sendLogToGUI({
+            sendDataToGUI.exception({
                 location: "BetControl",
                 message: "init :: no cashOutSpinner_1"
-            }, LogCode.EXCEPTION)
+            })
             throw "no cashOutSpinner_1"
         }
         if(cachOutSpinner_2 == null){
-            sendLogToGUI({
+            sendDataToGUI.exception({
                 location: "BetControl",
                 message: "init :: no cachOutSpinner_2"
-            }, LogCode.EXCEPTION)
+            })
             throw "no cachOutSpinner_2"
         }
         this._autoCashOutMultiplier_1 = cashOutSpinner_1.locator("input").first()
         this._autoCashOutMultiplier_2 = cachOutSpinner_2.locator("input").first()
         if(!this._autoCashOutMultiplier_1){
-            sendLogToGUI({
+            sendDataToGUI.exception({
                 location: "BetControl",
                 message: "init :: no _autoCashOutMultiplier_1"
-            }, LogCode.EXCEPTION)
+            })
             throw "no _autoCashOutMultiplier_1"
         }
         if(!this._autoCashOutMultiplier_2){
-            sendLogToGUI({
+            sendDataToGUI.exception({
                 location: "BetControl",
                 message: "init :: no _autoCashOutMultiplier_2"
-            }, LogCode.EXCEPTION)
+            })
             throw "no _autoCashOutMultiplier_2"
         }
         // app-bet-control.buttons-block>button
@@ -134,10 +134,10 @@ export class BetControl{
             autoCashOutMultiplier = this._autoCashOutMultiplier_2
         }
         if(!autoCashOutMultiplier){
-            sendLogToGUI({
+            sendDataToGUI.exception({
                 location: "BetControl",
                 message: "setAutoCashOut :: buttons null autoCashOutMultiplier"
-            }, LogCode.EXCEPTION)
+            })
             throw "buttons null autoCashOutMultiplier"
         }
         const value = roundNumber(parseFloat(await autoCashOutMultiplier.inputValue({timeout: 1000})), 2)
@@ -155,10 +155,10 @@ export class BetControl{
             input = this._amountInput_2
         }
         if(input == null){
-            sendLogToGUI({
+            sendDataToGUI.exception({
                 location: "BetControl",
                 message: "updateAmount :: input null"
-            }, LogCode.EXCEPTION)
+            })
             throw "updateAmount :: input null"
         }
         const value = roundNumber(parseFloat(await input.inputValue({timeout: 1000})), 0)
@@ -175,19 +175,19 @@ export class BetControl{
         control: Control, 
     ){
         if(multiplier == null || amount == null){
-            sendLogToGUI({
+            sendDataToGUI.exception({
                 location: "BetControl",
                 message: "bet :: no multiplier or amount"
-            }, LogCode.EXCEPTION)
+            })
             throw "bet :: no multiplier or amount"
         }
         await this.setAutoCashOut(multiplier, control)
         await this.updateAmount(amount, control)
         if(this._betButton_1 == null || this._betButton_2 == null){
-            sendLogToGUI({
+            sendDataToGUI.exception({
                 location: "BetControl",
                 message: "bet :: bet button null. control"
-            }, LogCode.EXCEPTION)
+            })
             throw "bet: bet button null. control"
         }
         if(control === Control.Control1){
