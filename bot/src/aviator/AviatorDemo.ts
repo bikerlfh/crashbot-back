@@ -1,6 +1,6 @@
 import playwright from 'playwright'
 import {AviatorPage} from './Aviator'
-import {sendEventToGUI, LogCode} from "../ws/gui_events"
+import {sendEventToGUI} from "../ws/gui_events"
 
 export class AviatorDemo extends AviatorPage{
     _frame: playwright.FrameLocator| null = null

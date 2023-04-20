@@ -1,7 +1,7 @@
 import playwright from 'playwright'
 import {AviatorPage} from './Aviator'
 import { HomeBets } from '../constants'
-import {sendEventToGUI, LogCode} from "../ws/gui_events"
+import {sendEventToGUI} from "../ws/gui_events"
 
 
 export class AviatorOneWin extends AviatorPage{
@@ -10,6 +10,10 @@ export class AviatorOneWin extends AviatorPage{
 
     async _login(): Promise<void> {
         if(!this._page){
+            sendEventToGUI.exception({
+                location: "AviatorOneWin",
+                message: "_login :: page is null"
+            })
             throw "_login :: page is null"
         }
         const pageLoginButton = this._page.locator("button.login")
@@ -27,6 +31,10 @@ export class AviatorOneWin extends AviatorPage{
 
     async _getAppGame(): Promise<playwright.Locator> {
         if(!this._page){
+            sendEventToGUI.exception({
+                location: "AviatorOneWin",
+                message: "_getAppGame :: page is null"
+            })
             throw "_getAppGame :: page is null"
         }
         await this._page.waitForURL("**/casino/play/spribe_aviator**", {timeout: 50000})
@@ -40,7 +48,7 @@ export class AviatorOneWin extends AviatorPage{
                 return this._appGame
             } catch (e) {
                 if (e instanceof playwright.errors.TimeoutError) {
-                    sendEventToGUI.log("page :: error timeout", LogCode.ERROR)
+                    sendEventToGUI.log.debug("page :: error timeout")
                     continue
                 }
                 throw e
@@ -50,13 +58,25 @@ export class AviatorOneWin extends AviatorPage{
     
     async readGameLimits(){
         if(this._frame == null){
+            sendEventToGUI.exception({
+                location: "AviatorOneWin",
+                message: "readGameLimits :: _frame is null"
+            })
             throw "readGameLimits :: _frame is null"
         }
         if(this._appGame == null || this._page == null){
+            sendEventToGUI.exception({
+                location: "AviatorOneWin",
+                message: "readGameLimits :: _appGame is null"
+            })
             throw "readGameLimits :: _appGame is null"
         }
         const menu = this._appGame.locator(".dropdown-toggle.user")
         if(menu == null){
+            sendEventToGUI.exception({
+                location: "AviatorOneWin",
+                message: "readGameLimits :: menu is null"
+            })
             throw "readGameLimits :: menu is null"
         }
         // await menu.click()
@@ -66,6 +86,10 @@ export class AviatorOneWin extends AviatorPage{
         // app-user-menu-dropdown
         const appUserMenu = this._appGame.locator("app-settings-menu")
         if(appUserMenu == null){
+            sendEventToGUI.exception({
+                location: "AviatorOneWin",
+                message: "readGameLimits :: appusermenu is null"
+            })
             throw "readGameLimits :: appusermenu is null"
         }
         const listMenu = appUserMenu.locator(".list-menu").last()
@@ -76,9 +100,9 @@ export class AviatorOneWin extends AviatorPage{
         this.minimumBet = parseFloat((await limits[0].textContent())?.split(" ")[0] || "0")
         this.maximumBet = parseFloat((await limits[1].textContent())?.split(" ")[0] || "0")
         this.maximumWinForOneBet =  parseFloat((await limits[2].textContent())?.split(" ")[0] || "0")
-        sendEventToGUI.log(`minimumBet: ${this.minimumBet}`)
-        sendEventToGUI.log(`maximumBet: ${this.maximumBet}`)
-        sendEventToGUI.log(`maximumWinForOneBet: ${this.maximumWinForOneBet}`)
+        sendEventToGUI.log.debug(`minimumBet: ${this.minimumBet}`)
+        sendEventToGUI.log.debug(`maximumBet: ${this.maximumBet}`)
+        sendEventToGUI.log.debug(`maximumWinForOneBet: ${this.maximumWinForOneBet}`)
         const buttonClose = this._frame.locator("ngb-modal-window")
         await buttonClose.click()
     }

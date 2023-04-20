@@ -1,6 +1,6 @@
 import playwright from "playwright";
 import { roundNumber } from "../game/utils";
-import {sendEventToGUI, LogCode} from "../ws/gui_events"
+import {sendEventToGUI} from "../ws/gui_events"
 
 export enum Control{
     Control1=1,

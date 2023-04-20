@@ -82,12 +82,12 @@ export class Average{
     ){}
 
     printData(){
-        sendEventToGUI.log(`prediction: ${this.predictionValue}(${this.predictionRound})`)
-        sendEventToGUI.log(`categoryPrecentage: ${this.categoryPrecentage}`)
-        sendEventToGUI.log(`categoryPercentageValueInLive: ${this.categoryPercentageValueInLive}`)
-        sendEventToGUI.log(`averagePredictionsOfModel: ${this. averagePredictionsOfModel}`)
-        sendEventToGUI.log(`inCategoryPercentageValueInLive: ${this.inCategoryPercentageValueInLive}`)
-        sendEventToGUI.log(`inCategoryPrecentage: ${this.inCategoryPrecentage}`)
-        sendEventToGUI.log(`inAveragePredictionsOfModel: ${this.inAveragePredictionsOfModel}`)
+        sendEventToGUI.log.success(`Prediction: ${this.predictionValue}(${this.predictionRound})`)
+        sendEventToGUI.log.info(`Category Precentage: ${this.categoryPrecentage}`)
+        sendEventToGUI.log.info(`Category Percentage Value In Live: ${this.categoryPercentageValueInLive}`)
+        sendEventToGUI.log.info(`AveragePredictions Of Model: ${this. averagePredictionsOfModel}`)
+        sendEventToGUI.log.debug(`In Category Percentage Value In Live: ${this.inCategoryPercentageValueInLive}`)
+        sendEventToGUI.log.debug(`In Category Precentage: ${this.inCategoryPrecentage}`)
+        sendEventToGUI.log.debug(`In Average Predictions Of Model: ${this.inAveragePredictionsOfModel}`)
     }
  }

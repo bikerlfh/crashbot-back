@@ -1,7 +1,7 @@
 import playwright from "playwright";
 import {BetControl, Control} from "./BetControl"
 import { sleepNow } from "../game/utils";
-import {sendEventToGUI, LogCode} from "../ws/gui_events"
+import {sendEventToGUI} from "../ws/gui_events"
 
 
 export class AviatorPage{
@@ -27,7 +27,7 @@ export class AviatorPage{
     async _click(element: playwright.Locator){
         const box = await element.boundingBox();
         if(!box || !this._page){
-            sendEventToGUI.log("page :: box or page does't exists", LogCode.ERROR)
+            sendEventToGUI.log.error("page :: box or page does't exists")
             return
         }
         await this._page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {steps: 50})
@@ -60,7 +60,7 @@ export class AviatorPage{
                 return _appGame
             } catch (e) {
                 if (e instanceof playwright.errors.TimeoutError) {
-                    sendEventToGUI.log("page :: error timeout", LogCode.ERROR)
+                    sendEventToGUI.log.debug("page :: error timeout")
                     continue
                 }
                 sendEventToGUI.exception({
@@ -80,13 +80,13 @@ export class AviatorPage{
         await this._login()
         this._appGame = await this._getAppGame()
         this._historyGame = this._appGame.locator(".result-history");
-        sendEventToGUI.log("result history found")
+        sendEventToGUI.log.debug("Result history found")
         await this.readBalance()
         await this.readMultipliers()
         // await this.readGameLimits()
         this._controls = new BetControl(this._appGame);
         await this._controls.init()
-        sendEventToGUI.log("aviator loaded")
+        sendEventToGUI.log.success("Aviator loaded")
     }
 
     async close(){
@@ -136,9 +136,9 @@ export class AviatorPage{
         this.maximumWinForOneBet =  parseFloat((await limits[2].textContent())?.split(" ")[0] || "0")
         const buttonClose = this._page.locator("ngb-modal-window")
         await buttonClose.click()
-        sendEventToGUI.log(`minimumBet: ${this.minimumBet}`)
-        sendEventToGUI.log(`maximumBet: ${this.maximumBet}`)
-        sendEventToGUI.log(`maximumWinForOneBet: ${this.maximumWinForOneBet}`)
+        sendEventToGUI.log.debug(`minimumBet: ${this.minimumBet}`)
+        sendEventToGUI.log.debug(`maximumBet: ${this.maximumBet}`)
+        sendEventToGUI.log.debug(`maximumWinForOneBet: ${this.maximumWinForOneBet}`)
         
     }
 
@@ -218,7 +218,7 @@ export class AviatorPage{
             lastMultiplier = lastMultiplierContent? this._formatMultiplier(lastMultiplierContent): lastMultiplierSaved;
             if(lastMultiplierSaved != lastMultiplier){
                 this.multipliers.push(lastMultiplier)
-                sendEventToGUI.log(`New multiplier: ${lastMultiplier}`)
+                sendEventToGUI.log.success(`New Multiplier: ${lastMultiplier}`)
                 this.multipliers = this.multipliers.slice(1)
                 return
             }

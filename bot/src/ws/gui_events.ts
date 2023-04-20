@@ -9,15 +9,14 @@ const enum GUIEvent {
 // TODO: add BET_PLACED, BET_WON, BET_LOST
 export const enum LogCode {
     INFO = 'info',
-    ERROR = 'error',
-    WARNING = 'warning',
     SUCCESS = 'success',
-    INTERNAL = 'internal',
+    WARNING = 'warning',
+    ERROR = 'error',
+    DEBUG = 'debug',
 }
 
-export const sendEventToGUI = {
-    log: (data: any, code?: LogCode) => {
-        /*
+const sendLogToGUI = (data: any, code?: LogCode) => {
+    /*
         * Send a log to the GUI
         * @param data: any (can be string or object)
         * @param code: string
@@ -25,11 +24,30 @@ export const sendEventToGUI = {
         * @example sendLogToGUI('Hello world', 'info')
         * @example sendLogToGUI('Hello world')
         */
-        code = code || LogCode.INFO;
-        data = typeof data === 'string' ? {message: data} : data;
-        data = Object.assign({code:code}, data)
-        console.log(data);
-        (global as any).emitToGUI(GUIEvent.LOG, data);
+    code = code || LogCode.INFO;
+    data = typeof data === 'string' ? {message: data} : data;
+    data = Object.assign({code:code}, data)
+    console.log(data);
+    (global as any).emitToGUI(GUIEvent.LOG, data);
+}
+
+export const sendEventToGUI = {
+    log: {
+        info: (data: any) => {
+            sendLogToGUI(data, LogCode.INFO);
+        },
+        error: (data: any) => {
+            sendLogToGUI(data, LogCode.ERROR);
+        },
+        warning: (data: any) => {
+            sendLogToGUI(data, LogCode.WARNING);
+        },
+        success: (data: any) => {
+            sendLogToGUI(data, LogCode.SUCCESS);
+        },
+        debug: (data: any) => {
+            sendLogToGUI(data, LogCode.DEBUG);
+        },
     },
     balance: (balance: number) => { 
         (global as any).emitToGUI(GUIEvent.UPDATE_BALANCE, {
