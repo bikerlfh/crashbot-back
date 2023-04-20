@@ -16,7 +16,7 @@ const io = new Server(httpServer);
 createGlobals(io);
 
 let numConnections = 0;
-const maxConnections = 1; // Máximo de conexiones permitidas
+const maxConnections = 2; // Máximo de conexiones permitidas
 
 // Middleware para limitar el número de conexiones
 io.use((socket, next) => {
@@ -27,7 +27,11 @@ io.use((socket, next) => {
     socket.on('disconnect', () => {
         console.log('ws client disconnected');
         numConnections--;
-        closeGameEvent({});
+        closeGameEvent().then((response: any) => {
+            socket.emit('closeGame', response)
+        }).catch((error: any) => {
+            socket.emit('closeGame', error)
+        });
     });
     next();
 });
@@ -42,14 +46,15 @@ io.on('connection', (socket: Socket) => {
         })
     });
     socket.on('login', (data: any) => {
+        console.log('login', data)
         loginEvent(data).then((response: any) => {
             socket.emit('login', response)
-        }).catch((error: any) => {
+        }).catch((error: any) => { 
             socket.emit('login', JSON.stringify(error))
         });
     });
     socket.on('startBot', (data: any) => {
-        startBotEvent(data).catch((error: any) => {
+        startBotEvent(data, socket).catch((error: any) => {
             socket.emit('startBot', error)
         });
     });
@@ -62,7 +67,7 @@ io.on('connection', (socket: Socket) => {
         socket.emit('setMaxAmountToBet', msg)
     });
     socket.on('closeGame', (data: any) => {
-        closeGameEvent(data).then((response: any) => {
+        closeGameEvent().then((response: any) => {
             socket.emit('closeGame', response)
         }).catch((error: any) => {
             socket.emit('closeGame', error)

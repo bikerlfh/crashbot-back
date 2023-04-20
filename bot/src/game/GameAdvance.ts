@@ -9,7 +9,7 @@ import { BetData } from "../api/models"
 import { sleepNow, roundNumber } from "./utils"
 import { BotType } from "./core"
 import { Bot, BotStatic } from "./bots/bots"
-import {sendLogToGUI, LogCode} from "../globals"
+import {sendLogToGUI, sendDataToGUI, LogCode} from "../globals"
 
 
 export class Game {
@@ -97,8 +97,9 @@ export class Game {
         sendLogToGUI("opening home bet.....")
         await this.aviatorPage.open()
         sendLogToGUI("reading the player's balance.....")
-        this.initialBalance = await this.readBalanceToAviator()
+        this.initialBalance = this.aviatorPage.balance
         this.balance = this.initialBalance
+        sendDataToGUI.sendBalance(this.balance)
         sendLogToGUI("loading the player.....")
         this.multipliersToSave = this.aviatorPage.multipliers
         this.multipliers = this.multipliersToSave.map(item => new Multiplier(item))

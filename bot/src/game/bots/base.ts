@@ -4,7 +4,7 @@ import { PredictionCore } from "../PredictionCore"
 import { Bet, PredictionData } from "../core"
 import { AviatorBotAPI } from "../../api/AviatorBotAPI"
 import {BotType} from "../core"
-import {sendLogToGUI, LogCode} from "../../globals"
+import {sendLogToGUI, sendDataToGUI, LogCode} from "../../globals"
 
 
 export class BotBase{
@@ -191,6 +191,7 @@ export class BotBase{
 
     updateBalance(balance: number){
         this.balance = balance
+        sendDataToGUI.sendBalance(this.balance)
     }
 
     protected getPredictionData(prediction: PredictionCore): PredictionData{

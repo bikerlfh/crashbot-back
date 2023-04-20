@@ -159,7 +159,6 @@ export class AviatorPage{
             throw "balance element is null"
         }
         this.balance = parseFloat(await this._balanceElement.textContent() || "0")
-        sendLogToGUI(`balance: ${this.balance}`)
         return this.balance
     }
 

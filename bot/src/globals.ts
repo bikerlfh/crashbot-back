@@ -17,6 +17,7 @@ export const createGlobals = (io: any|null) => {
     };
 }
 
+// TODO: add BET_PLACED, BET_WON, BET_LOST
 export const enum LogCode {
     INFO = 'info',
     ERROR = 'error',
@@ -24,6 +25,7 @@ export const enum LogCode {
     SUCCESS = 'success',
     INTERNAL = 'internal',
     EXCEPTION = 'exception',
+    DATA = 'data',  // data to be displayed in the GUI
 } 
 
 export const sendLogToGUI = (data: any, code?: LogCode) => {
@@ -40,4 +42,13 @@ export const sendLogToGUI = (data: any, code?: LogCode) => {
     data = Object.assign({code:code}, data)
     console.log(data);
     (global as any).emitToGUI('log', data);
+}
+
+export const sendDataToGUI = {
+    sendBalance: (balance: number) => { 
+        sendLogToGUI({
+            type: 'balance',
+            balance: balance
+        }, LogCode.DATA)
+    }   
 }

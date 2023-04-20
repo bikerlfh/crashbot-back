@@ -66,6 +66,7 @@ export class BotStatic extends BotBase{
     * in the control 2 the bot will bet the min amount of money that the customer select
     * the min amount of bet should be less than the max amount of bet / 3 example: max bet = 300, min bet = 300/3 = 100
     */
+    private _initialBalance = 0
 
     constructor(
         botType: BotType,
@@ -87,7 +88,33 @@ export class BotStatic extends BotBase{
     async initialize(balance: number){
         sendLogToGUI("initializing bot static")
         await super.initialize(balance)
+        this._initialBalance = balance
         this.setMaxAmountToBet((global as any).maxAmountToBet)
+    }
+    
+    // NOTE: remove this method when the bot not need recover all profits
+    updateBalance(balance: number){
+        if(balance > this.initialBalance){
+            this.initialBalance = balance
+        }
+        super.updateBalance(balance)
+    }
+
+    evaluateBets(multiplierResult: number){
+        let totalAmount = 0
+        this.bets.forEach((bet)=>{
+            const profit = bet.evaluate(multiplierResult)
+            if (profit < 0){
+                this.addLoss(bet.amount)
+            }
+            else{
+                totalAmount += profit
+            }
+        })
+        if(totalAmount > 0){
+            this.removeLoss(totalAmount)
+        }
+        this.bets = []
     }
 
     protected getBetRecoveryAmount(multiplier: number, probability: number, strategy: BotStrategy): number{

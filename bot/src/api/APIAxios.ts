@@ -1,7 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import {APIUrl, HTTPStatus} from './constants';
 import { LocalStorage } from 'node-localstorage';
-import { rawListeners } from 'process';
 
 export class ApiService {
 	private readonly httpClient: AxiosInstance;

@@ -1,8 +1,9 @@
-import { makeWSError } from "./utils"
-import {login, verifyToken} from "./handlers"
-import {BotType} from "../game/core"
-import { HomeBets } from "../constants"
-import {Game} from "../game/GameAdvance"
+import {makeWSError} from "./utils";
+import {login, verifyToken} from "./handlers";
+import {BotType} from "../game/core";
+import {HomeBets}  from "../constants";
+import {Game} from "../game/GameAdvance";
+import { Socket } from "socket.io";
 
 
 export const verifyTokenEvent = async (): Promise<any> => {
@@ -17,7 +18,6 @@ export const loginEvent = async (data: any): Promise<any|boolean> => {
     }
     return await login(username, password)
 }
-
 
 export const autoPlayEvent = (data: any): any => {
     const autoPlay = data.autoPlay
@@ -42,20 +42,23 @@ export const setMaxAmountToBetEvent = (data: any): any => {
     return {maxAmountToBet: (global as any).maxAmountToBet}
 }
 
-export const closeGameEvent = async (data: any): Promise<any> => {
+export const closeGameEvent = async (): Promise<any> => {
     const game: Game = (global as any).game
+    if(!game){
+        return {closed: true}
+    }
     await game.close();
     (global as any).game = null;
     return {closed: true}
 }
 
-
-export const startBotEvent =  async (data: any): Promise<any> => {
+export const startBotEvent =  async (data: any, socket: Socket): Promise<any> => {
     const botType = data.botType
     const homeBetId = data.homeBetId
     const maxAmountToBet = data.maxAmountToBet
-    if(!botType || !homeBetId || !maxAmountToBet){
-        throw makeWSError('botType, homeBetId and maxAmountToBet are required')
+    const autoPlay = data.autoPlay
+    if(!botType || !homeBetId || !maxAmountToBet || autoPlay === undefined){
+        throw makeWSError('botType, homeBetId, autoPlay and maxAmountToBet are required')
     }
     const homeBetKey = Object.keys(HomeBets).find(key => HomeBets[key].id === homeBetId)
 	if(!homeBetKey){
@@ -75,7 +78,8 @@ export const startBotEvent =  async (data: any): Promise<any> => {
         default:
             throw makeWSError("invalid botType")
 	}
-    (global as any).maxAmountToBet = maxAmountToBet;
+    (global as any).maxAmountToBet = parseFloat(maxAmountToBet);
+    (global as any).autoPlay = autoPlay
     const homeBet = HomeBets[homeBetKey];
     let game: Game = (global as any).game
     if(game){
@@ -83,6 +87,8 @@ export const startBotEvent =  async (data: any): Promise<any> => {
     }
     (global as any).game = new Game(homeBet, botTypeSelected, true);
     game = (global as any).game
+    // send the game init message to the GUI
+    socket.emit('startBot', {started: true})
 	try{
 		await game.initialize()
 		await game.play()
