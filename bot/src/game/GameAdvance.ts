@@ -9,7 +9,7 @@ import { BetData } from "../api/models"
 import { sleepNow, roundNumber } from "./utils"
 import { BotType } from "./core"
 import { Bot, BotStatic } from "./bots/bots"
-import {sendDataToGUI, LogCode} from "../ws/gui_events"
+import {sendEventToGUI, LogCode} from "../ws/gui_events"
 
 
 export class Game {
@@ -60,7 +60,7 @@ export class Game {
             const chatId = data.hasOwnProperty("chat_id")? data.chat_id: null
             const others = data.hasOwnProperty("others")? data.others: null
             if(!homeBetId || !minMultiplier || !maxMultiplier){
-                sendDataToGUI.log({
+                sendEventToGUI.log({
                     message: "socketOnMessage: data incomplete",
                     data: data
                 }, LogCode.ERROR)
@@ -80,7 +80,7 @@ export class Game {
                 this.bets = []
             })
         }catch(error){
-            sendDataToGUI.log(`socketOnMessage: ${error}`,  LogCode.ERROR)
+            sendEventToGUI.log(`socketOnMessage: ${error}`,  LogCode.ERROR)
         }
     }
 
@@ -94,19 +94,19 @@ export class Game {
         // sendLogToGUI("connecting to websocket.....")
         //this._ws_client = await WebSocketClient.getInstance()
         //this._ws_client.setOnMessage(this.wsOnMessage.bind(this))
-        sendDataToGUI.log("opening home bet.....")
+        sendEventToGUI.log("opening home bet.....")
         await this.aviatorPage.open()
-        sendDataToGUI.log("reading the player's balance.....")
+        sendEventToGUI.log("reading the player's balance.....")
         this.initialBalance = this.aviatorPage.balance
         this.balance = this.initialBalance
-        sendDataToGUI. balance(this.balance)
-        sendDataToGUI.log("loading the player.....")
+        sendEventToGUI. balance(this.balance)
+        sendEventToGUI.log("loading the player.....")
         this.multipliersToSave = this.aviatorPage.multipliers
         this.multipliers = this.multipliersToSave.map(item => new Multiplier(item))
         await this.requestSaveMultipliers()
         await this.bot.initialize(this.initialBalance)
         this.initialized = true
-        sendDataToGUI.log("Game initialized", LogCode.SUCCESS)
+        sendEventToGUI.log("Game initialized", LogCode.SUCCESS)
     }
 
     async close(){
@@ -129,15 +129,15 @@ export class Game {
         if(this.multipliersToSave.length < this.MAX_MULTIPLIERS_TO_SAVE){
             return
         }
-        sendDataToGUI.log("saving multipliers.....")
+        sendEventToGUI.log("saving multipliers.....")
         await AviatorBotAPI.requestSaveMultipliers(this.homeBet.id, this.multipliersToSave).then(
             (response) => {
                 this.multipliersToSave = []
-                sendDataToGUI.log(`multipliers saved: ${response.data.multipliers}`, LogCode.INTERNAL);
+                sendEventToGUI.log(`multipliers saved: ${response.data.multipliers}`, LogCode.INTERNAL);
             }
         ).catch(
             (error) => {
-                sendDataToGUI.log(`error in requestSaveMultipliers: ${error}`, LogCode.ERROR)
+                sendEventToGUI.log(`error in requestSaveMultipliers: ${error}`, LogCode.ERROR)
             }
         )
     }
@@ -158,17 +158,17 @@ export class Game {
                 bet.multiplierResult
             )
         })
-        sendDataToGUI.log("saving bets.....")
+        sendEventToGUI.log("saving bets.....")
         AviatorBotAPI.requestCreateBet(
             this.homeBet.id,
             roundNumber(this.balance, 2),
             betsToSave
         ).then(
             (response) => {
-                sendDataToGUI.log(`bets saved: [${response.data.bet_ids}]`);
+                sendEventToGUI.log(`bets saved: [${response.data.bet_ids}]`);
             }
         ).catch(error => {
-            sendDataToGUI.log(`Error in requestSaveBets: ${error}`, LogCode.ERROR)
+            sendEventToGUI.log(`Error in requestSaveBets: ${error}`, LogCode.ERROR)
         })
     }
 
@@ -179,7 +179,7 @@ export class Game {
         const multipliers = this.multipliers.map(item => item.multiplier)
         const predictions = await AviatorBotAPI.requestPrediction(this.homeBet.id, multipliers).catch(
             (error) => { 
-                sendDataToGUI.log(`Error in requestGetPrediction: ${error}`, LogCode.ERROR)
+                sendEventToGUI.log(`Error in requestGetPrediction: ${error}`, LogCode.ERROR)
                 return [] 
             }
         )
@@ -208,7 +208,7 @@ export class Game {
         for (let index = 0; index < bets.length; index++) {
             const bet = bets[index];
             const control = index == 0? Control.Control1: Control.Control2
-            sendDataToGUI.log(`sending bet to aviator ${bet.amount} * ${ bet.multiplier} control: ${control}`)
+            sendEventToGUI.log(`sending bet to aviator ${bet.amount} * ${ bet.multiplier} control: ${control}`)
             await this.aviatorPage.bet(bet.amount, bet.multiplier, control)
             await sleepNow(1000)
         }
@@ -216,7 +216,7 @@ export class Game {
 
     async play(){
         if (!this.initialized){
-            sendDataToGUI.log("The game is not initialized")
+            sendEventToGUI.log("The game is not initialized")
             return
         }
         while(this.initialized){
@@ -256,11 +256,11 @@ export class Game {
         )
         const prediction = await this.requestGetPrediction()
         if(prediction == null){
-            sendDataToGUI.log("No prediction found")
+            sendEventToGUI.log("No prediction found")
             return []
         }
         this.bets = this.bot.getNextBet(prediction)
-        sendDataToGUI.log({bets: this.bets})
+        sendEventToGUI.log({bets: this.bets})
         return this.bets
     }
 }

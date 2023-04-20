@@ -13,18 +13,9 @@ export const enum LogCode {
     WARNING = 'warning',
     SUCCESS = 'success',
     INTERNAL = 'internal',
-    DATA = 'data',  // data to be displayed in the GUI
 }
 
-/*export const sendLogToGUI = (data: any, code?: LogCode) => {
-    code = code || LogCode.INFO;
-    data = typeof data === 'string' ? {message: data} : data;
-    data = Object.assign({code:code}, data)
-    console.log(data);
-    (global as any).emitToGUI(GUIEvent.LOG, data);
-}*/
-
-export const sendDataToGUI = {
+export const sendEventToGUI = {
     log: (data: any, code?: LogCode) => {
         /*
         * Send a log to the GUI
@@ -51,8 +42,9 @@ export const sendDataToGUI = {
         });
     },
     exception: (exception: any) => {
+        console.log(exception);
         (global as any).emitToGUI(GUIEvent.EXCEPTION, {
-            exception: exception
+            exception: exception.toString()
         });
     }
 }

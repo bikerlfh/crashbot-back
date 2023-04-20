@@ -1,7 +1,7 @@
 import playwright from 'playwright'
 import {AviatorPage} from './Aviator'
 import { HomeBets } from '../constants'
-import {sendDataToGUI, LogCode} from "../ws/gui_events"
+import {sendEventToGUI, LogCode} from "../ws/gui_events"
 
 
 export class AviatorBetPlay extends AviatorPage{
@@ -28,7 +28,7 @@ export class AviatorBetPlay extends AviatorPage{
 
     async _getAppGame(): Promise<playwright.Locator> {
         if(!this._page){
-            sendDataToGUI.exception({
+            sendEventToGUI.exception({
                 location: "AviatorBetPlay",
                 message: "_getAppGame :: page is null"
             })
@@ -47,10 +47,10 @@ export class AviatorBetPlay extends AviatorPage{
                 return this._appGame
             } catch (e) {
                 if (e instanceof playwright.errors.TimeoutError) {
-                    sendDataToGUI.log("page :: error timeout", LogCode.ERROR)
+                    sendEventToGUI.log("page :: error timeout", LogCode.ERROR)
                     continue
                 }
-                sendDataToGUI.exception({
+                sendEventToGUI.exception({
                     location: "AviatorBetPlay",
                     message: `_getAppGame :: ${e}`
                 })
@@ -61,14 +61,14 @@ export class AviatorBetPlay extends AviatorPage{
     
     async readGameLimits(){
         if(this._frame == null){
-            sendDataToGUI.exception({
+            sendEventToGUI.exception({
                 location: "AviatorBetPlay",
                 message: "readGameLimits :: _frame is null"
             })
             throw "readGameLimits :: _frame is null"
         }
         if(this._appGame == null || this._page == null){
-            sendDataToGUI.exception({
+            sendEventToGUI.exception({
                 location: "AviatorBetPlay",
                 message: "readGameLimits :: _appGame is null"
             })
@@ -76,7 +76,7 @@ export class AviatorBetPlay extends AviatorPage{
         }
         const menu = this._appGame.locator(".dropdown-toggle.user")
         if(menu == null){
-            sendDataToGUI.exception({
+            sendEventToGUI.exception({
                 location: "AviatorBetPlay",
                 message: "readGameLimits :: menu is null"
             })
@@ -88,7 +88,7 @@ export class AviatorBetPlay extends AviatorPage{
         // app-user-menu-dropdown
         const appUserMenu = this._appGame.locator("app-settings-menu")
         if(appUserMenu == null){
-            sendDataToGUI.exception({
+            sendEventToGUI.exception({
                 location: "AviatorBetPlay",
                 message: "readGameLimits :: appusermenu is null"
             })
@@ -102,9 +102,9 @@ export class AviatorBetPlay extends AviatorPage{
         this.minimumBet = parseFloat((await limits[0].textContent())?.split(" ")[0] || "0")
         this.maximumBet = parseFloat((await limits[1].textContent())?.split(" ")[0] || "0")
         this.maximumWinForOneBet =  parseFloat((await limits[2].textContent())?.split(" ")[0] || "0")
-        sendDataToGUI.log(`minimumBet: ${this.minimumBet}`)
-        sendDataToGUI.log(`maximumBet: ${this.maximumBet}`)
-        sendDataToGUI.log(`maximumWinForOneBet: ${this.maximumWinForOneBet}`)
+        sendEventToGUI.log(`minimumBet: ${this.minimumBet}`)
+        sendEventToGUI.log(`maximumBet: ${this.maximumBet}`)
+        sendEventToGUI.log(`maximumWinForOneBet: ${this.maximumWinForOneBet}`)
         const buttonClose = this._frame.locator("ngb-modal-window")
         await buttonClose.click()
     }
