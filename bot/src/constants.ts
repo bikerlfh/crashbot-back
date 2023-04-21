@@ -14,8 +14,9 @@ export class HomeBet{
     id: number
     minBet: number
     maxBet: number
+    url: string
     amountMultiple: number|null = null
-    aviatorPage: AviatorDemo|AviatorBetPlay|AviatorOneWin
+    aviatorPage: any
     username: string|null
     password: string|null
 
@@ -23,10 +24,16 @@ export class HomeBet{
         this.id = obj.id
         this.minBet = obj.minBet
         this.maxBet = obj.maxBet
+        this.url = obj.url
         this.aviatorPage = obj.aviatorPage
         this.username = obj.hasOwnProperty('username')? obj.username: null
         this.password = obj.hasOwnProperty('password')? obj.password: null
     }
+
+    getAviatorPage(){
+        return new this.aviatorPage(this.url)
+    }
+
 }
 
 export const HomeBets: Dictionary<HomeBet> = {
@@ -34,31 +41,31 @@ export const HomeBets: Dictionary<HomeBet> = {
         id: 1,
         minBet: 0.1,
         maxBet: 100,
-        aviatorPage: new AviatorDemo("https://www.spribe.co/games/aviator")
+        url: "https://www.spribe.co/games/aviator",
+        aviatorPage: AviatorDemo
     }),
     betplay: new HomeBet({
         id: 2,
         minBet: 100,
-        maxBet: 50000, 
-        username: process.env.BET_PLAY_USERNAME,
-        password: process.env.BET_PLAY_PASSWORD,
+        maxBet: 50000,
+        url: "https://betplay.com.co/slots",
         amountMultiple: 100,
-        aviatorPage: new AviatorBetPlay("https://betplay.com.co/slots")
+        aviatorPage: AviatorBetPlay
     }),
     oneWin: new HomeBet({
         id: 3,
         minBet: 500,
         maxBet: 500000, 
+        url: "https://1wslue.top/casino/",
         amountMultiple: 100,
-        username: process.env.ONE_WIN_USERNAME,
-        password: process.env.ONE_WIN_PASSWORD,
-        aviatorPage: new AviatorOneWin("https://1wslue.top/casino/")
+        aviatorPage: AviatorOneWin
     }),
     rivalo: new HomeBet({
         id: 4,
         minBet: 500,
         maxBet: 500000, 
+        url: "https://www.rivalo.co",
         amountMultiple: 100,
-        aviatorPage: new AviatorDemo("https://www.rivalo.co")
+        aviatorPage: AviatorDemo
     }),
 }

@@ -126,8 +126,18 @@ export class BotBase{
         }
     }
 
+    protected resetLosses(){
+        this.amountsLost = []
+    }
+
     protected getMinLostAmount(): number{
-        // return the min amount lost (the profit must be lower than 0)
+        /* if the amount lost is greater than 3 times 
+         * the average amount lost, return the average amount lost
+        */
+        if(this.amountsLost.length > 3){
+            const average = this.amountsLost.reduce((a, v) => a + v, 0) / this.amountsLost.length;
+            return average
+        }
         return Math.min(...this.amountsLost)
     }
 
@@ -149,19 +159,20 @@ export class BotBase{
 
     evaluateBets(multiplierResult: number){
         let totalAmount = 0
+        let betProfit = 0
         this.bets.forEach((bet)=>{
-            const profit = bet.evaluate(multiplierResult)
-            if (profit < 0){
+            betProfit = bet.evaluate(multiplierResult)
+            if (betProfit < 0){
                 this.addLoss(bet.amount)
             }
             else{
-                totalAmount += profit
+                totalAmount += betProfit
             }
         })
+        this.bets = []
         if(totalAmount > 0){
             this.removeLoss(totalAmount)
         }
-        this.bets = []
     }
     
     protected getNumberOfBets(): number{
@@ -329,6 +340,7 @@ export class BotBase{
     }
 
     getNextBet(prediction: PredictionCore): Bet[]{
+        // if profit >= 0, reset amountsLost
         if(prediction == null){
             return []
         }
@@ -341,6 +353,9 @@ export class BotBase{
             return []
         }
         const profit = this.getProfit()
+        if(profit >= 0){
+            this.resetLosses()
+        }
         const predictionData = this.getPredictionData(prediction)
         sendEventToGUI.log.debug(`profit: ${profit}`)
         predictionData.printData()

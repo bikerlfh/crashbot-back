@@ -43,9 +43,9 @@ export class PredictionCore{
         if(this.categoryPercentagesValuesInLive[predictionRound] === null){
             this.categoryPercentagesValuesInLive[predictionRound] = categoryPercentage
         }
-        sendEventToGUI.log.debug("---------------------- PredictionCore: ADD PREDICTION ----------------------")
-        sendEventToGUI.log.debug(`Model ID: ${this.id}`)
-        sendEventToGUI.log.debug(`Added prediction: ${prediction} in round ${predictionRound}`)
+        //sendEventToGUI.log.debug("---------------------- PredictionCore: ADD PREDICTION ----------------------")
+        //sendEventToGUI.log.debug(`Model ID: ${this.id}`)
+        //sendEventToGUI.log.debug(`Added prediction: ${prediction} in round ${predictionRound}`)
     }
 
     addMultiplierResult(multiplier: number){
@@ -55,11 +55,11 @@ export class PredictionCore{
     }
 
     calculateCategoryPercentages(){
-        sendEventToGUI.log.debug("------------- PredictionCore: calculateCategoryPercentages -------------")
-        sendEventToGUI.log.debug(`Model ID: ${this.id}`)
-        sendEventToGUI.log.debug(`Prediction Rounds: ${this.predictionRounds}`)
-        sendEventToGUI.log.debug(`Prediction Values: ${this.predictionValues}`)
-        sendEventToGUI.log.debug(`Multiplier Results: ${this.multiplierResults}`)
+        //sendEventToGUI.log.debug("------------- PredictionCore: calculateCategoryPercentages -------------")
+        //sendEventToGUI.log.debug(`Model ID: ${this.id}`)
+        //sendEventToGUI.log.debug(`Prediction Rounds: ${this.predictionRounds}`)
+        //sendEventToGUI.log.debug(`Prediction Values: ${this.predictionValues}`)
+        //sendEventToGUI.log.debug(`Multiplier Results: ${this.multiplierResults}`)
         let roundMultiplier = 0
         let valueRound = 0
         let value = 0
@@ -87,13 +87,13 @@ export class PredictionCore{
             }
             this.categoryPercentages[i] = roundNumber(count / countI, 2);
             this.categoryPercentagesValuesInLive[i] = roundNumber(countValues / countI, 2);
-            sendEventToGUI.log.debug(`Category ${i}: ${this.categoryPercentages[i]}`)
-            sendEventToGUI.log.debug(`Category ${i} Values: ${this.categoryPercentagesValuesInLive[i]}`)
+            //sendEventToGUI.log.debug(`Category ${i}: ${this.categoryPercentages[i]}`)
+            //sendEventToGUI.log.debug(`Category ${i} Values: ${this.categoryPercentagesValuesInLive[i]}`)
         }
     }
 
     calculateAverageModelPrediction(){
-        sendEventToGUI.log.debug("------------- PredictionCore: calculateAverageModelPrediction -------------")
+        //sendEventToGUI.log.debug("------------- PredictionCore: calculateAverageModelPrediction -------------")
         let correcValuesCount = 0;
         let roundMultiplier = 0
         for (let i = 0; i < this.multiplierResults.length; i++) {
@@ -104,12 +104,12 @@ export class PredictionCore{
             }
         }
         this.averagePredictionsOfModel = roundNumber(correcValuesCount / this.multiplierResults.length, 2);
-        sendEventToGUI.log.debug(`Model ID: ${this.id}`)
-        sendEventToGUI.log.debug(`Prediction Rounds: ${this.predictionRounds}`)
-        sendEventToGUI.log.debug(`Multiplier Results: ${this.multiplierResults}`)
-        sendEventToGUI.log.debug(`Correct Values: ${correcValuesCount}`)
-        sendEventToGUI.log.debug(`Count Multiplier Results: ${this.multiplierResults.length}`)
-        sendEventToGUI.log.debug(`Average Predictions: ${this.averagePredictionsOfModel})`)
+        //sendEventToGUI.log.debug(`Model ID: ${this.id}`)
+        //sendEventToGUI.log.debug(`Prediction Rounds: ${this.predictionRounds}`)
+        //sendEventToGUI.log.debug(`Multiplier Results: ${this.multiplierResults}`)
+        //sendEventToGUI.log.debug(`Correct Values: ${correcValuesCount}`)
+        //sendEventToGUI.log.debug(`Count Multiplier Results: ${this.multiplierResults.length}`)
+        //sendEventToGUI.log.debug(`Average Predictions: ${this.averagePredictionsOfModel})`)
     }
 
     getPreditionValue(): number{
@@ -143,8 +143,8 @@ export class PredictionModel{
     }
 
     addPredictions(predictions: Prediction[]){
-        sendEventToGUI.log.debug("----------------- PredictionModel: addPredictions ------------------")
-        sendEventToGUI.log.debug(`Count Predictions: ${this.predictions.length}`)
+        //sendEventToGUI.log.debug("----------------- PredictionModel: addPredictions ------------------")
+        //sendEventToGUI.log.debug(`Count Predictions: ${this.predictions.length}`)
         const new_predictions: PredictionCore[] = []
         predictions.forEach(prediction => {
             let prediction_ = this.predictions.find(
@@ -155,7 +155,7 @@ export class PredictionModel{
                     prediction.id,
                     prediction.averagePredictions
                 )
-                sendEventToGUI.log.debug(`New PredictionCore: ${prediction.id}`)
+                //sendEventToGUI.log.debug(`New PredictionCore: ${prediction.id}`)
             }   
             prediction_.addPrediction(
                 prediction.prediction,
@@ -166,7 +166,7 @@ export class PredictionModel{
             new_predictions.push(prediction_)
         })
         this.predictions = new_predictions
-        sendEventToGUI.log.debug(`Next Count Predictions: ${this.predictions.length}`)
+        //sendEventToGUI.log.debug(`Next Count Predictions: ${this.predictions.length}`)
         // this.predictions = this.predictions.filter(obj => obj.id in predictions.map(item => item.id));
     }
     
@@ -179,13 +179,13 @@ export class PredictionModel{
     }
 
     evaluateModels(minBotAveragePredictionModel: number){
-        sendEventToGUI.log.debug("----------------- PredictionModel: evaluateModels ------------------")
-        sendEventToGUI.log.debug(`Count Prediction: ${this.predictions.length}`)
+        //sendEventToGUI.log.debug("----------------- PredictionModel: evaluateModels ------------------")
+        //sendEventToGUI.log.debug(`Count Prediction: ${this.predictions.length}`)
         this.predictions = this.predictions.filter(p => 
             p.averagePredictionsOfModel > minBotAveragePredictionModel || 
             p.multiplierResults.length < this.MAX_RESULTS_TO_EVALUATE
         );
-        sendEventToGUI.log.debug(`Next Count Prediction: ${this.predictions.length}`)
+        //sendEventToGUI.log.debug(`Next Count Prediction: ${this.predictions.length}`)
     }
 
     getBestPrediction(): PredictionCore|null{
@@ -198,8 +198,8 @@ export class PredictionModel{
                 bestPrediction = pre
             }
         })
-        sendEventToGUI.log.debug("----------------- PredictionModel: getBestPrediction ------------------")
-        sendEventToGUI.log.debug(`Model ID: ${bestPrediction.id}`)
+        //sendEventToGUI.log.debug("----------------- PredictionModel: getBestPrediction ------------------")
+        //sendEventToGUI.log.debug(`Model ID: ${bestPrediction.id}`)
         return bestPrediction
     }
 }

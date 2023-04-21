@@ -34,7 +34,7 @@ export class Game {
     constructor(homeBet: HomeBet, botType: BotType, useBotStatic?: boolean){
         // TODO: add correct customerId
         this.homeBet = homeBet
-        this.aviatorPage = homeBet.aviatorPage       
+        this.aviatorPage = this.homeBet.getAviatorPage()
         this.minimumBet = homeBet.minBet
         this.maximumBet = homeBet.maxBet
         if(!useBotStatic){
@@ -60,10 +60,7 @@ export class Game {
             const chatId = data.hasOwnProperty("chat_id")? data.chat_id: null
             const others = data.hasOwnProperty("others")? data.others: null
             if(!homeBetId || !minMultiplier || !maxMultiplier){
-                sendEventToGUI.log.debug({
-                    message: "socketOnMessage: data incomplete",
-                    data: data
-                })
+                sendEventToGUI.log.debug(`socketOnMessage: data incomplete ${JSON.stringify(data)}`)
                 return
             }
             if(homeBetId != this.homeBet.id){
@@ -96,11 +93,11 @@ export class Game {
         //this._ws_client.setOnMessage(this.wsOnMessage.bind(this))
         sendEventToGUI.log.info("opening home bet.....")
         await this.aviatorPage.open()
-        sendEventToGUI.log.info("reading the player's balance.....")
+        sendEventToGUI.log.debug("reading the player's balance.....")
         this.initialBalance = this.aviatorPage.balance
         this.balance = this.initialBalance
         sendEventToGUI.balance(this.balance)
-        sendEventToGUI.log.info("loading the player.....")
+        sendEventToGUI.log.debug("loading the player.....")
         this.multipliersToSave = this.aviatorPage.multipliers
         this.multipliers = this.multipliersToSave.map(item => new Multiplier(item))
         await this.requestSaveMultipliers()

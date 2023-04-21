@@ -86,7 +86,7 @@ export class BotStatic extends BotBase{
     }
 
     async initialize(balance: number){
-        sendEventToGUI.log.info("initializing bot static")
+        sendEventToGUI.log.debug("initializing bot static")
         await super.initialize(balance)
         this._initialBalance = balance
         this.setMaxAmountToBet((global as any).maxAmountToBet)
@@ -152,10 +152,7 @@ export class BotStatic extends BotBase{
         }
         // const kellyAmount = adaptiveKellyFormula(multiplier, probability, this.RISK_FACTOR, amount)
         amount =  Math.max(amount, this.minimumBet)
-        sendEventToGUI.log.debug({
-            location: "BotStatic :: getBetRecoveryAmount",
-            amount: amount,
-        })
+        sendEventToGUI.log.debug(`BotStatic :: getBetRecoveryAmount ${amount}`)
         return amount
     }
 
@@ -214,6 +211,9 @@ export class BotStatic extends BotBase{
             return []
         }
         const profit = this.getProfit()
+        if(profit >= 0){
+            this.resetLosses()
+        }
         const predictionData = this.getPredictionData(prediction)
         const numberOfBet = this.getNumberOfBets()
         const strategy = this.getStrategy(numberOfBet)
