@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Neubs SAS.
+ * Copyright (c) 2023, lhenriquez.
  * All rights reserved.
  *
  * Contiene todos los enpoints de la api.
@@ -8,7 +8,6 @@
  * @version 1.3
  */
 import {Dictionary} from '../types/interfaces';
-import {APIRest} from './APIRest';
 import {Prediction, BetData, Bot} from './models';
 
 import { ApiService } from './APIAxios';

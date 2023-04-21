@@ -205,7 +205,7 @@ export class Game {
         for (let index = 0; index < bets.length; index++) {
             const bet = bets[index];
             const control = index == 0? Control.Control1: Control.Control2
-            sendEventToGUI.log.info(`sending bet to aviator ${bet.amount} * ${ bet.multiplier} control: ${control}`)
+            sendEventToGUI.log.info(`Sending bet to aviator ${bet.amount} * ${ bet.multiplier} control: ${control}`)
             await this.aviatorPage.bet(bet.amount, bet.multiplier, control)
             await sleepNow(1000)
         }
@@ -216,12 +216,13 @@ export class Game {
             sendEventToGUI.log.error("The game is not initialized")
             return
         }
-        while(this.initialized){
+        while(this.initialized){            
             await this.waitNextGame()
             await this.getNextBet()
             if((global as any).autoPlay){
                 await this.sendBetsToAviator(this.bets)
             }
+            sendEventToGUI.log.info("***************************************") 
         }
     }
 

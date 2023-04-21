@@ -19,6 +19,12 @@ export class AviatorOneWin extends AviatorPage{
         const pageLoginButton = this._page.locator("button.login")
         await this._click(pageLoginButton)
         await this._page.waitForTimeout(1000)
+        const username = HomeBets.oneWin.username
+        const password = HomeBets.oneWin.password
+        if(!username || !password){
+            sendEventToGUI.log.warning("please add login")
+            return
+        }
         const userNameInput = this._page.locator("input[name='login']")
         const passwordInput = this._page.locator("input[name='password']")
         await userNameInput.type(HomeBets.oneWin.username || "", {delay: 100})
