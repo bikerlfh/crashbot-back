@@ -2,8 +2,7 @@
  * APIUrl
  * @type {string}
  */
-export const APIUrl = "http://localhost:8000/";
-// export const APIUrl: string = "http://201.244.226.121:8081/";
+export const APIUrl: string = "http://localhost:8000/";
 
 export enum HTTPStatus {
     OK = 200,

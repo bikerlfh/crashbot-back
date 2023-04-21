@@ -4,8 +4,6 @@ export const createGlobals = (io: any|null) => {
     * use this function to initialize the global variables
     */
     (global as any).autoPlay = false;
-    // (global as any).homeBetId = false;
-    // (global as any).customerId = false;
     (global as any).maxAmountToBet = 300;
     (global as any).game = null;
     (global as any).emitToGUI = (event: string, message: any) =>{

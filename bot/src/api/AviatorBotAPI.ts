@@ -2,9 +2,10 @@
  * Copyright (c) 2023, lhenriquez.
  * All rights reserved.
  *
- * Contiene todos los enpoints de la api.
- * Las cadenas que necesiten parametros de url mas no GET se deben poner
- * de la siguiente forma: (?P<nombreParametro>), ejemplo en la url productoDetalle
+ * contains all the endpoints of the api. 
+ * The parameters of the url are passed in the form of a dictionary
+ * the url that needs url parameters but not GET must be put
+ * in the following form: <nombreParametro>, example in the url productDetail
  * @version 1.3
  */
 import {Dictionary} from '../types/interfaces';
@@ -15,7 +16,6 @@ import { HTTPStatus } from './constants';
 const apiService = new ApiService();
 
 const URLS = {
-    /** Authentication **/
     login: '/api/token/',
     tokenRefresh: '/api/token/refresh/',
     tokenVerify: '/api/token/verify/',
@@ -27,18 +27,17 @@ const URLS = {
     updateBalance: 'customers/balance/',
     createBet: 'bets/',
     getBet: 'bets/?bet_id=<bet_id>',
-    // gameDetail: 'games/<gameId>/',
 };
 
 /**
- * Construye la url de las peticiones a la API
- * @param url: url del objeto URLS
- * @param params: parámetros a pasar
- * @returns url con los parámetros
+ * make the url with the parameters
+ * @param url: endpoint
+ * @param params: params of the url
+ * @returns url with the parameters
  */
 const makeURL = (url: string, params: Dictionary<any>) =>{
     if(params !== null) {
-        // se evaluan los parametros no GET que van en la url
+        // evaluating the parameters that are not GET
         const paramsRequiredList = url.match(/\<\w*\>/g);
         if(paramsRequiredList !== null && paramsRequiredList.length > 0){
             for(let key of paramsRequiredList){
@@ -46,13 +45,12 @@ const makeURL = (url: string, params: Dictionary<any>) =>{
                 if(params.hasOwnProperty(keyFormat)) {
                     if(params[keyFormat] !== null)
                         url = url.replace("<" + keyFormat + ">", params[keyFormat]);
-                    // se elimina el atributo de los parámetors para que
-                    // no se agregen como parametros GET
+                    // deleting the attribute of the parameters so that 
+                    // they are not added as GET parameters
                     delete params[keyFormat];
                 }
             }
         }
-        // Se agregan los parametros GET
         for (let key of Object.keys(params)) {
             const value = params[key]
             if(value !== null && value !== undefined)

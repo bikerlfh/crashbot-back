@@ -17,13 +17,13 @@ export const enum LogCode {
 
 const sendLogToGUI = (data: any, code?: LogCode) => {
     /*
-        * Send a log to the GUI
-        * @param data: any (can be string or object)
-        * @param code: string
-        * @return void
-        * @example sendLogToGUI('Hello world', 'info')
-        * @example sendLogToGUI('Hello world')
-        */
+    * Send a log to the GUI
+    * @param data: any (can be string or object)
+    * @param code: string
+    * @return void
+    * @example sendLogToGUI('Hello world', 'info')
+    * @example sendLogToGUI('Hello world')
+    */
     code = code || LogCode.INFO;
     data = typeof data === 'string' ? {message: data} : data;
     data = Object.assign({code:code}, data)

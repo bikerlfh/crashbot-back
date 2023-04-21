@@ -14,7 +14,7 @@ export class ApiService {
 				'Content-Type': 'application/json',
 			},
 		});
-		// Creamos una instancia del almacenamiento persistente y lo asignamos a una variable de clase
+		// create a local storage instance
 		this.localStorage = new LocalStorage('./storage');
 	}
 	private mapError(error: AxiosError): any{

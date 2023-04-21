@@ -22,7 +22,7 @@ export class AviatorOneWin extends AviatorPage{
         const username = HomeBets.oneWin.username
         const password = HomeBets.oneWin.password
         if(!username || !password){
-            sendEventToGUI.log.warning("please add login")
+            sendEventToGUI.log.warning("please set username and password to login!")
             return
         }
         const userNameInput = this._page.locator("input[name='login']")

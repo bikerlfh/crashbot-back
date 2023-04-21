@@ -145,8 +145,6 @@ export class BetControl{
             await autoCashOutMultiplier.fill("", {timeout: 1000})
             await autoCashOutMultiplier.type(multiplier.toString(), {delay: 100})
         }
-        //await autoCashOutMultiplier.fill("", {timeout: 500})
-        //await autoCashOutMultiplier.type(multiplier.toString(), {delay: 100})
     }
     
     async updateAmount(amount: number, control:Control){

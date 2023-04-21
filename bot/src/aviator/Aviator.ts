@@ -53,7 +53,6 @@ export class AviatorPage{
             try {
                 await this._page.locator("app-game").first().waitFor({ timeout: 50000 })
                 _appGame = this._page.locator("app-game").first();
-                // _appGame = this._page.locator("app-game").first()
                 await _appGame.locator(".result-history").waitFor({
                     timeout: 50000
                 });
@@ -180,12 +179,10 @@ export class AviatorPage{
         items.reverse().forEach(async (item) => {
             const multiplier = await item.textContent();
             if(multiplier !== null){
-                // const value = this._formatMultiplier(multiplier)
                 this.multipliers.push(this._formatMultiplier(multiplier));
             }
         })
         await this._page.waitForTimeout(2000);
-        //sendLogToGUI("multiplier aviator:", this.multipliers)
     }
 
     async bet(amount: number, multiplier: number, control: Control){
