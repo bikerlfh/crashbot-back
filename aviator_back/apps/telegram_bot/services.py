@@ -1,4 +1,5 @@
 # Standard Library
+import typing
 from typing import Union
 
 # Internal
@@ -15,6 +16,10 @@ def start_telegram_bot():
     bot.run_until_disconnected()
 
 
-def send_telegram_message(*, chat_id: int, message: str) -> Union[None]:
+def send_telegram_message(*, chat_id: int | str, message: str) -> Union[None]:
     bot = TelegramBot()
     bot.send_message(chat_id=chat_id, message=message)
+
+
+
+

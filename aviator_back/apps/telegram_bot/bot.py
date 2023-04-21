@@ -65,7 +65,7 @@ class TelegramBot(Singleton):
     def send_message(
         self,
         *,
-        chat_id: int,
+        chat_id: int | str,
         message: str,
         parse_mode: Optional[str] = (),
         silent: Optional[bool] = False,
