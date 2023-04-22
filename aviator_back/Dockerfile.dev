@@ -30,8 +30,9 @@ COPY . /app/
 COPY fixtures/* /app/fixtures/
 
 RUN groupadd user && useradd --create-home --home-dir /home/user -g user user
-RUN mkdir -p $APP_HOME && chown user:user $APP_HOME
+RUN mkdir -p $APP_HOME && chown -R user:user $APP_HOME
 
+RUN chown -R user:user $APP_HOME
 USER user
 
 ENTRYPOINT ["bash", "/tmp/postgres-healthy.sh"]
