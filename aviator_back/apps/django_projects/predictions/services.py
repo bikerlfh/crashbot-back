@@ -11,6 +11,7 @@ from rest_framework.exceptions import ValidationError
 
 # Internal
 from apps.django_projects.core import selectors as core_selectors
+from apps.django_projects.core.models import HomeBet
 from apps.django_projects.predictions import selectors
 from apps.django_projects.predictions.constants import (
     DEFAULT_SEQ_LEN,
@@ -18,6 +19,7 @@ from apps.django_projects.predictions.constants import (
     PERCENTAGE_ACCEPTABLE,
     PERCENTAGE_MODEL_TO_INACTIVE,
     DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL,
+    NUMBER_OF_MULTIPLIERS_TO_GENERATE_RESULTS,
     ModelStatus,
 )
 from apps.django_projects.predictions.models import (
@@ -32,22 +34,14 @@ logger = logging.getLogger(__name__)
 
 def create_model_home_bet(
     *,
-    home_bet_id: int,
+    home_bet: HomeBet,
     name: str,
     model_type: ModelType,
     seq_len: int,
     others: Optional[dict] = {},
 ) -> ModelHomeBet:
-    home_bet_exists = core_selectors.filter_home_bet(
-        home_bet_id=home_bet_id
-    ).exists()
-    if not home_bet_exists:
-        raise ValidationError(
-            f"create_model_home_bet :: "
-            f"home bet {home_bet_id} does not exists"
-        )
     model = ModelHomeBet.objects.create(
-        home_bet_id=home_bet_id,
+        home_bet=home_bet,
         name=name,
         model_type=model_type.value,
         seq_len=seq_len,
@@ -90,21 +84,15 @@ def create_model_average_result(
     return average
 
 
-def generate_category_result_of_model(*, model_home_bet_id: int) -> None:
+def generate_category_result_of_model(*, model_home_bet: ModelHomeBet) -> None:
+    model_home_bet_id = model_home_bet.id
     print("---------------------------------------------------------")
     print(f"generation category result for model {model_home_bet_id}")
     print("---------------------------------------------------------")
-    model_home_bet = selectors.filter_model_home_bet_by_id(
-        model_home_bet_id=model_home_bet_id
-    ).first()
-    if not model_home_bet:
-        raise ValidationError(
-            f"generate_average_result_of_model :: "
-            f"model home bet {model_home_bet_id} does not exists"
-        )
     now = datetime.now()
     multipliers = core_selectors.get_last_multipliers(
-        home_bet_id=model_home_bet.home_bet_id, count=200
+        home_bet_id=model_home_bet.home_bet_id,
+        count=NUMBER_OF_MULTIPLIERS_TO_GENERATE_RESULTS
     )
     average_result = prediction_services.evaluate_model_home_bet(
         model_home_bet=model_home_bet, multipliers=multipliers
@@ -185,6 +173,7 @@ def predict(
                 model=model_home_bet.name,
                 prediction=prediction_value,
                 prediction_round=prediction_round,
+                prediction_percentage="",
                 average_predictions=model_home_bet.average_predictions,
                 category_percentage=percentage_predictions,
             )
@@ -193,18 +182,25 @@ def predict(
     return data
 
 
-def create_model_with_all_multipliers(
+def generate_model(
     *,
     home_bet_id: int,
     seq_len: int,
     model_type: Optional[ModelType] = ModelType.SEQUENTIAL,
 ) -> ModelHomeBet | None:
-    home_bet_exists = core_selectors.filter_home_bet(
+    """
+    Generate a model for a home bet
+    :param home_bet_id: home bet id
+    :param seq_len: sequence length
+    :param model_type: model type
+    :return: model home bet
+    """
+    home_bet = core_selectors.filter_home_bet(
         home_bet_id=home_bet_id
-    ).exists()
-    if not home_bet_exists:
+    ).first()
+    if not home_bet:
         logger.error(
-            f"create_model_with_all_multipliers :: "
+            f"generate_model :: "
             f"home bet {home_bet_id} does not exists"
         )
         return
@@ -212,7 +208,7 @@ def create_model_with_all_multipliers(
     multipliers = core_selectors.get_today_multipliers(home_bet_id=home_bet_id)
     if not multipliers:
         logger.warning(
-            f"create_model_with_all_multipliers :: "
+            f"generate_model :: "
             f"no multipliers for home bet {home_bet_id}"
         )
         return
@@ -224,7 +220,7 @@ def create_model_with_all_multipliers(
         seq_len=seq_len,
     )
     model_home_bet = create_model_home_bet(
-        home_bet_id=home_bet_id,
+        home_bet=home_bet,
         name=name,
         model_type=model_type,
         seq_len=seq_len,
@@ -234,16 +230,16 @@ def create_model_with_all_multipliers(
             metrics=metrics,
         ),
     )
-    generate_category_result_of_model(model_home_bet_id=model_home_bet.id)
+    generate_category_result_of_model(model_home_bet=model_home_bet)
     return model_home_bet
 
 
-def create_model_for_all_in_play_home_bet(
+def generate_model_for_in_play_home_bet(
     *,
     home_bet_ids: Optional[set[int]] = None,
 ) -> list[ModelHomeBet]:
     """
-    create model for all in-play home bets
+    generate model for all in-play home bets
     (multipliers created no more than 10 minutes ago)
     """
     if not home_bet_ids:
@@ -264,20 +260,20 @@ def create_model_for_all_in_play_home_bet(
         diff_multipliers = num_multipliers - num_multipliers_train
         if diff_multipliers < DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL:
             logger.info(
-                f"create_model_for_all_in_play_home_bet :: "
+                f"generate_model_for_in_play_home_bet :: "
                 f"home bet {home_bet_id} has {diff_multipliers} "
                 f"multipliers to train, skip"
             )
             continue
         for model_type_ in GENERATE_AUTOMATIC_MODEL_TYPES:
-            model = create_model_with_all_multipliers(
+            model = generate_model(
                 home_bet_id=home_bet_id,
                 seq_len=DEFAULT_SEQ_LEN,
                 model_type=ModelType(model_type_),
             )
             models.append(model)
             logger.info(
-                f"create_model_for_all_in_play_home_bet :: "
+                f"generate_model_for_in_play_home_bet :: "
                 f"model {model.id} ({model_type_}) created"
             )
     return models
@@ -290,8 +286,9 @@ def generate_category_results_of_models():
     """
     models = selectors.filter_models_to_generate_category_result()
     models_to_inactive = []
+
     for model in models:
-        generate_category_result_of_model(model_home_bet_id=model.id)
+        generate_category_result_of_model(model_home_bet=model)
         model.refresh_from_db()
         if model.average_predictions < PERCENTAGE_MODEL_TO_INACTIVE:
             models_to_inactive.append(model)
@@ -300,35 +297,30 @@ def generate_category_results_of_models():
     home_bet_ids_to_create = {
         model.home_bet_id for model in models_to_inactive
     }
+    model_ids_to_inactive = {model.id for model in models_to_inactive}
+    # get all models from homes bet to create
     models_ = selectors.filter_model_home_bet(
         home_bet_id__in=home_bet_ids_to_create,
         status=ModelStatus.ACTIVE.value,
     ).values("id", "home_bet_id")
-    model_ids_to_inactive = {model.id for model in models_to_inactive}
-    home_bet_ids = {
+    # home_bet_ids with active models
+    home_bet_ids_with_active_model = {
         model["home_bet_id"]
         for model in models_
         if model['id'] not in model_ids_to_inactive
     }
-    home_bet_ids_ = set(
+    # get home_bet_ids with no active models
+    home_bet_ids_with_no_active_model = set(
         _id for _id in home_bet_ids_to_create
-        if _id not in home_bet_ids
+        if _id not in home_bet_ids_with_active_model
     )
-    if not home_bet_ids_:
-        return
-    # create models for home bets with no active models
-    models_created = create_model_for_all_in_play_home_bet(home_bet_ids=home_bet_ids_)
-    home_bet_ids_created = {
-        model.home_bet_id for model in models_created
-    }
-    # inactive models with average predictions < PERCENTAGE_MODEL_TO_INACTIVE
-    models_to_inactive = [
-        model_ for model_ in models_to_inactive
-        if model_.home_bet_id in home_bet_ids_created
-    ]
-    for model in models_to_inactive:
-        model.status = ModelStatus.INACTIVE.value
-        model.save()
+    if home_bet_ids_with_no_active_model:
+        # create models for home bets with no active models
+        generate_model_for_in_play_home_bet(home_bet_ids=home_bet_ids_with_no_active_model)
+    # inactive models
+    ModelHomeBet.objects.filter(id__in=model_ids_to_inactive).update(
+        status=ModelStatus.INACTIVE.value,
+    )
 
 
 def get_models_home_bet(

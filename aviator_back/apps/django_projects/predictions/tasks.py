@@ -15,9 +15,9 @@ def task_generate_category_result():
 
 
 @shared_task
-def task_create_sequential_models():
+def task_generate_models():
     """
-    create sequential models for all home bets
+    create models for all home bets
     """
-    logger.info("task_create_sequential_model invoked")
-    services.create_model_for_all_in_play_home_bet()
+    logger.info("task_generate_models invoked")
+    services.generate_model_for_in_play_home_bet()

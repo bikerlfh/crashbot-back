@@ -31,7 +31,7 @@ class Command(BaseCommand):
         home_bet_id = options["home_bet_id"]
         seq_len = options["seq_len"] or DEFAULT_SEQ_LEN
         model_type = ModelType(options["model_type"])
-        model_home_bet = services.create_model_with_all_multipliers(
+        model_home_bet = services.generate_model(
             home_bet_id=home_bet_id,
             seq_len=seq_len,
             model_type=model_type,

@@ -90,4 +90,6 @@ class SequentialModel(AbstractBaseModel):
 
     def predict(self, *, data: list[int]) -> Decimal:
         next_num = self.model.predict(np.array([data[-self.seq_len:]]))[0][0]
-        return round(next_num, 2)
+        prediction = round(next_num, 2)
+
+        return prediction

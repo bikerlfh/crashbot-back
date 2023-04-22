@@ -156,10 +156,10 @@ CELERY_RESULT_BACKEND = "redis://redis:6379"
 CELERY_BEAT_SCHEDULE = {
     "task_generate_category_result": {
         "task": "apps.django_projects.predictions.tasks.task_generate_category_result",
-        "schedule": crontab(minute="*/30"),
+        "schedule": crontab(minute="*/15"),
     },
-    # "task_create_sequential_models": {
-    #    "task": "apps.django_projects.predictions.tasks.task_create_sequential_models",
+    # "task_generate_models": {
+    #    "task": "apps.django_projects.predictions.tasks.task_generate_models",
     #    "schedule": crontab(minute="*/8"),
     # },
 }

@@ -13,7 +13,9 @@ from apps.django_projects.predictions.models import ModelHomeBet, Bot
 
 
 def filter_model_home_bet(**kwargs) -> QuerySet[ModelHomeBet]:
-    return ModelHomeBet.objects.filter(**kwargs)
+    return ModelHomeBet.objects.filter(**kwargs).prefetch_related(
+        "category_results"
+    )
 
 
 def filter_models_to_generate_category_result() -> QuerySet[ModelHomeBet]:
@@ -39,9 +41,7 @@ def filter_model_home_bet_by_home_bet_id(
     filter_ = dict(home_bet_id=home_bet_id)
     if status is not None:
         filter_.update(status=status)
-    return filter_model_home_bet(**filter_).prefetch_related(
-        "category_results"
-    )
+    return filter_model_home_bet(**filter_)
 
 
 def get_bets_models_by_average_predictions(
