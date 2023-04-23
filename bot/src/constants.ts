@@ -16,8 +16,6 @@ export class HomeBet{
     url: string
     amountMultiple: number|null = null
     aviatorPage: any
-    username: string|null
-    password: string|null
 
     constructor(obj: any){
         this.id = obj.id
@@ -25,8 +23,6 @@ export class HomeBet{
         this.maxBet = obj.maxBet
         this.url = obj.url
         this.aviatorPage = obj.aviatorPage
-        this.username = obj.hasOwnProperty('username')? obj.username: null
-        this.password = obj.hasOwnProperty('password')? obj.password: null
     }
 
     getAviatorPage(){
