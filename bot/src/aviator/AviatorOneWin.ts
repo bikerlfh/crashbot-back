@@ -19,8 +19,8 @@ export class AviatorOneWin extends AviatorPage{
         const pageLoginButton = this._page.locator("button.login")
         await this._click(pageLoginButton)
         await this._page.waitForTimeout(1000)
-        const username = HomeBets.oneWin.username
-        const password = HomeBets.oneWin.password
+        const username = (global as any).username;
+        const password = (global as any).password;
         if(!username || !password){
             sendEventToGUI.log.warning("please set username and password to login!")
             return

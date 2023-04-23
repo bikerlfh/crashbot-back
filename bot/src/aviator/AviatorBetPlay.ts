@@ -11,15 +11,19 @@ export class AviatorBetPlay extends AviatorPage{
         if(!this._page){
             throw "_login :: page is null"
         }
-        if(HomeBets.betplay.username && HomeBets.betplay.password){
+        const username = (global as any).username;
+        const password = (global as any).password;
+        if(username && password){
             const userNameInput = this._page.locator("input#userName")
             const passwordInput = this._page.locator("input#password")
             const loginButton = this._page.locator("button#btnLoginPrimary")
-            await userNameInput.type(HomeBets.betplay.username, {delay: 100})
-            await passwordInput.type(HomeBets.betplay.password, {delay: 100})
+            await userNameInput.type(username, {delay: 100})
+            await passwordInput.type(password, {delay: 100})
             await this._click(loginButton)
+        }else{
+            sendEventToGUI.log.warning("please set username and password to login!")
         }
-        await this._page.locator("#spanUser").waitFor({timeout: 50000})
+        await this._page.locator("#spanUser").waitFor({timeout: 50000}) 
         const searchButton = this._page.locator("input.inputSearch")
         await this._page.waitForTimeout(1000)
         await searchButton.type("aviator", {delay: 150})

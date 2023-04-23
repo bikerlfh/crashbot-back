@@ -36,6 +36,7 @@ export class AviatorPage{
     
     async _login(): Promise<void>{
         /* implement the login */
+        // use username and password from global
         return
     }
 

@@ -5,6 +5,8 @@ export const createGlobals = (io: any|null) => {
     */
     (global as any).autoPlay = false;
     (global as any).maxAmountToBet = 300;
+    (global as any).username = undefined;
+    (global as any).password = undefined;
     (global as any).game = null;
     (global as any).emitToGUI = (event: string, message: any) =>{
         if(io){
