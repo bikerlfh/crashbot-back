@@ -27,8 +27,8 @@ export class AviatorOneWin extends AviatorPage{
         }
         const userNameInput = this._page.locator("input[name='login']")
         const passwordInput = this._page.locator("input[name='password']")
-        await userNameInput.type(HomeBets.oneWin.username || "", {delay: 100})
-        await passwordInput.type(HomeBets.oneWin.password || "", {delay: 100})
+        await userNameInput.type(username, {delay: 100})
+        await passwordInput.type(password, {delay: 100})
         await this._page.waitForTimeout(1000)
         const loginButton_2 = this._page.locator("button.modal-button[type='submit']")
         await this._click(loginButton_2)

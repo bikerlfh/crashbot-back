@@ -12,9 +12,6 @@ help:
 black: ## black
 	black . --line-length=79 --exclude migrations\
 
-docker-login: ## docker login
-	aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com
-
 build: ## build
 	docker compose build
 
@@ -77,3 +74,4 @@ docker-celery: ## docker celery
 
 docker-attach: ## docker attach
 	docker attach --detach-keys ctrl-d ${CONTAINER_ID}
+

@@ -10,7 +10,7 @@
             "risk_factor": 0.1,
             "min_multiplier_to_bet": 1.2,
             "min_multiplier_to_recover_losses": 1.95,
-            "min_probability_to_bet": 0.62,
+            "min_probability_to_bet": 0.69,
             "is_active": true,
             "min_category_percentage_to_bet": 0.5,
             "min_category_percentage_value_in_live_to_bet": 0.5,

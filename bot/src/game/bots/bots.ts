@@ -137,7 +137,7 @@ export class BotStatic extends BotBase{
         // calculate the amount to bet to recover last amount loss
         const lastAmountLosse = this.calculateRecoveryAmount(this.getMinLostAmount(), multiplier)
         // calculates the maximum amount allowed to recover in a single bet 
-        const maxRecoveryAmount = this.maximumBet * 0.3 // 30% of maximum bet (this can be a parameter of the bot)
+        const maxRecoveryAmount = this.maximumBet * 0.5 // 50% of maximum bet (this can be a parameter of the bot)
         let amount = Math.min(amountToRecoverLosses, maxRecoveryAmount, this.balance)
         amount = amount >= maxRecoveryAmount ? lastAmountLosse : amount
         amount =  Math.max(amount, this.minimumBet)
@@ -229,7 +229,7 @@ export class BotStatic extends BotBase{
             sendEventToGUI.log.warning("Stop loss reached")
             return []
         }
-        if(this.inTakeProfit()){
+        /*if(this.inTakeProfit()){
             sendEventToGUI.log.success("Take profit reached")
             return []
         }
@@ -240,7 +240,7 @@ export class BotStatic extends BotBase{
         if(predictionData.predictionValue < this.MIN_MULTIPLIER_TO_BET){
             sendEventToGUI.log.warning("Prediction value is too low")
             return []
-        }
+        }*/
         if(predictionData.probability < this.MIN_PROBABILITY_TO_BET){
             sendEventToGUI.log.debug("Probability is too low")
             return []

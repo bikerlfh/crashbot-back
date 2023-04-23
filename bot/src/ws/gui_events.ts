@@ -26,8 +26,7 @@ const sendLogToGUI = (data: any, code?: LogCode) => {
     */
     code = code || LogCode.INFO;
     data = typeof data === 'string' ? {message: data} : data;
-    data = Object.assign({code:code}, data)
-    console.log(data);
+    data = Object.assign({code:code}, data);
     (global as any).emitToGUI(GUIEvent.LOG, data);
 }
 

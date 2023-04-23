@@ -20,6 +20,7 @@ from apps.django_projects.predictions.constants import (
     PERCENTAGE_MODEL_TO_INACTIVE,
     DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL,
     NUMBER_OF_MULTIPLIERS_TO_GENERATE_RESULTS,
+    MIN_MULTIPLIERS_TO_GENERATE_MODEL,
     ModelStatus,
 )
 from apps.django_projects.predictions.models import (
@@ -204,7 +205,7 @@ def generate_model(
             f"home bet {home_bet_id} does not exists"
         )
         return
-    # multipliers = core_selectors.get_last_multipliers(home_bet_id=home_bet_id)
+
     multipliers = core_selectors.get_today_multipliers(home_bet_id=home_bet_id)
     if not multipliers:
         logger.warning(
@@ -212,6 +213,10 @@ def generate_model(
             f"no multipliers for home bet {home_bet_id}"
         )
         return
+    if len(multipliers) < MIN_MULTIPLIERS_TO_GENERATE_MODEL:
+        multipliers = core_selectors.get_last_multipliers(
+            home_bet_id=home_bet_id, count=MIN_MULTIPLIERS_TO_GENERATE_MODEL
+        )
 
     name, metrics = prediction_services.create_model(
         home_bet_id=home_bet_id,
