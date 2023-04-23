@@ -10,7 +10,7 @@ from keras.models import Sequential, load_model
 from sklearn.model_selection import train_test_split
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.prediction.constants import ModelType
-from apps.prediction.models.base import AbstractBaseModel
+from apps.prediction.models.base import AbstractBaseModel, PredictionData
 from apps.prediction.models.constants import EPOCHS_SEQUENTIAL, EPOCHS_SEQUENTIAL_LSTM
 from apps.prediction import utils
 
@@ -88,8 +88,20 @@ class SequentialModel(AbstractBaseModel):
             raise FileNotFoundError(f"file not found'{model_path}'")
         self.model = load_model(model_path)
 
-    def predict(self, *, data: list[int]) -> Decimal:
+    def predict(self, *, data: list[int]) -> PredictionData:
         next_num = self.model.predict(np.array([data[-self.seq_len:]]))[0][0]
         prediction = round(next_num, 2)
-
-        return prediction
+        # TODO: refactor if the categories change. this is only for 1 and 2
+        prediction_round = 2 if prediction > 1 else 1
+        probability = prediction
+        if 1 <= prediction <= 2:
+            probability = round(prediction - 1, 2)
+        # TODO: fixed if the result > 2 not work correctly
+        elif prediction > 2:
+            probability = 0
+        prediction_data = PredictionData(
+            prediction=prediction,
+            prediction_round=prediction_round,
+            probability=probability,
+        )
+        return prediction_data

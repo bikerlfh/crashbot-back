@@ -19,6 +19,7 @@ export class BotBase{
     RISK_FACTOR: number = 0.1 // 0.1 = 10%
     MIN_MULTIPLIER_TO_BET: number = 1.5
     MIN_MULTIPLIER_TO_RECOVER_LOSSES: number = 2.0
+    MIN_PROBABILITY_TO_BET: number = 0.5
     MIN_CATEGORY_PERCENTAGE_TO_BET: number = 0.8 // 0.8 = 80%
     MIN_CATEGORY_PERCENTAGE_VALUE_IN_LIVE_TO_BET: number = 0.8 // 0.8 = 80%
     MIN_AVERAGE_PREDICTION_MODEL_IN_LIVE_TO_BET: number = 0.8 // 0.8 = 80%
@@ -71,6 +72,7 @@ export class BotBase{
         this.RISK_FACTOR = bot.riskFactor
         this.MIN_MULTIPLIER_TO_BET = bot.minMultiplierToBet
         this.MIN_MULTIPLIER_TO_RECOVER_LOSSES = bot.minMultiplierToRecoverLosses
+        this.MIN_PROBABILITY_TO_BET = bot.minProbabilityToBet
         
         this.STOP_LOSS_PERCENTAGE = bot.stopLossPercentage
         this.TAKE_PROFIT_PERCENTAGE = bot.takeProfitPercentage
@@ -216,6 +218,7 @@ export class BotBase{
         const predictionData = new PredictionData(
             prediction.getPredictionRoundValue(),
             prediction.getPreditionValue(),
+            prediction.getProbabilityValue(),
             categoryPrecentage,
             categoryPercentageValueInLive,
             averagePredictionsOfModel,
@@ -375,6 +378,10 @@ export class BotBase{
         }
         if(predictionData.predictionValue < this.MIN_MULTIPLIER_TO_BET){
             sendEventToGUI.log.warning("Prediction value is too low")
+            return []
+        }
+        if(predictionData.probability < this.MIN_PROBABILITY_TO_BET){
+            sendEventToGUI.log.debug("Probability is too low")
             return []
         }
         // CATEGORY 1

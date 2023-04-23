@@ -93,12 +93,12 @@ export class BotStatic extends BotBase{
     }
     
     // NOTE: remove this method when the bot not need recover all profits
-    /*updateBalance(balance: number){
+    updateBalance(balance: number){
         if(balance > this.initialBalance){
             this.initialBalance = balance
         }
         super.updateBalance(balance)
-    }*/
+    }
 
     evaluateBets(multiplierResult: number){
         let totalAmount = 0
@@ -239,6 +239,10 @@ export class BotStatic extends BotBase{
         }
         if(predictionData.predictionValue < this.MIN_MULTIPLIER_TO_BET){
             sendEventToGUI.log.warning("Prediction value is too low")
+            return []
+        }
+        if(predictionData.probability < this.MIN_PROBABILITY_TO_BET){
+            sendEventToGUI.log.debug("Probability is too low")
             return []
         }
         // CATEGORY 1 not bet

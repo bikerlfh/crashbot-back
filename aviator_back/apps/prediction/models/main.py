@@ -4,6 +4,7 @@ from decimal import Decimal
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.django_projects.predictions.models import ModelHomeBet
 from apps.prediction.constants import ModelType
+from apps.prediction.models.base import PredictionData
 from apps.prediction.models.sequential_model import SequentialModel
 from apps.prediction.models.gru_model import GRUModel
 from apps.prediction.models.transformer_model import TransformerModel
@@ -95,7 +96,7 @@ class CoreModel:
         ), "model_home_bet must be provided"
         return self.model.evaluate(multipliers=multipliers)
 
-    def predict(self, *, multipliers: list[Decimal]) -> Decimal:
+    def predict(self, *, multipliers: list[Decimal]) -> PredictionData:
         """
         Predicts the next multiplier
         @param multipliers: The data to predict the next multiplier on

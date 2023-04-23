@@ -8,6 +8,7 @@ export class PredictionCore{
     averagePredictionsOfModel: number
     predictionValues: number[] = []
     predictionRounds: number[] = []
+    probabilityValues: number[] = []
     multiplierResults: number[] = []
     categoryPercentages: {[key: number]: number|null} = {
         1: null,
@@ -31,11 +32,13 @@ export class PredictionCore{
     addPrediction(
         prediction: number,
         predictionRound: number,
+        probability: number,
         averagePredictions: number,
         categoryPercentage: number = 0
     ){
         this.predictionValues.push(prediction)
         this.predictionRounds.push(predictionRound)
+        this.probabilityValues.push(probability)
         this.averagePredictionsOfModel = averagePredictions
         if(this.categoryPercentages[predictionRound] === null){
             this.categoryPercentages[predictionRound] = categoryPercentage
@@ -43,9 +46,9 @@ export class PredictionCore{
         if(this.categoryPercentagesValuesInLive[predictionRound] === null){
             this.categoryPercentagesValuesInLive[predictionRound] = categoryPercentage
         }
-        //sendEventToGUI.log.debug("---------------------- PredictionCore: ADD PREDICTION ----------------------")
-        //sendEventToGUI.log.debug(`Model ID: ${this.id}`)
-        //sendEventToGUI.log.debug(`Added prediction: ${prediction} in round ${predictionRound}`)
+        sendEventToGUI.log.debug("---------------------- PredictionCore: addPrediction ----------------------")
+        sendEventToGUI.log.debug(`Model ID: ${this.id}`)
+        sendEventToGUI.log.debug(`Added prediction: ${prediction}(${predictionRound}) - probability: ${probability}`)
     }
 
     addMultiplierResult(multiplier: number){
@@ -120,6 +123,10 @@ export class PredictionCore{
         return this.predictionRounds.slice(-1)[0]
     }
 
+    getProbabilityValue(): number{
+        return this.probabilityValues.slice(-1)[0]
+    }
+
     getCategoryPercentage(): number{
         return this.categoryPercentages[this.getPredictionRoundValue()] || 0
     }
@@ -160,6 +167,7 @@ export class PredictionModel{
             prediction_.addPrediction(
                 prediction.prediction,
                 prediction.predictionRound,
+                prediction.probability,
                 prediction.averagePredictions,
                 prediction.categoryPercentage
             )

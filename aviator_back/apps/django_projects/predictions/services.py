@@ -151,14 +151,12 @@ def predict(
             raise ValidationError("no multipliers")
     predictions = []
     for model_home_bet in models:
-        prediction_value = prediction_services.predict(
+        prediction_data = prediction_services.predict(
             model_home_bet=model_home_bet, multipliers=multipliers
         )
-        prediction_round = round(prediction_value, 0)
-        if prediction_round < 1:
-            prediction_round = 1
-        elif prediction_round > 3:
-            prediction_round = 3
+        prediction = prediction_data.prediction
+        prediction_round = prediction_data.prediction_round
+        probability = prediction_data.probability
         category_data = (
             model_home_bet.category_results.filter(category=prediction_round)
             .values("percentage_predictions")
@@ -167,13 +165,15 @@ def predict(
         percentage_predictions = 0
         if category_data:
             percentage_predictions = category_data["percentage_predictions"]
+        if probability is None:
+            probability = percentage_predictions
         predictions.append(
             dict(
                 id=model_home_bet.id,
                 model=model_home_bet.name,
-                prediction=prediction_value,
+                prediction=prediction,
                 prediction_round=prediction_round,
-                prediction_percentage="",
+                probability=probability,
                 average_predictions=model_home_bet.average_predictions,
                 category_percentage=percentage_predictions,
             )
@@ -389,6 +389,7 @@ def get_active_bots(
             risk_factor=bot.risk_factor,
             min_multiplier_to_bet=bot.min_multiplier_to_bet,
             min_multiplier_to_recover_losses=bot.min_multiplier_to_recover_losses,
+            min_probability_to_bet=bot.min_probability_to_bet,
             min_category_percentage_to_bet=bot.min_category_percentage_to_bet,
             min_category_percentage_value_in_live_to_bet=bot.min_category_percentage_value_in_live_to_bet,
             min_average_prediction_model_in_live_to_bet=bot.min_average_prediction_model_in_live_to_bet,

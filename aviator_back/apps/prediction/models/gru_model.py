@@ -12,8 +12,7 @@ from sklearn.metrics import f1_score, recall_score, precision_score, confusion_m
 from sklearn.model_selection import train_test_split
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.prediction.constants import ModelType
-from apps.prediction.models.base import AbstractBaseModel
-from apps.prediction.models.constants import EPOCHS_SEQUENTIAL, EPOCHS_SEQUENTIAL_LSTM
+from apps.prediction.models.base import AbstractBaseModel, PredictionData
 from apps.prediction import utils
 
 
@@ -110,7 +109,12 @@ class GRUModel(AbstractBaseModel):
             raise FileNotFoundError(f"file not found'{model_path}'")
         self.model = load_model(model_path)
 
-    def predict(self, *, data: list[int]) -> int:
+    def predict(self, *, data: list[int]) -> PredictionData:
         input_sequence = np.array(data[-self.seq_len:]).reshape(1, self.seq_len, 1) / float(self.num_classes)
         probabilities = self.model.predict(input_sequence)[0]
-        return np.argmax(probabilities)
+        prediction = int(np.argmax(probabilities))
+        prediction_data = PredictionData(
+            prediction=prediction,
+            prediction_round=prediction,
+        )
+        return prediction_data

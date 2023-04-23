@@ -73,6 +73,7 @@ export class Average{
     constructor(
         public predictionRound: number,
         public predictionValue: number,
+        public probability: number,
         public categoryPrecentage: number,
         public categoryPercentageValueInLive: number,
         public averagePredictionsOfModel: number,
@@ -82,12 +83,14 @@ export class Average{
     ){}
 
     printData(){
-        sendEventToGUI.log.success(`Prediction: ${this.predictionValue}(${this.predictionRound})`)
-        sendEventToGUI.log.info(`Category Precentage: ${this.categoryPrecentage}`)
-        sendEventToGUI.log.info(`Category Percentage Value In Live: ${this.categoryPercentageValueInLive}`)
-        sendEventToGUI.log.info(`AveragePredictions Of Model: ${this. averagePredictionsOfModel}`)
-        sendEventToGUI.log.debug(`In Category Percentage Value In Live: ${this.inCategoryPercentageValueInLive}`)
-        sendEventToGUI.log.debug(`In Category Precentage: ${this.inCategoryPrecentage}`)
-        sendEventToGUI.log.debug(`In Average Predictions Of Model: ${this.inAveragePredictionsOfModel}`)
+        sendEventToGUI.log.success(
+            `Prediction: ${this.predictionValue}(${this.predictionRound}) - probability: ${this.probability}`
+        )
+        sendEventToGUI.log.info(
+            `CatPer: ${this.categoryPrecentage} - CatPerVal: ${this.categoryPercentageValueInLive} - AvgPredModel: ${this. averagePredictionsOfModel}`
+        )
+        sendEventToGUI.log.debug(
+            `InCatPer: ${this.inCategoryPrecentage} - InCatPerVal: ${this.inCategoryPercentageValueInLive} - InAvgPredModel: ${this.inAveragePredictionsOfModel}`
+        )
     }
  }

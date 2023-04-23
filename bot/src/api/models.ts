@@ -4,6 +4,7 @@ export class Prediction{
     id: number
     prediction: number
     predictionRound: number
+    probability: number
     averagePredictions: number
     categoryPercentage: number
 
@@ -11,6 +12,7 @@ export class Prediction{
         this.id = object.id
         this.prediction = object.prediction
         this.predictionRound = object.prediction_round
+        this.probability = object.probability
         this.averagePredictions = object.average_predictions
         this.categoryPercentage = object.category_percentage
     }
@@ -53,6 +55,7 @@ export class Bot{
     riskFactor: number
     minMultiplierToBet: number
     minMultiplierToRecoverLosses: number
+    minProbabilityToBet: number
     minCategoryPercentageToBet: number
     minCategoryPercentageValueInLiveToBet: number
     minAveragePredictionModelInLiveToBet: number
@@ -67,6 +70,7 @@ export class Bot{
         this.minMultiplierToBet = object.min_multiplier_to_bet
         this.minCategoryPercentageToBet = object.min_category_percentage_to_bet
         this.minMultiplierToRecoverLosses = object.min_multiplier_to_recover_losses
+        this.minProbabilityToBet = object.min_probability_to_bet
         this.minCategoryPercentageValueInLiveToBet = object.min_category_percentage_value_in_live_to_bet
         this.minAveragePredictionModelInLiveToBet = object.min_average_prediction_model_in_live_to_bet
         this.stopLossPercentage = object.stop_loss_percentage

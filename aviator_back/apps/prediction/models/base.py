@@ -15,6 +15,13 @@ from apps.prediction.constants import MODELS_PATH, Category, ModelType
 
 
 @dataclass
+class PredictionData:
+    prediction: Decimal | int
+    prediction_round: int
+    probability: Optional[Decimal] = None
+
+
+@dataclass
 class _CategoryData:
     count: int
     correct_predictions: int
@@ -103,7 +110,7 @@ class AbstractBaseModel(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def predict(self, *, data: list[int]) -> Decimal:
+    def predict(self, *, data: list[int]) -> PredictionData:
         ...
 
     def _generate_model_path_to_save(
@@ -141,8 +148,9 @@ class AbstractBaseModel(abc.ABC):
             _data = X[i]
             next_value = y[i]
             next_multiplier = y_multiplier[i]
-            value = self.predict(data=_data)
-            value_round = round(value, 0)
+            prediction_data = self.predict(data=_data)
+            value = prediction_data.prediction
+            value_round = prediction_data.prediction_round
             category_data = self.average_info.categories_data.get(
                 next_value,
                 _CategoryData(
