@@ -85,15 +85,20 @@ def create_model_average_result(
     return average
 
 
-def generate_category_result_of_model(*, model_home_bet: ModelHomeBet) -> None:
+def generate_category_result_of_model(
+    *,
+    model_home_bet: ModelHomeBet,
+    count_multipliers: Optional[int] = None,
+) -> None:
     model_home_bet_id = model_home_bet.id
     print("---------------------------------------------------------")
     print(f"generation category result for model {model_home_bet_id}")
     print("---------------------------------------------------------")
     now = datetime.now()
+    count_multipliers = count_multipliers or NUMBER_OF_MULTIPLIERS_TO_GENERATE_RESULTS
     multipliers = core_selectors.get_last_multipliers(
         home_bet_id=model_home_bet.home_bet_id,
-        count=NUMBER_OF_MULTIPLIERS_TO_GENERATE_RESULTS
+        count=count_multipliers
     )
     average_result = prediction_services.evaluate_model_home_bet(
         model_home_bet=model_home_bet, multipliers=multipliers
@@ -206,7 +211,11 @@ def generate_model(
         )
         return
 
-    multipliers = core_selectors.get_today_multipliers(home_bet_id=home_bet_id)
+    # multipliers = core_selectors.get_today_multipliers(home_bet_id=home_bet_id)
+    # USE ALL MULTIPLIERS
+    multipliers = core_selectors.get_last_multipliers(
+        home_bet_id=home_bet_id
+    )
     if not multipliers:
         logger.warning(
             f"generate_model :: "

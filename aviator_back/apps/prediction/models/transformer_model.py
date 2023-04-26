@@ -50,7 +50,7 @@ class TransformerModel(AbstractBaseModel):
     transformer model class
     not use directly. Use CoreModel instead
     """
-
+    APPLY_MIN_PROBABILITY = False
     MODEL_EXTENSION = "pth"
 
     def __init__(self, *, seq_len: Optional[int] = DEFAULT_SEQ_LEN):

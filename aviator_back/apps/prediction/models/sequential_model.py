@@ -9,8 +9,12 @@ from keras.layers import LSTM, Dense, Dropout
 from keras.models import Sequential, load_model
 from sklearn.model_selection import train_test_split
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
-from apps.prediction.constants import ModelType
-from apps.prediction.models.base import AbstractBaseModel, PredictionData
+from apps.prediction.constants import (
+    ModelType,
+    Category,
+    MIN_PROBABILITY_TO_EVALUATE_MODEL
+)
+from apps.prediction.models.base import AbstractBaseModel, PredictionData, CategoryData, AverageInfo
 from apps.prediction.models.constants import EPOCHS_SEQUENTIAL, EPOCHS_SEQUENTIAL_LSTM
 from apps.prediction import utils
 
@@ -20,7 +24,7 @@ class SequentialModel(AbstractBaseModel):
     sequential model class
     not use directly. Use CoreModel instead
     """
-
+    APPLY_MIN_PROBABILITY = True
     MODEL_EXTENSION = "h5"
 
     def __init__(
@@ -98,7 +102,7 @@ class SequentialModel(AbstractBaseModel):
             probability = round(prediction - 1, 2)
         # TODO: fixed if the result > 2 not work correctly
         elif prediction > 2:
-            probability = 0
+            probability = -1
         prediction_data = PredictionData(
             prediction=prediction,
             prediction_round=prediction_round,

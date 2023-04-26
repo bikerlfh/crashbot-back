@@ -11,18 +11,23 @@ import numpy as np
 # Internal
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.prediction import utils
-from apps.prediction.constants import MODELS_PATH, Category, ModelType
+from apps.prediction.constants import (
+    MODELS_PATH,
+    Category,
+    ModelType,
+    MIN_PROBABILITY_TO_EVALUATE_MODEL
+)
 
 
 @dataclass
 class PredictionData:
-    prediction: Decimal | int
+    prediction: float | int
     prediction_round: int
-    probability: Optional[Decimal] = None
+    probability: Optional[float] = None
 
 
 @dataclass
-class _CategoryData:
+class CategoryData:
     count: int
     correct_predictions: int
     incorrect_predictions: int
@@ -37,14 +42,14 @@ class _CategoryData:
 class AverageInfo:
     average_predictions: float
     average_bets: float
-    categories_data: dict[int, _CategoryData]
+    categories_data: dict[int, CategoryData]
 
 
 class AbstractBaseModel(abc.ABC):
     """
     Abstract class for the models
     """
-
+    APPLY_MIN_PROBABILITY = True
     MODEL_EXTENSION = "h5"
 
     def __init__(
@@ -133,10 +138,16 @@ class AbstractBaseModel(abc.ABC):
         """
         return f"{MODELS_PATH}{name}"
 
-    def evaluate(self, *, multipliers: list[Decimal]) -> AverageInfo:
+    def evaluate(
+        self,
+        *,
+        multipliers: list[Decimal],
+        probability_to_eval: Optional[float] = MIN_PROBABILITY_TO_EVALUATE_MODEL
+    ) -> AverageInfo:
         """
         evaluate the model
         @param multipliers: list of multipliers in Decimal value
+        @param probability_to_eval: the minimum probability of prediction to be considered
         @return: AverageInfo
         """
         data = utils.transform_multipliers_to_data(multipliers=multipliers)
@@ -149,11 +160,12 @@ class AbstractBaseModel(abc.ABC):
             next_value = y[i]
             next_multiplier = y_multiplier[i]
             prediction_data = self.predict(data=_data)
-            value = prediction_data.prediction
-            value_round = prediction_data.prediction_round
+            prediction = prediction_data.prediction
+            prediction_round = prediction_data.prediction_round
+            probability = prediction_data.probability
             category_data = self.average_info.categories_data.get(
-                next_value,
-                _CategoryData(
+                prediction_round,
+                CategoryData(
                     count=0,
                     correct_predictions=0,
                     incorrect_predictions=0,
@@ -163,20 +175,21 @@ class AbstractBaseModel(abc.ABC):
                     percentage_bets=0,
                 ),
             )
-            if value < 1:
-                value = 1
-            if value > 3:
-                value = 3
+            if self.APPLY_MIN_PROBABILITY and \
+                    probability < probability_to_eval:
+                continue
+            if prediction > 3:
+                prediction = 3
             category_data.count += 1
-            if value_round == next_value:
+            if prediction_round == next_value:
                 category_data.correct_predictions += 1
             else:
                 category_data.incorrect_predictions += 1
-            if value <= next_multiplier:
+            if prediction < next_multiplier:
                 category_data.correct_bets += 1
             else:
                 category_data.incorrect_bets += 1
-            self.average_info.categories_data[next_value] = category_data
+            self.average_info.categories_data[prediction_round] = category_data
         sum_percentage_predictions = 0
         sum_percentage_bets = 0
         count_categories = 0

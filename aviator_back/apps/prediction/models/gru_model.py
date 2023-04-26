@@ -21,7 +21,7 @@ class GRUModel(AbstractBaseModel):
     GRU model class
     not use directly. Use CoreModel instead
     """
-
+    APPLY_MIN_PROBABILITY = False
     MODEL_EXTENSION = "h5"
 
     def __init__(

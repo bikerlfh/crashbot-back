@@ -4,3 +4,10 @@
 ## install nvidia drivers
 
 https://www.linuxcapable.com/install-nvidia-drivers-on-ubuntu-linux/
+
+
+# ENVIRONMENT VARIABLES
+
+## PREDICTION
+
+* MIN_PROBABILITY_TO_EVALUATE_MODEL: (float) minimum probability to evaluate model. The prediction's probability must be greater than this value to be considered. Default: 0.5
