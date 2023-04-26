@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
-
+from operator import itemgetter
 # Django
 from django.db.models import Max, Q
 from rest_framework.exceptions import ValidationError
@@ -19,7 +19,7 @@ from apps.django_projects.predictions.constants import (
     PERCENTAGE_ACCEPTABLE,
     PERCENTAGE_MODEL_TO_INACTIVE,
     DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL,
-    NUMBER_OF_MULTIPLIERS_TO_GENERATE_RESULTS,
+    NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL,
     MIN_MULTIPLIERS_TO_GENERATE_MODEL,
     ModelStatus,
 )
@@ -28,6 +28,7 @@ from apps.django_projects.predictions.models import (
     ModelHomeBet,
 )
 from apps.prediction import services as prediction_services
+from apps.prediction.models.base import AverageInfo
 from apps.prediction.constants import ModelType
 
 logger = logging.getLogger(__name__)
@@ -95,7 +96,7 @@ def generate_category_result_of_model(
     print(f"generation category result for model {model_home_bet_id}")
     print("---------------------------------------------------------")
     now = datetime.now()
-    count_multipliers = count_multipliers or NUMBER_OF_MULTIPLIERS_TO_GENERATE_RESULTS
+    count_multipliers = count_multipliers or NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL
     multipliers = core_selectors.get_last_multipliers(
         home_bet_id=model_home_bet.home_bet_id,
         count=count_multipliers
@@ -420,3 +421,51 @@ def get_active_bots(
             ]
         ))
     return bots_data
+
+
+def evaluate_model(
+    *,
+    model_home_bet_id: int,
+    count_multipliers: Optional[int] = None,
+    probability_to_eval: Optional[float] = None,
+    today_multipliers: Optional[bool] = False,
+) -> dict[str, any]:
+    model_home_bet = selectors.filter_model_home_bet_by_id(
+        model_home_bet_id=model_home_bet_id
+    ).first()
+    if not model_home_bet:
+        raise ValidationError(f"model {model_home_bet_id} does not exists")
+    print("---------------------------------------------------------")
+    print(f"******** evaluating model {model_home_bet_id} ************")
+    print("---------------------------------------------------------")
+    count_multipliers = count_multipliers or NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL
+    if today_multipliers:
+        multipliers = core_selectors.get_today_multipliers(
+            home_bet_id=model_home_bet.home_bet_id,
+        )
+    else:
+        multipliers = core_selectors.get_last_multipliers(
+            home_bet_id=model_home_bet.home_bet_id,
+            count=count_multipliers
+        )
+    average_result = prediction_services.evaluate_model_home_bet(
+        model_home_bet=model_home_bet,
+        multipliers=multipliers,
+        probability_to_eval=probability_to_eval
+    )
+    category_results = []
+    for key, value in average_result.categories_data.items():
+        category_results.append(
+            dict(
+                category=key,
+                correct_predictions=value.correct_predictions,
+                incorrect_predictions=value.incorrect_predictions,
+                percentage_predictions=value.percentage_predictions
+            )
+        )
+    category_results = sorted(category_results, key=itemgetter('category'))
+    data = dict(
+        average_predictions=average_result.average_predictions,
+        category_results=category_results
+    )
+    return data

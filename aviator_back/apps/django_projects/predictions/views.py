@@ -164,4 +164,43 @@ class BotView(
         )
 
 
+class EvaluateModelView(
+    APIErrorsMixin,
+    APIView,
+):
+    permission_classes = [IsAuthenticated]
 
+    class InputSerializer(serializers.Serializer):
+        model_home_bet_id = serializers.IntegerField()
+        count_multipliers = serializers.IntegerField(
+            required=False,
+            allow_null=True
+        )
+        probability_to_eval = serializers.FloatField(
+            required=False,
+            allow_null=True
+        )
+
+    class OutputSerializer(serializers.Serializer):
+        average_predictions = serializers.DecimalField(
+            max_digits=5, decimal_places=2
+        )
+        category_results = inline_serializer(
+            fields=dict(
+                category=serializers.IntegerField(),
+                correct_predictions=serializers.IntegerField(),
+                incorrect_predictions=serializers.IntegerField(),
+                percentage_predictions=serializers.DecimalField(
+                    max_digits=5, decimal_places=2
+                ),
+            ),
+            many=True,
+        )
+
+    def get(self, request):
+        in_serializer = self.InputSerializer(data=request.GET)
+        in_serializer.is_valid(raise_exception=True)
+        data = services.evaluate_model(**in_serializer.validated_data)
+        out_serializer = self.OutputSerializer(data=data)
+        out_serializer.is_valid(raise_exception=True)
+        return Response(data=out_serializer.validated_data)

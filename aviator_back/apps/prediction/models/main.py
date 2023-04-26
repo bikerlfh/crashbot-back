@@ -85,16 +85,25 @@ class CoreModel:
             epochs=epochs,
         )
 
-    def evaluate(self, *, multipliers: list[Decimal]) -> AverageInfo:
+    def evaluate(
+        self,
+        *,
+        multipliers: list[Decimal],
+        probability_to_eval: Optional[float] = None
+    ) -> AverageInfo:
         """
         Evaluates the model
         @param multipliers: The multipliers to evaluate the model on
+        @param probability_to_eval: The probability to evaluate the model on
         @return: The average info
         """
         assert (
             self.model_home_bet is not None
         ), "model_home_bet must be provided"
-        return self.model.evaluate(multipliers=multipliers)
+        return self.model.evaluate(
+            multipliers=multipliers,
+            probability_to_eval=probability_to_eval
+        )
 
     def predict(self, *, multipliers: list[Decimal]) -> PredictionData:
         """

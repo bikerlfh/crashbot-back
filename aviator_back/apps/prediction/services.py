@@ -53,16 +53,23 @@ def predict(
 
 
 def evaluate_model_home_bet(
-    *, model_home_bet: ModelHomeBet, multipliers: list[Decimal]
+    *,
+    model_home_bet:
+    ModelHomeBet, multipliers: list[Decimal],
+    probability_to_eval: Optional[float] = None
 ) -> AverageInfo:
     """
     Evaluates a model home bet
     @param model_home_bet: The model home bet
     @param multipliers: The multipliers to evaluate the model home bet
+    @param probability_to_eval: The probability to evaluate the model home bet
     @return: The average info
     """
     model = CoreModel(model_home_bet=model_home_bet)
-    average_info = model.evaluate(multipliers=multipliers)
+    average_info = model.evaluate(
+        multipliers=multipliers,
+        probability_to_eval=probability_to_eval
+    )
     return average_info
 
 

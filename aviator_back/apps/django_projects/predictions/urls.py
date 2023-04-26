@@ -19,6 +19,11 @@ urlpatterns: list[Any] = [
         name="model-home-bet-view",
     ),
     path(
+        "models/evaluate/",
+        views.EvaluateModelView.as_view(),
+        name="evaluate-model-view",
+    ),
+    path(
         "bots/",
         views.BotView.as_view(),
         name="bots-view",

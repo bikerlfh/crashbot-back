@@ -142,7 +142,7 @@ class AbstractBaseModel(abc.ABC):
         self,
         *,
         multipliers: list[Decimal],
-        probability_to_eval: Optional[float] = MIN_PROBABILITY_TO_EVALUATE_MODEL
+        probability_to_eval: Optional[float] = None
     ) -> AverageInfo:
         """
         evaluate the model
@@ -150,6 +150,7 @@ class AbstractBaseModel(abc.ABC):
         @param probability_to_eval: the minimum probability of prediction to be considered
         @return: AverageInfo
         """
+        probability_to_eval = probability_to_eval or MIN_PROBABILITY_TO_EVALUATE_MODEL
         data = utils.transform_multipliers_to_data(multipliers=multipliers)
         X, y = self._split_data_to_train(data)  # NOQA
         y_multiplier = np.array(multipliers[self.seq_len:])
@@ -207,6 +208,8 @@ class AbstractBaseModel(abc.ABC):
             sum_percentage_predictions += dict_value.percentage_predictions
             sum_percentage_bets += dict_value.percentage_bets
             self.average_info.categories_data[key] = dict_value
+        if count_categories == 0:
+            count_categories = 1
         self.average_info.average_predictions = utils.to_float(
             sum_percentage_predictions / count_categories
         )
