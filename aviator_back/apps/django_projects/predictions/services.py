@@ -214,8 +214,11 @@ def generate_model(
 
     # multipliers = core_selectors.get_today_multipliers(home_bet_id=home_bet_id)
     # USE ALL MULTIPLIERS
+    # now = datetime.now().date()
     multipliers = core_selectors.get_last_multipliers(
-        home_bet_id=home_bet_id
+        home_bet_id=home_bet_id,
+        count=500,
+        # filter_=dict(multiplier_dt__date__lt=now),
     )
     if not multipliers:
         logger.warning(
@@ -460,7 +463,10 @@ def evaluate_model(
                 category=key,
                 correct_predictions=value.correct_predictions,
                 incorrect_predictions=value.incorrect_predictions,
-                percentage_predictions=value.percentage_predictions
+                percentage_predictions=value.percentage_predictions,
+                correct_bets=value.correct_bets,
+                incorrect_bets=value.incorrect_bets,
+                percentage_bets=value.percentage_bets,
             )
         )
     category_results = sorted(category_results, key=itemgetter('category'))

@@ -72,7 +72,7 @@ class SequentialModel(AbstractBaseModel):
             X, y, test_size=test_size, random_state=42
         )
         model = self._compile_model()
-        model.fit(X_train, y_train, epochs=self._epochs, batch_size=32)
+        model.fit(X_train, y_train, epochs=self._epochs, batch_size=16)
         lost = model.evaluate(X_test, y_test)
         name, model_path = self._generate_model_path_to_save(
             home_bet_id=home_bet_id

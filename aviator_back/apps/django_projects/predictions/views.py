@@ -180,6 +180,10 @@ class EvaluateModelView(
             required=False,
             allow_null=True
         )
+        today_multipliers = serializers.BooleanField(
+            required=False,
+            allow_null=True
+        )
 
     class OutputSerializer(serializers.Serializer):
         average_predictions = serializers.DecimalField(
@@ -191,6 +195,11 @@ class EvaluateModelView(
                 correct_predictions=serializers.IntegerField(),
                 incorrect_predictions=serializers.IntegerField(),
                 percentage_predictions=serializers.DecimalField(
+                    max_digits=5, decimal_places=2
+                ),
+                correct_bets=serializers.IntegerField(),
+                incorrect_bets=serializers.IntegerField(),
+                percentage_bets=serializers.DecimalField(
                     max_digits=5, decimal_places=2
                 ),
             ),
