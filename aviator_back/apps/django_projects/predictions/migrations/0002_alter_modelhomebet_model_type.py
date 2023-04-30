@@ -4,15 +4,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('predictions', '0001_initial'),
+        ("predictions", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='modelhomebet',
-            name='model_type',
-            field=models.CharField(choices=[('sequential', 'SEQUENTIAL'), ('sequential_lstm', 'SEQUENTIAL_LSTM'), ('transformer', 'TRANSFORMER'), ('decision_tree_regressor', 'DECISION_TREE_REGRESSOR'), ('linear_regression', 'LINEAR_REGRESSOR')], max_length=25),
+            model_name="modelhomebet",
+            name="model_type",
+            field=models.CharField(
+                choices=[
+                    ("sequential", "SEQUENTIAL"),
+                    ("sequential_lstm", "SEQUENTIAL_LSTM"),
+                    ("transformer", "TRANSFORMER"),
+                    ("decision_tree_regressor", "DECISION_TREE_REGRESSOR"),
+                    ("linear_regression", "LINEAR_REGRESSOR"),
+                ],
+                max_length=25,
+            ),
         ),
     ]

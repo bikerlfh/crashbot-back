@@ -1,8 +1,10 @@
+# Standard Library
 from typing import Optional
+
 # Django
 from rest_framework.exceptions import ValidationError
 
-# Internal
+# Libraries
 from apps.django_projects.bets import selectors
 from apps.django_projects.bets.constants import BetStatus, BetType
 from apps.django_projects.bets.models import Bet
@@ -55,17 +57,19 @@ def create_bets(
         if multiplier >= multiplier_result:
             profit_amount = -amount
             status = BetStatus.LOST.value
-        bet_list.append(Bet(
-            balance_id=balance.id,
-            external_id=external_id,
-            prediction=prediction,
-            amount=amount,
-            multiplier=multiplier,
-            multiplier_result=multiplier_result,
-            profit_amount=profit_amount,
-            bet_type=bet_type,
-            status=status,
-        ))
+        bet_list.append(
+            Bet(
+                balance_id=balance.id,
+                external_id=external_id,
+                prediction=prediction,
+                amount=amount,
+                multiplier=multiplier,
+                multiplier_result=multiplier_result,
+                profit_amount=profit_amount,
+                bet_type=bet_type,
+                status=status,
+            )
+        )
     bets = Bet.objects.bulk_create(bet_list)
     balance.amount = balance_amount
     balance.save()
@@ -78,22 +82,17 @@ def get_my_bets(
     home_bet_id: Optional[int] = None,
     status: Optional[str] = None,
 ) -> list[dict]:
-    bet_data = (
-        selectors.filter_bets_by_user_id(
-            user_id=user_id,
-            home_bet_id=home_bet_id,
-            status=status
-        )
-        .values(
-            "id",
-            "home_bet_id",
-            "prediction",
-            "amount",
-            "multiplier",
-            "multiplier_result",
-            "profit_amount",
-            "status",
-        )
+    bet_data = selectors.filter_bets_by_user_id(
+        user_id=user_id, home_bet_id=home_bet_id, status=status
+    ).values(
+        "id",
+        "home_bet_id",
+        "prediction",
+        "amount",
+        "multiplier",
+        "multiplier_result",
+        "profit_amount",
+        "status",
     )
     if not bet_data:
         raise ValidationError("Bets does not exists")

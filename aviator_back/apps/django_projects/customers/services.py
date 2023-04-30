@@ -1,7 +1,7 @@
 # Django
 from rest_framework.exceptions import ValidationError
 
-# Internal
+# Libraries
 from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.customers import selectors
 from apps.django_projects.customers.models import CustomerBalance
@@ -33,9 +33,7 @@ def create_customer_balance(
     return balance
 
 
-def get_customer_balance_data(
-    *, customer_id: int, home_bet_id: int
-) -> dict[str, any]:
+def get_customer_balance_data(*, customer_id: int, home_bet_id: int) -> dict[str, any]:
     balance = selectors.filter_balance(
         customer_id=customer_id, home_bet_id=home_bet_id
     ).first()

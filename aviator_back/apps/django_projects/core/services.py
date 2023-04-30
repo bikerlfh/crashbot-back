@@ -6,7 +6,7 @@ from typing import Any, Optional
 # Django
 from rest_framework.exceptions import ValidationError
 
-# Internal
+# Libraries
 from apps.django_projects.core import selectors
 from apps.django_projects.core.models import HomeBetMultiplier
 from apps.django_projects.core.strategies import multiplier_save
@@ -38,15 +38,11 @@ def get_home_bet(
 def get_home_bet_multipliers(
     *, home_bet_id: int, count: Optional[int] = 10
 ) -> list[Decimal]:
-    multipliers = selectors.get_last_multipliers(
-        home_bet_id=home_bet_id, count=count
-    )
+    multipliers = selectors.get_last_multipliers(home_bet_id=home_bet_id, count=count)
     return multipliers
 
 
-def save_multipliers(
-    *, home_bet_id: int, multipliers: list[Decimal]
-) -> list[Decimal]:
+def save_multipliers(*, home_bet_id: int, multipliers: list[Decimal]) -> list[Decimal]:
     home_bet = selectors.filter_home_bet(home_bet_id=home_bet_id).first()
     if not home_bet:
         raise ValidationError("Home bet does not exists")

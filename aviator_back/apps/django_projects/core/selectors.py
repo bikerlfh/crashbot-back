@@ -6,7 +6,7 @@ from typing import Optional
 # Django
 from django.db.models import Q, QuerySet
 
-# Internal
+# Libraries
 from apps.django_projects.core.models import HomeBet, HomeBetMultiplier
 
 
@@ -48,10 +48,7 @@ def get_last_multipliers(
     return multipliers
 
 
-def get_today_multipliers(
-    *,
-    home_bet_id: int
-) -> list[Decimal]:
+def get_today_multipliers(*, home_bet_id: int) -> list[Decimal]:
     now = datetime.now().date()
     filter_ = dict(
         home_bet_id=home_bet_id,
@@ -68,9 +65,7 @@ def get_today_multipliers(
 
 
 def count_home_bet_multipliers(
-    *,
-    home_bet_id: int,
-    only_today: Optional[bool] = False
+    *, home_bet_id: int, only_today: Optional[bool] = False
 ) -> int:
     filter_ = dict(
         home_bet_id=home_bet_id,

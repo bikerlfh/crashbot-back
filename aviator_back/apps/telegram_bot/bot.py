@@ -11,10 +11,6 @@ import logging
 from typing import Optional
 
 # Libraries
-from telethon.sync import TelegramClient, events
-from telethon.tl.types import PeerChannel, PeerUser
-
-# Internal
 from apps.telegram_bot.channel_listeners import ChannelListener
 from apps.telegram_bot.constants import (
     TELEGRAM_API_HASH,
@@ -22,6 +18,8 @@ from apps.telegram_bot.constants import (
     TELEGRAM_PHONE_NUMBER,
 )
 from apps.utils.patterns.singleton import Singleton
+from telethon.sync import TelegramClient, events
+from telethon.tl.types import PeerChannel, PeerUser
 
 logger = logging.getLogger(__name__)
 
@@ -44,18 +42,12 @@ class TelegramBot(Singleton):
         if self.client is not None:
             return
         try:
-            self.client = TelegramClient(
-                "session", TELEGRAM_API_ID, TELEGRAM_API_HASH
-            )
+            self.client = TelegramClient("session", TELEGRAM_API_ID, TELEGRAM_API_HASH)
             self.client.connect()
             if not self.client.is_user_authorized():
                 self.client.send_code_request(TELEGRAM_PHONE_NUMBER)
-                self.client.sign_in(
-                    TELEGRAM_PHONE_NUMBER, input("Enter the code: ")
-                )
-            self.client.add_event_handler(
-                self.handle_message, events.NewMessage()
-            )
+                self.client.sign_in(TELEGRAM_PHONE_NUMBER, input("Enter the code: "))
+            self.client.add_event_handler(self.handle_message, events.NewMessage())
         except Exception as e:
             logger.exception(f"TelegramBot::connect :: {e}")
 

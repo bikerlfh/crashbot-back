@@ -7,15 +7,13 @@ from typing import Optional, Tuple
 
 # Libraries
 import numpy as np
-
-# Internal
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.prediction import utils
 from apps.prediction.constants import (
+    MIN_PROBABILITY_TO_EVALUATE_MODEL,
     MODELS_PATH,
     Category,
     ModelType,
-    MIN_PROBABILITY_TO_EVALUATE_MODEL
 )
 
 
@@ -49,6 +47,7 @@ class AbstractBaseModel(abc.ABC):
     """
     Abstract class for the models
     """
+
     APPLY_MIN_PROBABILITY = True
     MODEL_EXTENSION = "h5"
 
@@ -74,21 +73,16 @@ class AbstractBaseModel(abc.ABC):
     def _compile_model(self) -> any:
         ...
 
-    def _split_data_to_train(
-        self, data: list[int]
-    ) -> Tuple[np.array, np.array]:
+    def _split_data_to_train(self, data: list[int]) -> Tuple[np.array, np.array]:
         """
         get the list of sequences and the list of next values
         @return: Tuple[train_data, test_data]
         the list of sequences and the list of next values
         """
         X = np.array(  # NOQA
-            [
-                data[i: i + self.seq_len]
-                for i in range(len(data) - self.seq_len)
-            ]
+            [data[i : i + self.seq_len] for i in range(len(data) - self.seq_len)]
         )
-        y = np.array(data[self.seq_len:])
+        y = np.array(data[self.seq_len :])
         return X, y
 
     @abc.abstractmethod
@@ -118,9 +112,7 @@ class AbstractBaseModel(abc.ABC):
     def predict(self, *, data: list[int]) -> PredictionData:
         ...
 
-    def _generate_model_path_to_save(
-        self, *, home_bet_id: int
-    ) -> Tuple[str, str]:
+    def _generate_model_path_to_save(self, *, home_bet_id: int) -> Tuple[str, str]:
         """
         generate the model path
         @param home_bet_id: the home bet id
@@ -139,10 +131,7 @@ class AbstractBaseModel(abc.ABC):
         return f"{MODELS_PATH}{name}"
 
     def evaluate(
-        self,
-        *,
-        multipliers: list[Decimal],
-        probability_to_eval: Optional[float] = None
+        self, *, multipliers: list[Decimal], probability_to_eval: Optional[float] = None
     ) -> AverageInfo:
         """
         evaluate the model
@@ -153,7 +142,7 @@ class AbstractBaseModel(abc.ABC):
         probability_to_eval = probability_to_eval or MIN_PROBABILITY_TO_EVALUATE_MODEL
         data = utils.transform_multipliers_to_data(multipliers=multipliers)
         X, y = self._split_data_to_train(data)  # NOQA
-        y_multiplier = np.array(multipliers[self.seq_len:])
+        y_multiplier = np.array(multipliers[self.seq_len :])
         for i in range(len(X)):
             if i == len(X) - 1:
                 break
@@ -176,8 +165,7 @@ class AbstractBaseModel(abc.ABC):
                     percentage_bets=0,
                 ),
             )
-            if self.APPLY_MIN_PROBABILITY and \
-                    probability < probability_to_eval:
+            if self.APPLY_MIN_PROBABILITY and probability < probability_to_eval:
                 continue
             if prediction > 3:
                 prediction = 3

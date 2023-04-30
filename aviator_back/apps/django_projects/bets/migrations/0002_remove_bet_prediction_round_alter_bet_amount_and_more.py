@@ -4,39 +4,38 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('bets', '0001_initial'),
+        ("bets", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='bet',
-            name='prediction_round',
+            model_name="bet",
+            name="prediction_round",
         ),
         migrations.AlterField(
-            model_name='bet',
-            name='amount',
+            model_name="bet",
+            name="amount",
             field=models.FloatField(),
         ),
         migrations.AlterField(
-            model_name='bet',
-            name='multiplier',
+            model_name="bet",
+            name="multiplier",
             field=models.FloatField(null=True),
         ),
         migrations.AlterField(
-            model_name='bet',
-            name='multiplier_result',
+            model_name="bet",
+            name="multiplier_result",
             field=models.FloatField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='bet',
-            name='prediction',
+            model_name="bet",
+            name="prediction",
             field=models.FloatField(default=0.0),
         ),
         migrations.AlterField(
-            model_name='bet',
-            name='profit_amount',
+            model_name="bet",
+            name="profit_amount",
             field=models.FloatField(default=0.0),
         ),
     ]

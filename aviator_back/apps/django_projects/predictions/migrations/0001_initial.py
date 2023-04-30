@@ -5,52 +5,116 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('core', '0001_initial'),
+        ("core", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ModelHomeBet',
+            name="ModelHomeBet",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='updated at')),
-                ('name', models.CharField(max_length=50, unique=True)),
-                ('model_type', models.CharField(choices=[('sequential', 'SEQUENTIAL'), ('sequential_lstm', 'SEQUENTIAL_LSTM'), ('decision_tree_regressor', 'DECISION_TREE_REGRESSOR'), ('linear_regression', 'LINEAR_REGRESSOR')], max_length=25)),
-                ('status', models.CharField(default='active', max_length=10)),
-                ('seq_len', models.SmallIntegerField(default=10)),
-                ('average_predictions', models.FloatField(default=0)),
-                ('average_bets', models.FloatField(default=0)),
-                ('result_date', models.DateTimeField(blank=True, default=None, null=True)),
-                ('others', models.JSONField(blank=True, null=True)),
-                ('home_bet', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='models', to='core.homebet')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="created at"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="updated at"),
+                ),
+                ("name", models.CharField(max_length=50, unique=True)),
+                (
+                    "model_type",
+                    models.CharField(
+                        choices=[
+                            ("sequential", "SEQUENTIAL"),
+                            ("sequential_lstm", "SEQUENTIAL_LSTM"),
+                            ("decision_tree_regressor", "DECISION_TREE_REGRESSOR"),
+                            ("linear_regression", "LINEAR_REGRESSOR"),
+                        ],
+                        max_length=25,
+                    ),
+                ),
+                ("status", models.CharField(default="active", max_length=10)),
+                ("seq_len", models.SmallIntegerField(default=10)),
+                ("average_predictions", models.FloatField(default=0)),
+                ("average_bets", models.FloatField(default=0)),
+                (
+                    "result_date",
+                    models.DateTimeField(blank=True, default=None, null=True),
+                ),
+                ("others", models.JSONField(blank=True, null=True)),
+                (
+                    "home_bet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="models",
+                        to="core.homebet",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'model_homebet',
+                "db_table": "model_homebet",
             },
         ),
         migrations.CreateModel(
-            name='ModelCategoryResult',
+            name="ModelCategoryResult",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='updated at')),
-                ('category', models.SmallIntegerField(choices=[(1, 'CATEGORY_1'), (2, 'CATEGORY_2'), (3, 'CATEGORY_3')])),
-                ('correct_predictions', models.IntegerField(default=0)),
-                ('incorrect_predictions', models.IntegerField(default=0)),
-                ('percentage_predictions', models.FloatField()),
-                ('correct_bets', models.IntegerField(default=0)),
-                ('incorrect_bets', models.IntegerField(default=0)),
-                ('percentage_bets', models.FloatField()),
-                ('other_info', models.JSONField(blank=True, null=True)),
-                ('model_home_bet', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='category_results', to='predictions.modelhomebet')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="created at"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="updated at"),
+                ),
+                (
+                    "category",
+                    models.SmallIntegerField(
+                        choices=[
+                            (1, "CATEGORY_1"),
+                            (2, "CATEGORY_2"),
+                            (3, "CATEGORY_3"),
+                        ]
+                    ),
+                ),
+                ("correct_predictions", models.IntegerField(default=0)),
+                ("incorrect_predictions", models.IntegerField(default=0)),
+                ("percentage_predictions", models.FloatField()),
+                ("correct_bets", models.IntegerField(default=0)),
+                ("incorrect_bets", models.IntegerField(default=0)),
+                ("percentage_bets", models.FloatField()),
+                ("other_info", models.JSONField(blank=True, null=True)),
+                (
+                    "model_home_bet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="category_results",
+                        to="predictions.modelhomebet",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'model_category_result',
+                "db_table": "model_category_result",
             },
         ),
     ]

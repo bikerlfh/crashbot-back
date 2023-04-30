@@ -1,9 +1,10 @@
 # Django
 from rest_framework import serializers, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-# Internal
+
+# Libraries
 from apps.django_projects.customers import services
 from apps.utils.django.mixin import APIErrorsMixin
 
@@ -34,9 +35,7 @@ class CustomerBalanceView(APIErrorsMixin, APIView):
         )
         out_serializer = self.OutputGETSerializer(data=data)
         out_serializer.is_valid(raise_exception=True)
-        return Response(
-            data=out_serializer.validated_data, status=status.HTTP_200_OK
-        )
+        return Response(data=out_serializer.validated_data, status=status.HTTP_200_OK)
 
     def patch(self, request):
         serializer = self.InputPATCHSerializer(data=request.data)

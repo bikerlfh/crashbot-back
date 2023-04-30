@@ -1,6 +1,6 @@
 # Standard Library
-from os import getenv
 from enum import Enum
+from os import getenv
 
 MODELS_PATH = "models_created/"
 
@@ -22,4 +22,6 @@ class Category(int, Enum):
     CATEGORY_3 = 3
 
 
-MIN_PROBABILITY_TO_EVALUATE_MODEL = round(float(getenv("MIN_PROBABILITY_TO_EVALUATE_MODEL", 0.5)), 2)
+MIN_PROBABILITY_TO_EVALUATE_MODEL = round(
+    float(getenv("MIN_PROBABILITY_TO_EVALUATE_MODEL", 0.5)), 2
+)

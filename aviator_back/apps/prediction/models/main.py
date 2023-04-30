@@ -1,15 +1,20 @@
-from typing import Optional, Tuple
+# Standard Library
 from decimal import Decimal
+from typing import Optional, Tuple
 
+# Libraries
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.django_projects.predictions.models import ModelHomeBet
-from apps.prediction.constants import ModelType
-from apps.prediction.models.base import PredictionData
-from apps.prediction.models.sequential_model import SequentialModel
-from apps.prediction.models.gru_model import GRUModel
-from apps.prediction.models.transformer_model import TransformerModel
-from apps.prediction.models.base import AbstractBaseModel, AverageInfo
 from apps.prediction import utils
+from apps.prediction.constants import ModelType
+from apps.prediction.models.base import (
+    AbstractBaseModel,
+    AverageInfo,
+    PredictionData,
+)
+from apps.prediction.models.gru_model import GRUModel
+from apps.prediction.models.sequential_model import SequentialModel
+from apps.prediction.models.transformer_model import TransformerModel
 
 
 class CoreModel:
@@ -33,9 +38,7 @@ class CoreModel:
             if self.model_home_bet
             else model_type
         )
-        self.seq_len = (
-            self.model_home_bet.seq_len if self.model_home_bet else seq_len
-        )
+        self.seq_len = self.model_home_bet.seq_len if self.model_home_bet else seq_len
         self.model = self.__get_model(seq_len=self.seq_len)
         if self.model_home_bet:
             self.model.load_model(name=self.model_home_bet.name)
@@ -51,15 +54,11 @@ class CoreModel:
                     model_type=ModelType.SEQUENTIAL_LSTM, seq_len=seq_len
                 )
             case ModelType.GRU:
-                model = GRUModel(
-                    model_type=ModelType.GRU, seq_len=seq_len
-                )
+                model = GRUModel(model_type=ModelType.GRU, seq_len=seq_len)
             case ModelType.TRANSFORMER:
                 model = TransformerModel(seq_len=seq_len)
             case _:
-                raise ValueError(
-                    f"model_type: {self.model_type} is not supported"
-                )
+                raise ValueError(f"model_type: {self.model_type} is not supported")
         return model
 
     def train(
@@ -86,10 +85,7 @@ class CoreModel:
         )
 
     def evaluate(
-        self,
-        *,
-        multipliers: list[Decimal],
-        probability_to_eval: Optional[float] = None
+        self, *, multipliers: list[Decimal], probability_to_eval: Optional[float] = None
     ) -> AverageInfo:
         """
         Evaluates the model
@@ -97,12 +93,9 @@ class CoreModel:
         @param probability_to_eval: The probability to evaluate the model on
         @return: The average info
         """
-        assert (
-            self.model_home_bet is not None
-        ), "model_home_bet must be provided"
+        assert self.model_home_bet is not None, "model_home_bet must be provided"
         return self.model.evaluate(
-            multipliers=multipliers,
-            probability_to_eval=probability_to_eval
+            multipliers=multipliers, probability_to_eval=probability_to_eval
         )
 
     def predict(self, *, multipliers: list[Decimal]) -> PredictionData:
@@ -111,8 +104,6 @@ class CoreModel:
         @param multipliers: The data to predict the next multiplier on
         @return: The next multiplier
         """
-        assert (
-            self.model_home_bet is not None
-        ), "model_home_bet must be provided"
+        assert self.model_home_bet is not None, "model_home_bet must be provided"
         data = utils.transform_multipliers_to_data(multipliers=multipliers)
         return self.model.predict(data=data)

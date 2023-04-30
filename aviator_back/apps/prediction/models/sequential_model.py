@@ -5,18 +5,26 @@ from typing import Optional, Tuple
 
 # Libraries
 import numpy as np
+from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
+from apps.prediction import utils
+from apps.prediction.constants import (
+    MIN_PROBABILITY_TO_EVALUATE_MODEL,
+    Category,
+    ModelType,
+)
+from apps.prediction.models.base import (
+    AbstractBaseModel,
+    AverageInfo,
+    CategoryData,
+    PredictionData,
+)
+from apps.prediction.models.constants import (
+    EPOCHS_SEQUENTIAL,
+    EPOCHS_SEQUENTIAL_LSTM,
+)
 from keras.layers import LSTM, Dense, Dropout
 from keras.models import Sequential, load_model
 from sklearn.model_selection import train_test_split
-from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
-from apps.prediction.constants import (
-    ModelType,
-    Category,
-    MIN_PROBABILITY_TO_EVALUATE_MODEL
-)
-from apps.prediction.models.base import AbstractBaseModel, PredictionData, CategoryData, AverageInfo
-from apps.prediction.models.constants import EPOCHS_SEQUENTIAL, EPOCHS_SEQUENTIAL_LSTM
-from apps.prediction import utils
 
 
 class SequentialModel(AbstractBaseModel):
@@ -24,6 +32,7 @@ class SequentialModel(AbstractBaseModel):
     sequential model class
     not use directly. Use CoreModel instead
     """
+
     APPLY_MIN_PROBABILITY = True
     MODEL_EXTENSION = "h5"
 
@@ -34,9 +43,7 @@ class SequentialModel(AbstractBaseModel):
         seq_len: Optional[int] = DEFAULT_SEQ_LEN,
     ):
         self._epochs = 2500
-        super(SequentialModel, self).__init__(
-            model_type=model_type, seq_len=seq_len
-        )
+        super(SequentialModel, self).__init__(model_type=model_type, seq_len=seq_len)
 
     def _compile_model(self) -> Sequential:
         model = Sequential()
@@ -74,9 +81,7 @@ class SequentialModel(AbstractBaseModel):
         model = self._compile_model()
         model.fit(X_train, y_train, epochs=self._epochs, batch_size=16)
         lost = model.evaluate(X_test, y_test)
-        name, model_path = self._generate_model_path_to_save(
-            home_bet_id=home_bet_id
-        )
+        name, model_path = self._generate_model_path_to_save(home_bet_id=home_bet_id)
         model.save(model_path)
         metrics = dict(
             lost=lost,
@@ -93,7 +98,7 @@ class SequentialModel(AbstractBaseModel):
         self.model = load_model(model_path)
 
     def predict(self, *, data: list[int]) -> PredictionData:
-        next_num = self.model.predict(np.array([data[-self.seq_len:]]))[0][0]
+        next_num = self.model.predict(np.array([data[-self.seq_len :]]))[0][0]
         prediction = round(next_num, 2)
         # TODO: refactor if the categories change. this is only for 1 and 2
         prediction_round = 2 if prediction > 1 else 1

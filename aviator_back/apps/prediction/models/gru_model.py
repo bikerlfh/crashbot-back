@@ -5,15 +5,20 @@ from typing import Optional, Tuple
 
 # Libraries
 import numpy as np
+from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
+from apps.prediction import utils
+from apps.prediction.constants import ModelType
+from apps.prediction.models.base import AbstractBaseModel, PredictionData
+from sklearn.metrics import (
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+)
+from sklearn.model_selection import train_test_split
 from tensorflow.keras.layers import GRU, Dense
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.utils import to_categorical
-from sklearn.metrics import f1_score, recall_score, precision_score, confusion_matrix
-from sklearn.model_selection import train_test_split
-from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
-from apps.prediction.constants import ModelType
-from apps.prediction.models.base import AbstractBaseModel, PredictionData
-from apps.prediction import utils
 
 
 class GRUModel(AbstractBaseModel):
@@ -21,6 +26,7 @@ class GRUModel(AbstractBaseModel):
     GRU model class
     not use directly. Use CoreModel instead
     """
+
     APPLY_MIN_PROBABILITY = False
     MODEL_EXTENSION = "h5"
 
@@ -31,21 +37,19 @@ class GRUModel(AbstractBaseModel):
         seq_len: Optional[int] = DEFAULT_SEQ_LEN,
     ):
         self._epochs = 1000
-        super(GRUModel, self).__init__(
-            model_type=model_type, seq_len=seq_len
-        )
+        super(GRUModel, self).__init__(model_type=model_type, seq_len=seq_len)
         assert self.model_type == ModelType.GRU, "Invalid model type"
 
     def _compile_model(self) -> Sequential:
         model = Sequential()
         model.add(GRU(32, input_shape=(self.seq_len, 1)))
-        model.add(Dense(self.num_classes, activation='softmax'))
-        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+        model.add(Dense(self.num_classes, activation="softmax"))
+        model.compile(
+            loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"]
+        )
         return model
 
-    def _split_data_to_train_gru(
-        self, data: list[int]
-    ) -> Tuple[np.array, np.array]:
+    def _split_data_to_train_gru(self, data: list[int]) -> Tuple[np.array, np.array]:
         """
         get the list of sequences and the list of next values
         @return: Tuple[train_data, test_data]
@@ -76,20 +80,18 @@ class GRUModel(AbstractBaseModel):
         model = self._compile_model()
         model.fit(x_train, y_train, epochs=self._epochs, batch_size=32, verbose=2)
         loss, accuracy = model.evaluate(x_test, y_test, verbose=2)
-        name, model_path = self._generate_model_path_to_save(
-            home_bet_id=home_bet_id
-        )
+        name, model_path = self._generate_model_path_to_save(home_bet_id=home_bet_id)
         model.save(model_path)
         print("-------------------------------------------------------------------")
         print(f"--------MODEL: {name} LOSS: {loss} ACCURRACY: {accuracy}----------")
         print("-------------------------------------------------------------------")
         # generate others metrics
-        y_pred_prob = model.predict(x_test) # NOQA
-        y_pred = np.argmax(y_pred_prob, axis=1) # NOQA
+        y_pred_prob = model.predict(x_test)  # NOQA
+        y_pred = np.argmax(y_pred_prob, axis=1)  # NOQA
         y_true = np.argmax(y_test, axis=1)
-        precision = precision_score(y_true, y_pred, average='weighted')
-        recall = recall_score(y_true, y_pred, average='weighted')
-        f1 = f1_score(y_true, y_pred, average='weighted')
+        precision = precision_score(y_true, y_pred, average="weighted")
+        recall = recall_score(y_true, y_pred, average="weighted")
+        f1 = f1_score(y_true, y_pred, average="weighted")
         # calculate specificity
         cm = confusion_matrix(y_true, y_pred)
         specificity = cm.diagonal() / cm.sum(axis=1)
@@ -110,7 +112,9 @@ class GRUModel(AbstractBaseModel):
         self.model = load_model(model_path)
 
     def predict(self, *, data: list[int]) -> PredictionData:
-        input_sequence = np.array(data[-self.seq_len:]).reshape(1, self.seq_len, 1) / float(self.num_classes)
+        input_sequence = np.array(data[-self.seq_len :]).reshape(
+            1, self.seq_len, 1
+        ) / float(self.num_classes)
         probabilities = self.model.predict(input_sequence)[0]
         prediction = int(np.argmax(probabilities))
         prediction_data = PredictionData(

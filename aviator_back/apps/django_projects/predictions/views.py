@@ -1,12 +1,12 @@
 # Django
 from rest_framework import serializers
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-# Internal
+
+# Libraries
 from apps.django_projects.predictions import services
-from apps.django_projects.predictions.constants import BotType
-from apps.django_projects.predictions.constants import ModelStatus
+from apps.django_projects.predictions.constants import BotType, ModelStatus
 from apps.utils.django.mixin import APIErrorsMixin
 from apps.utils.rest.serializers import inline_serializer
 from apps.utils.tools import enum_to_choices
@@ -35,13 +35,9 @@ class PredictionView(
         predictions = inline_serializer(
             fields=dict(
                 id=serializers.IntegerField(),
-                prediction=serializers.DecimalField(
-                    max_digits=5, decimal_places=2
-                ),
+                prediction=serializers.DecimalField(max_digits=5, decimal_places=2),
                 prediction_round=serializers.IntegerField(),
-                probability=serializers.DecimalField(
-                    max_digits=5, decimal_places=2
-                ),
+                probability=serializers.DecimalField(max_digits=5, decimal_places=2),
                 average_predictions=serializers.DecimalField(
                     max_digits=5, decimal_places=2
                 ),
@@ -79,13 +75,9 @@ class ModelHomeBetView(
         model_type = serializers.CharField()
         status = serializers.CharField()
         seq_len = serializers.IntegerField()
-        average_predictions = serializers.DecimalField(
-            max_digits=5, decimal_places=2
-        )
+        average_predictions = serializers.DecimalField(max_digits=5, decimal_places=2)
         average_bets = serializers.DecimalField(max_digits=5, decimal_places=2)
-        result_date = serializers.DateTimeField(
-            required=False, allow_null=True
-        )
+        result_date = serializers.DateTimeField(required=False, allow_null=True)
         others = serializers.JSONField(required=False, allow_null=True)
         category_results = inline_serializer(
             fields=dict(
@@ -159,9 +151,7 @@ class BotView(
         data = services.get_active_bots(**in_serializer.validated_data)
         out_serializer = self.OutputSerializer(data=data, many=True)
         out_serializer.is_valid(raise_exception=True)
-        return Response(
-            data=dict(bots=out_serializer.validated_data)
-        )
+        return Response(data=dict(bots=out_serializer.validated_data))
 
 
 class EvaluateModelView(
@@ -172,23 +162,12 @@ class EvaluateModelView(
 
     class InputSerializer(serializers.Serializer):
         model_home_bet_id = serializers.IntegerField()
-        count_multipliers = serializers.IntegerField(
-            required=False,
-            allow_null=True
-        )
-        probability_to_eval = serializers.FloatField(
-            required=False,
-            allow_null=True
-        )
-        today_multipliers = serializers.BooleanField(
-            required=False,
-            allow_null=True
-        )
+        count_multipliers = serializers.IntegerField(required=False, allow_null=True)
+        probability_to_eval = serializers.FloatField(required=False, allow_null=True)
+        today_multipliers = serializers.BooleanField(required=False, allow_null=True)
 
     class OutputSerializer(serializers.Serializer):
-        average_predictions = serializers.DecimalField(
-            max_digits=5, decimal_places=2
-        )
+        average_predictions = serializers.DecimalField(max_digits=5, decimal_places=2)
         category_results = inline_serializer(
             fields=dict(
                 category=serializers.IntegerField(),

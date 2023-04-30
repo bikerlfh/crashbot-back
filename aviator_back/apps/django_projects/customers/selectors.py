@@ -1,7 +1,7 @@
 # Django
 from django.db.models import QuerySet
 
-# Internal
+# Libraries
 from apps.django_projects.customers.models import Customer, CustomerBalance
 
 

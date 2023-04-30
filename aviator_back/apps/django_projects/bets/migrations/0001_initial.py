@@ -5,33 +5,67 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('customers', '0001_initial'),
+        ("customers", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Bet',
+            name="Bet",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='updated at')),
-                ('external_id', models.CharField(max_length=50)),
-                ('prediction', models.DecimalField(decimal_places=2, default=0, max_digits=5)),
-                ('prediction_round', models.IntegerField(default=0)),
-                ('amount', models.DecimalField(decimal_places=2, max_digits=18)),
-                ('multiplier', models.DecimalField(decimal_places=2, max_digits=10, null=True)),
-                ('multiplier_result', models.DecimalField(blank=True, decimal_places=2, max_digits=18, null=True)),
-                ('profit_amount', models.DecimalField(decimal_places=2, default=0, max_digits=18)),
-                ('status', models.CharField(default='pending', max_length=10)),
-                ('balance', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='bets', to='customers.customerbalance')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="created at"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="updated at"),
+                ),
+                ("external_id", models.CharField(max_length=50)),
+                (
+                    "prediction",
+                    models.DecimalField(decimal_places=2, default=0, max_digits=5),
+                ),
+                ("prediction_round", models.IntegerField(default=0)),
+                ("amount", models.DecimalField(decimal_places=2, max_digits=18)),
+                (
+                    "multiplier",
+                    models.DecimalField(decimal_places=2, max_digits=10, null=True),
+                ),
+                (
+                    "multiplier_result",
+                    models.DecimalField(
+                        blank=True, decimal_places=2, max_digits=18, null=True
+                    ),
+                ),
+                (
+                    "profit_amount",
+                    models.DecimalField(decimal_places=2, default=0, max_digits=18),
+                ),
+                ("status", models.CharField(default="pending", max_length=10)),
+                (
+                    "balance",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="bets",
+                        to="customers.customerbalance",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'bet',
-                'unique_together': {('balance', 'external_id')},
+                "db_table": "bet",
+                "unique_together": {("balance", "external_id")},
             },
         ),
     ]

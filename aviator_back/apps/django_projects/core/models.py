@@ -1,7 +1,7 @@
 # Django
 from django.db import models
 
-# Internal
+# Libraries
 from apps.utils.django.models import BaseModel
 
 

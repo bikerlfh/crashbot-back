@@ -2,7 +2,7 @@
 import typing
 from typing import Union
 
-# Internal
+# Libraries
 from apps.telegram_bot.bot import TelegramBot
 
 
@@ -19,7 +19,3 @@ def start_telegram_bot():
 def send_telegram_message(*, chat_id: int | str, message: str) -> Union[None]:
     bot = TelegramBot()
     bot.send_message(chat_id=chat_id, message=message)
-
-
-
-

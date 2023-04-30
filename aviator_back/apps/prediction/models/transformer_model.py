@@ -1,16 +1,18 @@
-import torch
-import torch.nn as nn
-from torch.nn import TransformerEncoder, TransformerEncoderLayer
-import torch.optim as optim
+# Standard Library
 import os
 from decimal import Decimal
 from typing import Optional, Tuple
-from sklearn.model_selection import train_test_split
 
+# Libraries
+import torch
+import torch.nn as nn
+import torch.optim as optim
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
+from apps.prediction import utils
 from apps.prediction.constants import ModelType
 from apps.prediction.models.base import AbstractBaseModel
-from apps.prediction import utils
+from sklearn.model_selection import train_test_split
+from torch.nn import TransformerEncoder, TransformerEncoderLayer
 
 
 class _NumberTransformer(nn.Module):
@@ -50,6 +52,7 @@ class TransformerModel(AbstractBaseModel):
     transformer model class
     not use directly. Use CoreModel instead
     """
+
     APPLY_MIN_PROBABILITY = False
     MODEL_EXTENSION = "pth"
 
@@ -95,10 +98,8 @@ class TransformerModel(AbstractBaseModel):
         epochs = epochs or self._epochs
         for epoch in range(epochs):
             for i in range(0, len(X_train), batch_size):
-                batch_X = torch.tensor(  # NOQA
-                    X_train[i: i + batch_size]
-                ).float()
-                batch_y = torch.tensor(y_train[i: i + batch_size]).float()
+                batch_X = torch.tensor(X_train[i : i + batch_size]).float()  # NOQA
+                batch_y = torch.tensor(y_train[i : i + batch_size]).float()
                 optimizer.zero_grad()
                 y_pred = self.model(batch_X)  # NOQA
                 loss = loss_fn(y_pred, batch_y)
@@ -106,9 +107,7 @@ class TransformerModel(AbstractBaseModel):
                 optimizer.step()
                 train_loss.append(loss.item())
             print(f"Epoch: {epoch + 1}/{epochs}, Loss: {train_loss[-1]}")
-        name, model_path = self._generate_model_path_to_save(
-            home_bet_id=home_bet_id
-        )
+        name, model_path = self._generate_model_path_to_save(home_bet_id=home_bet_id)
         torch.save(self.model.state_dict(), model_path)
         print("---------------------------------------------")
         print(f"--------MODEL: {name} ERROR: {train_loss[-1]}----------")

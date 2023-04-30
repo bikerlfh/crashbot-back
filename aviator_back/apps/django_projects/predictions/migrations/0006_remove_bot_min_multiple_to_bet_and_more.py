@@ -4,19 +4,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('predictions', '0005_remove_bot_min_average_prediction_in_live_to_bet_and_more'),
+        (
+            "predictions",
+            "0005_remove_bot_min_average_prediction_in_live_to_bet_and_more",
+        ),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='bot',
-            name='min_multiple_to_bet',
+            model_name="bot",
+            name="min_multiple_to_bet",
         ),
         migrations.AddField(
-            model_name='bot',
-            name='min_multiplier_to_bet',
-            field=models.FloatField(default=1.5, help_text='Minimum multiplier to bet'),
+            model_name="bot",
+            name="min_multiplier_to_bet",
+            field=models.FloatField(default=1.5, help_text="Minimum multiplier to bet"),
         ),
     ]

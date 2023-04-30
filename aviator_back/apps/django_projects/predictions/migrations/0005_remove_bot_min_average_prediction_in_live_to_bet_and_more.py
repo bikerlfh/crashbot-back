@@ -4,33 +4,36 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('predictions', '0004_bot_risk_factor_and_more'),
+        ("predictions", "0004_bot_risk_factor_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='bot',
-            name='min_average_prediction_in_live_to_bet',
+            model_name="bot",
+            name="min_average_prediction_in_live_to_bet",
         ),
         migrations.RemoveField(
-            model_name='bot',
-            name='min_average_prediction_values_in_live_to_bet',
+            model_name="bot",
+            name="min_average_prediction_values_in_live_to_bet",
         ),
         migrations.AddField(
-            model_name='bot',
-            name='min_average_prediction_model_in_live_to_bet',
-            field=models.FloatField(default=0, help_text='Minimum average prediction model in live to bet'),
+            model_name="bot",
+            name="min_average_prediction_model_in_live_to_bet",
+            field=models.FloatField(
+                default=0, help_text="Minimum average prediction model in live to bet"
+            ),
         ),
         migrations.AddField(
-            model_name='bot',
-            name='min_category_percentage_value_in_live_to_bet',
-            field=models.FloatField(default=0, help_text='Minimum category percentage value in live to bet'),
+            model_name="bot",
+            name="min_category_percentage_value_in_live_to_bet",
+            field=models.FloatField(
+                default=0, help_text="Minimum category percentage value in live to bet"
+            ),
         ),
         migrations.AddField(
-            model_name='bot',
-            name='min_multiple_to_bet',
-            field=models.FloatField(default=1.5, help_text='Minimum multiple to bet'),
+            model_name="bot",
+            name="min_multiple_to_bet",
+            field=models.FloatField(default=1.5, help_text="Minimum multiple to bet"),
         ),
     ]

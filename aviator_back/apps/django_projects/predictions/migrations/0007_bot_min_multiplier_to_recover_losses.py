@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('predictions', '0006_remove_bot_min_multiple_to_bet_and_more'),
+        ("predictions", "0006_remove_bot_min_multiple_to_bet_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='bot',
-            name='min_multiplier_to_recover_losses',
-            field=models.FloatField(default=2.0, help_text='Minimum multiplier to recover losses'),
+            model_name="bot",
+            name="min_multiplier_to_recover_losses",
+            field=models.FloatField(
+                default=2.0, help_text="Minimum multiplier to recover losses"
+            ),
         ),
     ]

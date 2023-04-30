@@ -3,24 +3,25 @@ import json
 import logging
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional
 from operator import itemgetter
+from typing import Optional
+
 # Django
 from django.db.models import Max, Q
 from rest_framework.exceptions import ValidationError
 
-# Internal
+# Libraries
 from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.core.models import HomeBet
 from apps.django_projects.predictions import selectors
 from apps.django_projects.predictions.constants import (
     DEFAULT_SEQ_LEN,
+    DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL,
     GENERATE_AUTOMATIC_MODEL_TYPES,
+    MIN_MULTIPLIERS_TO_GENERATE_MODEL,
+    NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL,
     PERCENTAGE_ACCEPTABLE,
     PERCENTAGE_MODEL_TO_INACTIVE,
-    DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL,
-    NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL,
-    MIN_MULTIPLIERS_TO_GENERATE_MODEL,
     ModelStatus,
 )
 from apps.django_projects.predictions.models import (
@@ -28,8 +29,8 @@ from apps.django_projects.predictions.models import (
     ModelHomeBet,
 )
 from apps.prediction import services as prediction_services
-from apps.prediction.models.base import AverageInfo
 from apps.prediction.constants import ModelType
+from apps.prediction.models.base import AverageInfo
 
 logger = logging.getLogger(__name__)
 
@@ -98,8 +99,7 @@ def generate_category_result_of_model(
     now = datetime.now()
     count_multipliers = count_multipliers or NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL
     multipliers = core_selectors.get_last_multipliers(
-        home_bet_id=model_home_bet.home_bet_id,
-        count=count_multipliers
+        home_bet_id=model_home_bet.home_bet_id, count=count_multipliers
     )
     average_result = prediction_services.evaluate_model_home_bet(
         model_home_bet=model_home_bet, multipliers=multipliers
@@ -110,9 +110,7 @@ def generate_category_result_of_model(
     model_home_bet.average_bets = average_result.average_bets
     model_home_bet.save()
     for key, value in average_result.categories_data.items():
-        category_ = model_home_bet.category_results.filter(
-            category=key
-        ).first()
+        category_ = model_home_bet.category_results.filter(category=key).first()
         if category_:
             category_.correct_predictions = value.correct_predictions
             category_.incorrect_predictions = value.incorrect_predictions
@@ -202,14 +200,9 @@ def generate_model(
     :param model_type: model type
     :return: model home bet
     """
-    home_bet = core_selectors.filter_home_bet(
-        home_bet_id=home_bet_id
-    ).first()
+    home_bet = core_selectors.filter_home_bet(home_bet_id=home_bet_id).first()
     if not home_bet:
-        logger.error(
-            f"generate_model :: "
-            f"home bet {home_bet_id} does not exists"
-        )
+        logger.error(f"generate_model :: " f"home bet {home_bet_id} does not exists")
         return
 
     # multipliers = core_selectors.get_today_multipliers(home_bet_id=home_bet_id)
@@ -222,8 +215,7 @@ def generate_model(
     )
     if not multipliers:
         logger.warning(
-            f"generate_model :: "
-            f"no multipliers for home bet {home_bet_id}"
+            f"generate_model :: " f"no multipliers for home bet {home_bet_id}"
         )
         return
     if len(multipliers) < MIN_MULTIPLIERS_TO_GENERATE_MODEL:
@@ -312,9 +304,7 @@ def generate_category_results_of_models():
             models_to_inactive.append(model)
     if not models_to_inactive:
         return
-    home_bet_ids_to_create = {
-        model.home_bet_id for model in models_to_inactive
-    }
+    home_bet_ids_to_create = {model.home_bet_id for model in models_to_inactive}
     model_ids_to_inactive = {model.id for model in models_to_inactive}
     # get all models from homes bet to create
     models_ = selectors.filter_model_home_bet(
@@ -325,16 +315,19 @@ def generate_category_results_of_models():
     home_bet_ids_with_active_model = {
         model["home_bet_id"]
         for model in models_
-        if model['id'] not in model_ids_to_inactive
+        if model["id"] not in model_ids_to_inactive
     }
     # get home_bet_ids with no active models
     home_bet_ids_with_no_active_model = set(
-        _id for _id in home_bet_ids_to_create
+        _id
+        for _id in home_bet_ids_to_create
         if _id not in home_bet_ids_with_active_model
     )
     if home_bet_ids_with_no_active_model:
         # create models for home bets with no active models
-        generate_model_for_in_play_home_bet(home_bet_ids=home_bet_ids_with_no_active_model)
+        generate_model_for_in_play_home_bet(
+            home_bet_ids=home_bet_ids_with_no_active_model
+        )
     # inactive models
     ModelHomeBet.objects.filter(id__in=model_ids_to_inactive).update(
         status=ModelStatus.INACTIVE.value,
@@ -344,9 +337,7 @@ def generate_category_results_of_models():
 def get_models_home_bet(
     *, home_bet_id: int, status: Optional[str] = ModelStatus.ACTIVE.value
 ) -> list[dict]:
-    home_bet_exists = core_selectors.filter_home_bet(
-        home_bet_id=home_bet_id
-    ).exists()
+    home_bet_exists = core_selectors.filter_home_bet(home_bet_id=home_bet_id).exists()
     if not home_bet_exists:
         raise ValidationError(f"home bet {home_bet_id} does not exists")
     models = selectors.filter_model_home_bet_by_home_bet_id(
@@ -397,32 +388,35 @@ def get_active_bots(
     )
     bots_data = []
     for bot in bots:
-        strategies = bot.strategies.filter(
-            is_active=True
-        ).order_by("number_of_bets", "profit_percentage")
-        bots_data.append(dict(
-            id=bot.id,
-            name=bot.name,
-            bot_type=bot.bot_type,
-            risk_factor=bot.risk_factor,
-            min_multiplier_to_bet=bot.min_multiplier_to_bet,
-            min_multiplier_to_recover_losses=bot.min_multiplier_to_recover_losses,
-            min_probability_to_bet=bot.min_probability_to_bet,
-            max_recovery_percentage_on_max_bet=bot.max_recovery_percentage_on_max_bet,
-            min_category_percentage_to_bet=bot.min_category_percentage_to_bet,
-            min_average_model_prediction=bot.min_average_model_prediction,
-            stop_loss_percentage=bot.stop_loss_percentage,
-            take_profit_percentage=bot.take_profit_percentage,
-            strategies=[
-                dict(
-                    number_of_bets=strategy.number_of_bets,
-                    profit_percentage=strategy.profit_percentage,
-                    min_amount_percentage_to_bet=strategy.min_amount_percentage_to_bet,
-                    profit_percentage_to_bet=strategy.profit_percentage_to_bet,
-                    others=strategy.others,
-                ) for strategy in strategies
-            ]
-        ))
+        strategies = bot.strategies.filter(is_active=True).order_by(
+            "number_of_bets", "profit_percentage"
+        )
+        bots_data.append(
+            dict(
+                id=bot.id,
+                name=bot.name,
+                bot_type=bot.bot_type,
+                risk_factor=bot.risk_factor,
+                min_multiplier_to_bet=bot.min_multiplier_to_bet,
+                min_multiplier_to_recover_losses=bot.min_multiplier_to_recover_losses,
+                min_probability_to_bet=bot.min_probability_to_bet,
+                max_recovery_percentage_on_max_bet=bot.max_recovery_percentage_on_max_bet,
+                min_category_percentage_to_bet=bot.min_category_percentage_to_bet,
+                min_average_model_prediction=bot.min_average_model_prediction,
+                stop_loss_percentage=bot.stop_loss_percentage,
+                take_profit_percentage=bot.take_profit_percentage,
+                strategies=[
+                    dict(
+                        number_of_bets=strategy.number_of_bets,
+                        profit_percentage=strategy.profit_percentage,
+                        min_amount_percentage_to_bet=strategy.min_amount_percentage_to_bet,
+                        profit_percentage_to_bet=strategy.profit_percentage_to_bet,
+                        others=strategy.others,
+                    )
+                    for strategy in strategies
+                ],
+            )
+        )
     return bots_data
 
 
@@ -448,13 +442,12 @@ def evaluate_model(
         )
     else:
         multipliers = core_selectors.get_last_multipliers(
-            home_bet_id=model_home_bet.home_bet_id,
-            count=count_multipliers
+            home_bet_id=model_home_bet.home_bet_id, count=count_multipliers
         )
     average_result = prediction_services.evaluate_model_home_bet(
         model_home_bet=model_home_bet,
         multipliers=multipliers,
-        probability_to_eval=probability_to_eval
+        probability_to_eval=probability_to_eval,
     )
     category_results = []
     for key, value in average_result.categories_data.items():
@@ -469,9 +462,9 @@ def evaluate_model(
                 percentage_bets=value.percentage_bets,
             )
         )
-    category_results = sorted(category_results, key=itemgetter('category'))
+    category_results = sorted(category_results, key=itemgetter("category"))
     data = dict(
         average_predictions=average_result.average_predictions,
-        category_results=category_results
+        category_results=category_results,
     )
     return data

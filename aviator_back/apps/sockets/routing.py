@@ -1,7 +1,7 @@
 # Django
 from django.urls import path
 
-# Internal
+# Libraries
 from apps.sockets.consumers import BotConsumer
 
 websocket_urlpatterns = [

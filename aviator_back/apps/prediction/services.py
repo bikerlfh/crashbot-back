@@ -4,8 +4,6 @@ from typing import Optional, Tuple
 
 # Libraries
 import numpy as np
-
-# Internal
 from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.django_projects.predictions.models import ModelHomeBet
@@ -54,9 +52,9 @@ def predict(
 
 def evaluate_model_home_bet(
     *,
-    model_home_bet:
-    ModelHomeBet, multipliers: list[Decimal],
-    probability_to_eval: Optional[float] = None
+    model_home_bet: ModelHomeBet,
+    multipliers: list[Decimal],
+    probability_to_eval: Optional[float] = None,
 ) -> AverageInfo:
     """
     Evaluates a model home bet
@@ -67,13 +65,14 @@ def evaluate_model_home_bet(
     """
     model = CoreModel(model_home_bet=model_home_bet)
     average_info = model.evaluate(
-        multipliers=multipliers,
-        probability_to_eval=probability_to_eval
+        multipliers=multipliers, probability_to_eval=probability_to_eval
     )
     return average_info
 
 
-def extract_multipliers_to_csv(*, home_bet_id: int, convert_to_data: Optional[bool] = False) -> str:
+def extract_multipliers_to_csv(
+    *, home_bet_id: int, convert_to_data: Optional[bool] = False
+) -> str:
     data = core_selectors.get_last_multipliers(home_bet_id=home_bet_id)
     if convert_to_data:
         data = utils.transform_multipliers_to_data(data)

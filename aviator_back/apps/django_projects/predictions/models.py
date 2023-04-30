@@ -1,9 +1,9 @@
 # Django
 from django.db import models
 
-# Internal
+# Libraries
 from apps.django_projects.core.models import HomeBet
-from apps.django_projects.predictions.constants import ModelStatus, BotType
+from apps.django_projects.predictions.constants import BotType, ModelStatus
 from apps.prediction.constants import Category, ModelType
 from apps.utils.django.models import BaseModel
 from apps.utils.tools import enum_to_choices
@@ -14,9 +14,7 @@ class ModelHomeBet(BaseModel):
         HomeBet, on_delete=models.PROTECT, related_name="models"
     )
     name = models.CharField(max_length=50, unique=True)
-    model_type = models.CharField(
-        max_length=25, choices=enum_to_choices(ModelType)
-    )
+    model_type = models.CharField(max_length=25, choices=enum_to_choices(ModelType))
     status = models.CharField(max_length=10, default=ModelStatus.ACTIVE.value)
     seq_len = models.SmallIntegerField(default=10)
     average_predictions = models.FloatField(default=0)
@@ -35,9 +33,7 @@ class ModelCategoryResult(BaseModel):
     model_home_bet = models.ForeignKey(
         ModelHomeBet, on_delete=models.PROTECT, related_name="category_results"
     )
-    category = models.SmallIntegerField(
-        choices=enum_to_choices(Category)
-    )  # 1, 2, 3
+    category = models.SmallIntegerField(choices=enum_to_choices(Category))  # 1, 2, 3
     correct_predictions = models.IntegerField(default=0)
     incorrect_predictions = models.IntegerField(default=0)
     percentage_predictions = models.FloatField()
@@ -63,36 +59,29 @@ class Bot(BaseModel):
     is_active = models.BooleanField(default=True)
     risk_factor = models.FloatField(default=0.1)
     min_multiplier_to_bet = models.FloatField(
-        default=1.5,
-        help_text="Minimum multiplier to bet"
+        default=1.5, help_text="Minimum multiplier to bet"
     )
     min_multiplier_to_recover_losses = models.FloatField(
-        default=2.0,
-        help_text="Minimum multiplier to recover losses"
+        default=2.0, help_text="Minimum multiplier to recover losses"
     )
     min_probability_to_bet = models.FloatField(
-        default=0.65,
-        help_text="Minimum probability to bet"
+        default=0.65, help_text="Minimum probability to bet"
     )
     min_category_percentage_to_bet = models.FloatField(
-        default=0,
-        help_text="Minimum percentage of correct predictions by category"
+        default=0, help_text="Minimum percentage of correct predictions by category"
     )
     max_recovery_percentage_on_max_bet = models.FloatField(
         default=0.5,
         help_text="Maximum recovery percentage on maximum bet of home bet",
     )
     min_average_model_prediction = models.FloatField(
-        default=0,
-        help_text="Minimum average prediction model in live to bet"
+        default=0, help_text="Minimum average prediction model in live to bet"
     )
     stop_loss_percentage = models.FloatField(
-        default=0,
-        help_text="Stop loss percentage"
+        default=0, help_text="Stop loss percentage"
     )
     take_profit_percentage = models.FloatField(
-        default=0,
-        help_text="Take profit percentage"
+        default=0, help_text="Take profit percentage"
     )
 
     class Meta:
@@ -103,13 +92,9 @@ class Bot(BaseModel):
 
 
 class BotStrategy(BaseModel):
-    bot = models.ForeignKey(
-        Bot, on_delete=models.PROTECT, related_name="strategies"
-    )
+    bot = models.ForeignKey(Bot, on_delete=models.PROTECT, related_name="strategies")
     number_of_bets = models.IntegerField(
-        default=0,
-        help_text="Number of bets (maximum "
-                  "bet allowed by home bet)"
+        default=0, help_text="Number of bets (maximum " "bet allowed by home bet)"
     )
     profit_percentage = models.FloatField(default=0)
     min_amount_percentage_to_bet = models.FloatField(default=0)

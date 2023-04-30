@@ -1,10 +1,13 @@
-import numpy as np
+# Standard Library
 from typing import Optional
+
+# Libraries
+import numpy as np
 from apps.django_projects.core import selectors as core_selectors
-from apps.prediction.models.main import CoreModel
 from apps.django_projects.predictions import selectors as prediction_selectors
 from apps.django_projects.predictions.constants import ModelStatus
 from apps.prediction import utils as prediction_utils
+from apps.prediction.models.main import CoreModel
 
 
 def simulate_game(
@@ -20,8 +23,7 @@ def simulate_game(
         print("Home bet not found")
         return
     multipliers = core_selectors.get_last_multipliers(
-        home_bet_id=home_bet_id,
-        count=max_count_multipliers
+        home_bet_id=home_bet_id, count=max_count_multipliers
     )
     if not multipliers:
         print("Multipliers not found")
@@ -45,7 +47,7 @@ def simulate_game(
         model_ = CoreModel(model_home_bet=model)
         data = prediction_utils.transform_multipliers_to_data(multipliers=multipliers)
         X, y = model_.model._split_data_to_train(data)  # NOQA
-        y_multiplier = np.array(multipliers[model.seq_len:])
+        y_multiplier = np.array(multipliers[model.seq_len :])
         bets_won = 0
         bets_lost = 0
         total_profit = 0
@@ -111,13 +113,13 @@ def simulate_game(
 
             if amount_remaining <= 0:
                 break
-        data_result.append(dict(
-            model_id=model.id,
-            amount_remaining=amount_remaining,
-            bets_won=bets_won,
-            bets_lost=bets_lost,
-            max_loss=max_loss,
-        ))
+        data_result.append(
+            dict(
+                model_id=model.id,
+                amount_remaining=amount_remaining,
+                bets_won=bets_won,
+                bets_lost=bets_lost,
+                max_loss=max_loss,
+            )
+        )
     return data_result
-
-

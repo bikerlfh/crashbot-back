@@ -1,15 +1,15 @@
 # Django
 from rest_framework import serializers, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-# Internal
+
+# Libraries
 from apps.django_projects.bets import services
+from apps.django_projects.bets.constants import BetType
+from apps.utils import tools
 from apps.utils.django.mixin import APIErrorsMixin
 from apps.utils.rest.serializers import inline_serializer
-
-from apps.utils import tools
-from apps.django_projects.bets.constants import BetType
 
 
 class BetView(APIErrorsMixin, APIView):
@@ -31,9 +31,7 @@ class BetView(APIErrorsMixin, APIView):
 
     class InputPOSTSerializer(serializers.Serializer):
         home_bet_id = serializers.IntegerField()
-        balance_amount = serializers.DecimalField(
-            max_digits=18, decimal_places=2
-        )
+        balance_amount = serializers.DecimalField(max_digits=18, decimal_places=2)
         bets = inline_serializer(
             fields=dict(
                 external_id=serializers.CharField(max_length=50),
@@ -57,8 +55,7 @@ class BetView(APIErrorsMixin, APIView):
         in_serializer = self.InputGETSerializer(data=request.query_params)
         in_serializer.is_valid(raise_exception=True)
         bet_data = services.get_my_bets(
-            **in_serializer.validated_data,
-            user_id=request.user.id
+            **in_serializer.validated_data, user_id=request.user.id
         )
         output_serializer = self.OutputGETSerializer(data=bet_data, many=True)
         output_serializer.is_valid(raise_exception=True)
@@ -70,10 +67,7 @@ class BetView(APIErrorsMixin, APIView):
         serializer = self.InputPOSTSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         bets = services.create_bets(
-            **serializer.validated_data,
-            customer_id=request.user.customer.id
+            **serializer.validated_data, customer_id=request.user.customer.id
         )
         bet_ids = [bet.id for bet in bets]
-        return Response(
-            data={"bet_ids": bet_ids}, status=status.HTTP_201_CREATED
-        )
+        return Response(data={"bet_ids": bet_ids}, status=status.HTTP_201_CREATED)

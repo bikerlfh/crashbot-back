@@ -4,18 +4,16 @@ from typing import Optional
 # Django
 from django.db.models import F, QuerySet
 
-# Internal
+# Libraries
 from apps.django_projects.predictions.constants import (
+    NUMBER_OF_MODELS_TO_PREDICT,
     ModelStatus,
-    NUMBER_OF_MODELS_TO_PREDICT
 )
-from apps.django_projects.predictions.models import ModelHomeBet, Bot
+from apps.django_projects.predictions.models import Bot, ModelHomeBet
 
 
 def filter_model_home_bet(**kwargs) -> QuerySet[ModelHomeBet]:
-    return ModelHomeBet.objects.filter(**kwargs).prefetch_related(
-        "category_results"
-    )
+    return ModelHomeBet.objects.filter(**kwargs).prefetch_related("category_results")
 
 
 def filter_models_to_generate_category_result() -> QuerySet[ModelHomeBet]:
@@ -29,9 +27,7 @@ def filter_models_to_generate_category_result() -> QuerySet[ModelHomeBet]:
     )
 
 
-def filter_model_home_bet_by_id(
-    *, model_home_bet_id: int
-) -> QuerySet[ModelHomeBet]:
+def filter_model_home_bet_by_id(*, model_home_bet_id: int) -> QuerySet[ModelHomeBet]:
     return filter_model_home_bet(id=model_home_bet_id)
 
 
@@ -51,10 +47,7 @@ def get_bets_models_by_average_predictions(
     model_home_bet_id: Optional[int] = None
 ) -> QuerySet[ModelHomeBet]:
     number_of_models = number_of_models or NUMBER_OF_MODELS_TO_PREDICT
-    filter_ = dict(
-        home_bet_id=home_bet_id,
-        status=ModelStatus.ACTIVE.value
-    )
+    filter_ = dict(home_bet_id=home_bet_id, status=ModelStatus.ACTIVE.value)
     if model_home_bet_id is not None:
         filter_.update(id=model_home_bet_id)
         filter_.pop("status")
@@ -69,7 +62,8 @@ def get_bets_models_by_average_predictions(
 def filter_bot(
     bot_id: Optional[int] = None,
     bot_type: Optional[str] = None,
-    is_active: Optional[bool] = None, **kwargs
+    is_active: Optional[bool] = None,
+    **kwargs
 ) -> QuerySet[Bot]:
     kwargs = dict(**kwargs)
     if bot_id is not None:

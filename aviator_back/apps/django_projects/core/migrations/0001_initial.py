@@ -5,55 +5,102 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Currency',
+            name="Currency",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='updated at')),
-                ('code', models.CharField(max_length=3, unique=True)),
-                ('description', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="created at"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="updated at"),
+                ),
+                ("code", models.CharField(max_length=3, unique=True)),
+                ("description", models.CharField(max_length=50)),
             ],
             options={
-                'db_table': 'currency',
+                "db_table": "currency",
             },
         ),
         migrations.CreateModel(
-            name='HomeBet',
+            name="HomeBet",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='updated at')),
-                ('name', models.CharField(max_length=50, unique=True)),
-                ('url', models.URLField()),
-                ('min_bet', models.DecimalField(decimal_places=2, max_digits=18)),
-                ('max_bet', models.DecimalField(decimal_places=2, max_digits=18)),
-                ('currencies', models.ManyToManyField(to='core.currency')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="created at"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="updated at"),
+                ),
+                ("name", models.CharField(max_length=50, unique=True)),
+                ("url", models.URLField()),
+                ("min_bet", models.DecimalField(decimal_places=2, max_digits=18)),
+                ("max_bet", models.DecimalField(decimal_places=2, max_digits=18)),
+                ("currencies", models.ManyToManyField(to="core.currency")),
             ],
             options={
-                'db_table': 'homebet',
+                "db_table": "homebet",
             },
         ),
         migrations.CreateModel(
-            name='HomeBetMultiplier',
+            name="HomeBetMultiplier",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='updated at')),
-                ('number_of_players', models.SmallIntegerField(null=True)),
-                ('multiplier', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('multiplier_dt', models.DateTimeField()),
-                ('home_bet', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='multipliers', to='core.homebet')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="created at"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="updated at"),
+                ),
+                ("number_of_players", models.SmallIntegerField(null=True)),
+                ("multiplier", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("multiplier_dt", models.DateTimeField()),
+                (
+                    "home_bet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="multipliers",
+                        to="core.homebet",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'homebet_multiplier',
+                "db_table": "homebet_multiplier",
             },
         ),
     ]

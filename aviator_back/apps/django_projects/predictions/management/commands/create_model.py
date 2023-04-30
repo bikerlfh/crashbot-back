@@ -4,7 +4,7 @@ import logging
 # Django
 from django.core.management import BaseCommand
 
-# Internal
+# Libraries
 from apps.django_projects.predictions import services
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.prediction.constants import ModelType
@@ -23,9 +23,7 @@ class Command(BaseCommand):
             type=str,
             help="model type (sequential, sequential_lstm, transformer)",
         )
-        parser.add_argument(
-            "seq_len", type=int, nargs="?", help="size of sequential"
-        )
+        parser.add_argument("seq_len", type=int, nargs="?", help="size of sequential")
 
     def handle(self, *args, **options):
         home_bet_id = options["home_bet_id"]

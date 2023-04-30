@@ -4,7 +4,7 @@ import logging
 # Django
 from django.core.management import BaseCommand
 
-# Internal
+# Libraries
 from apps.prediction import services
 
 logger = logging.getLogger(__name__)
@@ -23,6 +23,4 @@ class Command(BaseCommand):
             home_bet_id=home_bet_id,
             convert_to_data=False,
         )
-        self.stdout.write(
-            self.style.SUCCESS(f"data exported to {file_path}")
-        )
+        self.stdout.write(self.style.SUCCESS(f"data exported to {file_path}"))

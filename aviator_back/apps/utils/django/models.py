@@ -8,9 +8,7 @@ from django.db import models
 class BaseModel(models.Model):
     CASE_STYLE = "lower"
 
-    created_at = models.DateTimeField(
-        auto_now_add=True, verbose_name="created at"
-    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="created at")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="updated at")
 
     def clean(self):

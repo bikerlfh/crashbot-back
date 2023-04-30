@@ -2,7 +2,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-# Internal
+# Libraries
 from apps.django_projects.core.models import HomeBet
 from apps.utils.cryptography_tool import FernetCrypto
 from apps.utils.django.models import BaseModel

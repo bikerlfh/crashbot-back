@@ -3,10 +3,8 @@ from typing import Optional
 
 # Libraries
 import channels.layers
-from asgiref.sync import async_to_sync
-
-# Internal
 from apps.sockets.constants import BOT_CHANNEL_NAME
+from asgiref.sync import async_to_sync
 
 
 def send_message_to_bots(message: dict) -> None:
