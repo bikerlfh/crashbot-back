@@ -17,7 +17,9 @@ def predict(*, data: list[int], length_window: Optional[int] = 10) -> int:
 
     X = _create_features(data, length_window)  # NOQA
     y = data[length_window:]
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)  # NOQA
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2
+    )  # NOQA
     modelo = DecisionTreeRegressor()
     modelo.fit(X_train, y_train)
     last_numbers = data[-length_window:]

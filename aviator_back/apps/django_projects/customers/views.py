@@ -35,7 +35,9 @@ class CustomerBalanceView(APIErrorsMixin, APIView):
         )
         out_serializer = self.OutputGETSerializer(data=data)
         out_serializer.is_valid(raise_exception=True)
-        return Response(data=out_serializer.validated_data, status=status.HTTP_200_OK)
+        return Response(
+            data=out_serializer.validated_data, status=status.HTTP_200_OK
+        )
 
     def patch(self, request):
         serializer = self.InputPATCHSerializer(data=request.data)

@@ -41,7 +41,9 @@ class ErrorFormatter:
             )
         elif hasattr(self.exception, "get_error_details"):
             kwargs = self.exception.get_error_details()
-            formatted_errors = self._get_response_json_from_error_message(**kwargs)
+            formatted_errors = self._get_response_json_from_error_message(
+                **kwargs
+            )
         else:
             formatted_errors = self._get_response_json_from_error_message(
                 message=str(self.exception)
@@ -54,9 +56,13 @@ class ErrorFormatter:
             serializer_errors = {}
 
         if type(serializer_errors) is list:
-            serializer_errors = {api_settings.NON_FIELD_ERRORS_KEY: serializer_errors}
+            serializer_errors = {
+                api_settings.NON_FIELD_ERRORS_KEY: serializer_errors
+            }
 
-        list_of_errors = self._get_list_of_errors(errors_dict=serializer_errors)
+        list_of_errors = self._get_list_of_errors(
+            errors_dict=serializer_errors
+        )
 
         response_data = {self.ERRORS: list_of_errors}
 
@@ -65,7 +71,9 @@ class ErrorFormatter:
     def _get_response_json_from_error_message(
         self, *, message="", field=None, code="error"
     ):
-        response_data = {self.ERRORS: [{self.MESSAGE: message, self.CODE: code}]}
+        response_data = {
+            self.ERRORS: [{self.MESSAGE: message, self.CODE: code}]
+        }
 
         if field:
             response_data[self.ERRORS][self.FIELD] = field
@@ -121,7 +129,9 @@ class ErrorFormatter:
 
                     current_level_error_list.append(field_error)
             else:
-                path = field_path if key_is_non_field_errors else new_field_path
+                path = (
+                    field_path if key_is_non_field_errors else new_field_path
+                )
 
                 current_level_error_list = self._get_list_of_errors(
                     field_path=path, errors_dict=value

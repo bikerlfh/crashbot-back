@@ -45,11 +45,15 @@ class GRUModel(AbstractBaseModel):
         model.add(GRU(32, input_shape=(self.seq_len, 1)))
         model.add(Dense(self.num_classes, activation="softmax"))
         model.compile(
-            loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"]
+            loss="categorical_crossentropy",
+            optimizer="adam",
+            metrics=["accuracy"],
         )
         return model
 
-    def _split_data_to_train_gru(self, data: list[int]) -> Tuple[np.array, np.array]:
+    def _split_data_to_train_gru(
+        self, data: list[int]
+    ) -> Tuple[np.array, np.array]:
         """
         get the list of sequences and the list of next values
         @return: Tuple[train_data, test_data]
@@ -78,13 +82,23 @@ class GRUModel(AbstractBaseModel):
             x, y, test_size=test_size, random_state=42
         )
         model = self._compile_model()
-        model.fit(x_train, y_train, epochs=self._epochs, batch_size=32, verbose=2)
+        model.fit(
+            x_train, y_train, epochs=self._epochs, batch_size=32, verbose=2
+        )
         loss, accuracy = model.evaluate(x_test, y_test, verbose=2)
-        name, model_path = self._generate_model_path_to_save(home_bet_id=home_bet_id)
+        name, model_path = self._generate_model_path_to_save(
+            home_bet_id=home_bet_id
+        )
         model.save(model_path)
-        print("-------------------------------------------------------------------")
-        print(f"--------MODEL: {name} LOSS: {loss} ACCURRACY: {accuracy}----------")
-        print("-------------------------------------------------------------------")
+        print(
+            "-------------------------------------------------------------------"
+        )
+        print(
+            f"--------MODEL: {name} LOSS: {loss} ACCURRACY: {accuracy}----------"
+        )
+        print(
+            "-------------------------------------------------------------------"
+        )
         # generate others metrics
         y_pred_prob = model.predict(x_test)  # NOQA
         y_pred = np.argmax(y_pred_prob, axis=1)  # NOQA

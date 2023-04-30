@@ -23,7 +23,9 @@ class Command(BaseCommand):
             type=str,
             help="model type (sequential, sequential_lstm, transformer)",
         )
-        parser.add_argument("seq_len", type=int, nargs="?", help="size of sequential")
+        parser.add_argument(
+            "seq_len", type=int, nargs="?", help="size of sequential"
+        )
 
     def handle(self, *args, **options):
         home_bet_id = options["home_bet_id"]

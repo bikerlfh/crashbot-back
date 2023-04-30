@@ -97,7 +97,9 @@ def generate_category_result_of_model(
     print(f"generation category result for model {model_home_bet_id}")
     print("---------------------------------------------------------")
     now = datetime.now()
-    count_multipliers = count_multipliers or NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL
+    count_multipliers = (
+        count_multipliers or NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL
+    )
     multipliers = core_selectors.get_last_multipliers(
         home_bet_id=model_home_bet.home_bet_id, count=count_multipliers
     )
@@ -110,7 +112,9 @@ def generate_category_result_of_model(
     model_home_bet.average_bets = average_result.average_bets
     model_home_bet.save()
     for key, value in average_result.categories_data.items():
-        category_ = model_home_bet.category_results.filter(category=key).first()
+        category_ = model_home_bet.category_results.filter(
+            category=key
+        ).first()
         if category_:
             category_.correct_predictions = value.correct_predictions
             category_.incorrect_predictions = value.incorrect_predictions
@@ -202,7 +206,9 @@ def generate_model(
     """
     home_bet = core_selectors.filter_home_bet(home_bet_id=home_bet_id).first()
     if not home_bet:
-        logger.error(f"generate_model :: " f"home bet {home_bet_id} does not exists")
+        logger.error(
+            f"generate_model :: " f"home bet {home_bet_id} does not exists"
+        )
         return
 
     # multipliers = core_selectors.get_today_multipliers(home_bet_id=home_bet_id)
@@ -304,7 +310,9 @@ def generate_category_results_of_models():
             models_to_inactive.append(model)
     if not models_to_inactive:
         return
-    home_bet_ids_to_create = {model.home_bet_id for model in models_to_inactive}
+    home_bet_ids_to_create = {
+        model.home_bet_id for model in models_to_inactive
+    }
     model_ids_to_inactive = {model.id for model in models_to_inactive}
     # get all models from homes bet to create
     models_ = selectors.filter_model_home_bet(
@@ -337,7 +345,9 @@ def generate_category_results_of_models():
 def get_models_home_bet(
     *, home_bet_id: int, status: Optional[str] = ModelStatus.ACTIVE.value
 ) -> list[dict]:
-    home_bet_exists = core_selectors.filter_home_bet(home_bet_id=home_bet_id).exists()
+    home_bet_exists = core_selectors.filter_home_bet(
+        home_bet_id=home_bet_id
+    ).exists()
     if not home_bet_exists:
         raise ValidationError(f"home bet {home_bet_id} does not exists")
     models = selectors.filter_model_home_bet_by_home_bet_id(
@@ -435,7 +445,9 @@ def evaluate_model(
     print("---------------------------------------------------------")
     print(f"******** evaluating model {model_home_bet_id} ************")
     print("---------------------------------------------------------")
-    count_multipliers = count_multipliers or NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL
+    count_multipliers = (
+        count_multipliers or NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL
+    )
     if today_multipliers:
         multipliers = core_selectors.get_today_multipliers(
             home_bet_id=model_home_bet.home_bet_id,

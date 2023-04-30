@@ -35,9 +35,13 @@ class PredictionView(
         predictions = inline_serializer(
             fields=dict(
                 id=serializers.IntegerField(),
-                prediction=serializers.DecimalField(max_digits=5, decimal_places=2),
+                prediction=serializers.DecimalField(
+                    max_digits=5, decimal_places=2
+                ),
                 prediction_round=serializers.IntegerField(),
-                probability=serializers.DecimalField(max_digits=5, decimal_places=2),
+                probability=serializers.DecimalField(
+                    max_digits=5, decimal_places=2
+                ),
                 average_predictions=serializers.DecimalField(
                     max_digits=5, decimal_places=2
                 ),
@@ -75,9 +79,13 @@ class ModelHomeBetView(
         model_type = serializers.CharField()
         status = serializers.CharField()
         seq_len = serializers.IntegerField()
-        average_predictions = serializers.DecimalField(max_digits=5, decimal_places=2)
+        average_predictions = serializers.DecimalField(
+            max_digits=5, decimal_places=2
+        )
         average_bets = serializers.DecimalField(max_digits=5, decimal_places=2)
-        result_date = serializers.DateTimeField(required=False, allow_null=True)
+        result_date = serializers.DateTimeField(
+            required=False, allow_null=True
+        )
         others = serializers.JSONField(required=False, allow_null=True)
         category_results = inline_serializer(
             fields=dict(
@@ -162,12 +170,20 @@ class EvaluateModelView(
 
     class InputSerializer(serializers.Serializer):
         model_home_bet_id = serializers.IntegerField()
-        count_multipliers = serializers.IntegerField(required=False, allow_null=True)
-        probability_to_eval = serializers.FloatField(required=False, allow_null=True)
-        today_multipliers = serializers.BooleanField(required=False, allow_null=True)
+        count_multipliers = serializers.IntegerField(
+            required=False, allow_null=True
+        )
+        probability_to_eval = serializers.FloatField(
+            required=False, allow_null=True
+        )
+        today_multipliers = serializers.BooleanField(
+            required=False, allow_null=True
+        )
 
     class OutputSerializer(serializers.Serializer):
-        average_predictions = serializers.DecimalField(max_digits=5, decimal_places=2)
+        average_predictions = serializers.DecimalField(
+            max_digits=5, decimal_places=2
+        )
         category_results = inline_serializer(
             fields=dict(
                 category=serializers.IntegerField(),

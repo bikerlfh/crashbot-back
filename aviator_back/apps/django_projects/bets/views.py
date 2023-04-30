@@ -31,7 +31,9 @@ class BetView(APIErrorsMixin, APIView):
 
     class InputPOSTSerializer(serializers.Serializer):
         home_bet_id = serializers.IntegerField()
-        balance_amount = serializers.DecimalField(max_digits=18, decimal_places=2)
+        balance_amount = serializers.DecimalField(
+            max_digits=18, decimal_places=2
+        )
         bets = inline_serializer(
             fields=dict(
                 external_id=serializers.CharField(max_length=50),
@@ -70,4 +72,6 @@ class BetView(APIErrorsMixin, APIView):
             **serializer.validated_data, customer_id=request.user.customer.id
         )
         bet_ids = [bet.id for bet in bets]
-        return Response(data={"bet_ids": bet_ids}, status=status.HTTP_201_CREATED)
+        return Response(
+            data={"bet_ids": bet_ids}, status=status.HTTP_201_CREATED
+        )
