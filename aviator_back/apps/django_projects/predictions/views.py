@@ -138,8 +138,8 @@ class BotView(
         min_multiplier_to_recover_losses = serializers.FloatField()
         min_probability_to_bet = serializers.FloatField()
         min_category_percentage_to_bet = serializers.FloatField()
-        min_category_percentage_value_in_live_to_bet = serializers.FloatField()
-        min_average_prediction_model_in_live_to_bet = serializers.FloatField()
+        max_recovery_percentage_on_max_bet = serializers.FloatField()
+        min_average_model_prediction = serializers.FloatField()
         stop_loss_percentage = serializers.FloatField()
         take_profit_percentage = serializers.FloatField()
         strategies = inline_serializer(

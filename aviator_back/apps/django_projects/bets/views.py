@@ -8,6 +8,9 @@ from apps.django_projects.bets import services
 from apps.utils.django.mixin import APIErrorsMixin
 from apps.utils.rest.serializers import inline_serializer
 
+from apps.utils import tools
+from apps.django_projects.bets.constants import BetType
+
 
 class BetView(APIErrorsMixin, APIView):
     permission_classes = [IsAuthenticated]
@@ -37,7 +40,12 @@ class BetView(APIErrorsMixin, APIView):
                 prediction=serializers.FloatField(),
                 amount=serializers.FloatField(),
                 multiplier=serializers.FloatField(),
-                multiplier_result=serializers.FloatField()
+                multiplier_result=serializers.FloatField(),
+                bet_type=serializers.ChoiceField(
+                    choices=tools.enum_to_choices(BetType),
+                    allow_null=True,
+                    allow_blank=True,
+                ),
             ),
             many=True,
         )

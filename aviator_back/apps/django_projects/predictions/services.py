@@ -408,9 +408,9 @@ def get_active_bots(
             min_multiplier_to_bet=bot.min_multiplier_to_bet,
             min_multiplier_to_recover_losses=bot.min_multiplier_to_recover_losses,
             min_probability_to_bet=bot.min_probability_to_bet,
+            max_recovery_percentage_on_max_bet=bot.max_recovery_percentage_on_max_bet,
             min_category_percentage_to_bet=bot.min_category_percentage_to_bet,
-            min_category_percentage_value_in_live_to_bet=bot.min_category_percentage_value_in_live_to_bet,
-            min_average_prediction_model_in_live_to_bet=bot.min_average_prediction_model_in_live_to_bet,
+            min_average_model_prediction=bot.min_average_model_prediction,
             stop_loss_percentage=bot.stop_loss_percentage,
             take_profit_percentage=bot.take_profit_percentage,
             strategies=[

@@ -2,7 +2,7 @@
 from django.db import models
 
 # Internal
-from apps.django_projects.bets.constants import BetStatus
+from apps.django_projects.bets.constants import BetStatus, BetType
 from apps.django_projects.customers.models import CustomerBalance
 from apps.utils.django.models import BaseModel
 
@@ -20,6 +20,7 @@ class Bet(BaseModel):
     multiplier_result = models.FloatField(null=True, blank=True)
     profit_amount = models.FloatField(default=0.0)
     status = models.CharField(max_length=10, default=BetStatus.PENDING.value)
+    bet_type = models.CharField(max_length=10, default=BetType.AUTOMATIC.value)
 
     class Meta:
         db_table = "bet"

@@ -18,7 +18,7 @@ class CustomerBalanceAdmin(admin.ModelAdmin):
             model = CustomerBalance
             fields = "__all__"
 
-    list_display = ["customer", "username", "home_bet", "amount"]
+    list_display = ["customer", "amount"]
     form = BalanceForm
 
 

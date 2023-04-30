@@ -78,11 +78,11 @@ class Bot(BaseModel):
         default=0,
         help_text="Minimum percentage of correct predictions by category"
     )
-    min_category_percentage_value_in_live_to_bet = models.FloatField(
-        default=0,
-        help_text="Minimum category percentage value in live to bet"
+    max_recovery_percentage_on_max_bet = models.FloatField(
+        default=0.5,
+        help_text="Maximum recovery percentage on maximum bet of home bet",
     )
-    min_average_prediction_model_in_live_to_bet = models.FloatField(
+    min_average_model_prediction = models.FloatField(
         default=0,
         help_text="Minimum average prediction model in live to bet"
     )

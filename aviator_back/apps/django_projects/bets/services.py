@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 
 # Internal
 from apps.django_projects.bets import selectors
-from apps.django_projects.bets.constants import BetStatus
+from apps.django_projects.bets.constants import BetStatus, BetType
 from apps.django_projects.bets.models import Bet
 from apps.django_projects.customers import selectors as customer_selectors
 
@@ -13,7 +13,7 @@ def create_bets(
     *,
     customer_id: int,
     home_bet_id: int,
-    balance_amount: int,
+    balance_amount: float,
     bets: list[dict[str, any]],
 ) -> list[Bet]:
     """
@@ -27,6 +27,7 @@ def create_bets(
         amount: float,
         multiplier: float,
         multiplier_result: float,
+        bet_type: str,
     )
     @return: Bets
     """
@@ -42,6 +43,7 @@ def create_bets(
         multiplier = bet["multiplier"]
         multiplier_result = bet["multiplier_result"]
         prediction = bet["prediction"]
+        bet_type = bet.get("bet_type", BetType.MANUAL.value)
         bet_exists = selectors.filter_bet(
             external_id=external_id,
             balance__customer_id=customer_id,
@@ -61,6 +63,7 @@ def create_bets(
             multiplier=multiplier,
             multiplier_result=multiplier_result,
             profit_amount=profit_amount,
+            bet_type=bet_type,
             status=status,
         ))
     bets = Bet.objects.bulk_create(bet_list)

@@ -28,8 +28,6 @@ class CustomerBalance(BaseModel):
     home_bet = models.ForeignKey(
         HomeBet, on_delete=models.DO_NOTHING, related_name="balances"
     )
-    username = models.CharField(max_length=50, null=True)
-    password = models.CharField(max_length=100, null=True)
     amount = models.DecimalField(default=0, max_digits=18, decimal_places=2)
 
     class Meta:

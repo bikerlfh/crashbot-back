@@ -7,8 +7,8 @@
             "updated_at": "2022-06-08 14:43",
             "name": "demo",
             "url": "https://www.spribe.co/games/aviator",
-            "min_bet": 5000,
-            "max_bet": 50000,
+            "min_bet": 1,
+            "max_bet": 100,
             "currencies": [1]
         }
     },
@@ -20,7 +20,7 @@
             "updated_at": "2022-06-08 14:43",
             "name": "BetPlay",
             "url": "https://www.betplay.com.co",
-            "min_bet": 500,
+            "min_bet": 100,
             "max_bet": 50000,
             "currencies": [1]
         }
@@ -33,7 +33,7 @@
             "updated_at": "2022-06-08 14:43",
             "name": "1win",
             "url": "https://1wslue.top/casino/",
-            "min_bet": 5000,
+            "min_bet": 500,
             "max_bet": 500000,
             "currencies": [1]
         }
@@ -46,7 +46,7 @@
             "updated_at": "2022-06-08 14:43",
             "name": "Rivalo",
             "url": "https://www.rivalo.com",
-            "min_bet": 5000,
+            "min_bet": 500,
             "max_bet": 500000,
             "currencies": [1]
         }
