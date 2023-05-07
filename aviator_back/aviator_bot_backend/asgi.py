@@ -14,10 +14,12 @@ import os
 from django.core.asgi import get_asgi_application
 
 # Libraries
-from apps.sockets import routing as sockets_rounting
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
+
+# Internal
+from apps.sockets import routing as sockets_rounting
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "aviator_bot_backend.settings")
 

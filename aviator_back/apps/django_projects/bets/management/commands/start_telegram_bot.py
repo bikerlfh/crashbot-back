@@ -4,7 +4,7 @@ import logging
 # Django
 from django.core.management import BaseCommand
 
-# Libraries
+# Internal
 from apps.django_projects.predictions import services
 from apps.prediction.constants import ModelType
 from apps.telegram_bot import services as telegram_services

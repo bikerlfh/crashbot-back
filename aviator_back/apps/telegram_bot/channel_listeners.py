@@ -6,7 +6,7 @@ bot will listen to read messages and send to de bots
 import logging
 from dataclasses import dataclass
 
-# Libraries
+# Internal
 from apps.sockets import services as sockets_services
 from apps.telegram_bot.constants import CHANNEL_LISTENERS_CONFIG
 

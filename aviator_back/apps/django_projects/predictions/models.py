@@ -1,7 +1,7 @@
 # Django
 from django.db import models
 
-# Libraries
+# Internal
 from apps.django_projects.core.models import HomeBet
 from apps.django_projects.predictions.constants import BotType, ModelStatus
 from apps.prediction.constants import Category, ModelType

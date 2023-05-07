@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.forms import CharField, ChoiceField, ModelForm
 
-# Libraries
+# Internal
 from apps.django_projects.predictions.constants import BotType
 from apps.django_projects.predictions.models import Bot, BotStrategy
 from apps.utils.tools import enum_to_choices

@@ -1,7 +1,7 @@
 # Django
 from django.db import models
 
-# Libraries
+# Internal
 from apps.utils.django.models import BaseModel
 
 
@@ -34,9 +34,11 @@ class HomeBetMultiplier(BaseModel):
     home_bet = models.ForeignKey(
         HomeBet, on_delete=models.DO_NOTHING, related_name="multipliers"
     )
-    number_of_players = models.SmallIntegerField(null=True)
     multiplier = models.DecimalField(max_digits=10, decimal_places=2)
     multiplier_dt = models.DateTimeField()
 
     class Meta:
         db_table = "homebet_multiplier"
+        indexes = [
+            models.Index(fields=["home_bet", "multiplier_dt"]),
+        ]

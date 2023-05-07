@@ -4,7 +4,7 @@ from typing import Any
 # Django
 from django.urls import path
 
-# Libraries
+# Internal
 from apps.django_projects.predictions import views
 
 urlpatterns: list[Any] = [
@@ -27,5 +27,10 @@ urlpatterns: list[Any] = [
         "bots/",
         views.BotView.as_view(),
         name="bots-view",
+    ),
+    path(
+        "positions/",
+        views.GetPositionValuesView.as_view(),
+        name="positions-view",
     ),
 ]

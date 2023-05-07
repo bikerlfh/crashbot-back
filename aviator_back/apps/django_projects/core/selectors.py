@@ -6,7 +6,7 @@ from typing import Optional
 # Django
 from django.db.models import Q, QuerySet
 
-# Libraries
+# Internal
 from apps.django_projects.core.models import HomeBet, HomeBetMultiplier
 
 

@@ -5,7 +5,7 @@ from decimal import Decimal
 # Django
 from rest_framework.exceptions import ValidationError
 
-# Libraries
+# Internal
 from apps.django_projects.core.models import HomeBet
 
 

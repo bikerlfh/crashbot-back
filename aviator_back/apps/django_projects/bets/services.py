@@ -4,7 +4,7 @@ from typing import Optional
 # Django
 from rest_framework.exceptions import ValidationError
 
-# Libraries
+# Internal
 from apps.django_projects.bets import selectors
 from apps.django_projects.bets.constants import BetStatus, BetType
 from apps.django_projects.bets.models import Bet

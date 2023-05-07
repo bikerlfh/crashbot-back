@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.forms import CharField, ModelForm, PasswordInput
 
-# Libraries
+# Internal
 from apps.django_projects.customers.models import Customer, CustomerBalance
 
 

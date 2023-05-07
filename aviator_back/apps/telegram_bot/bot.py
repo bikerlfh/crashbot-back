@@ -11,6 +11,10 @@ import logging
 from typing import Optional
 
 # Libraries
+from telethon.sync import TelegramClient, events
+from telethon.tl.types import PeerChannel, PeerUser
+
+# Internal
 from apps.telegram_bot.channel_listeners import ChannelListener
 from apps.telegram_bot.constants import (
     TELEGRAM_API_HASH,
@@ -18,8 +22,6 @@ from apps.telegram_bot.constants import (
     TELEGRAM_PHONE_NUMBER,
 )
 from apps.utils.patterns.singleton import Singleton
-from telethon.sync import TelegramClient, events
-from telethon.tl.types import PeerChannel, PeerUser
 
 logger = logging.getLogger(__name__)
 

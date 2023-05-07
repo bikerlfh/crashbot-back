@@ -2,9 +2,8 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-# Libraries
+# Internal
 from apps.django_projects.core.models import HomeBet
-from apps.utils.cryptography_tool import FernetCrypto
 from apps.utils.django.models import BaseModel
 
 
@@ -33,11 +32,3 @@ class CustomerBalance(BaseModel):
     class Meta:
         db_table = "customer_balance"
         unique_together = ("customer", "home_bet")
-
-    def save(self, *args, **kwargs):
-        if not FernetCrypto.verify_signature(str(self.password)):
-            self.password = FernetCrypto.encrypt(str(self.password))
-        super().save(*args, **kwargs)
-
-    def get_password(self):
-        return FernetCrypto.decrypt(self.password)

@@ -5,10 +5,6 @@ from typing import Optional, Tuple
 
 # Libraries
 import numpy as np
-from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
-from apps.prediction import utils
-from apps.prediction.constants import ModelType
-from apps.prediction.models.base import AbstractBaseModel, PredictionData
 from sklearn.metrics import (
     confusion_matrix,
     f1_score,
@@ -19,6 +15,12 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.layers import GRU, Dense
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.utils import to_categorical
+
+# Internal
+from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
+from apps.prediction import utils
+from apps.prediction.constants import ModelType
+from apps.prediction.models.base import AbstractBaseModel, PredictionData
 
 
 class GRUModel(AbstractBaseModel):

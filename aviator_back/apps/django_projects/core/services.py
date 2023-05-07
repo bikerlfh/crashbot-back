@@ -6,7 +6,7 @@ from typing import Any, Optional
 # Django
 from rest_framework.exceptions import ValidationError
 
-# Libraries
+# Internal
 from apps.django_projects.core import selectors
 from apps.django_projects.core.models import HomeBetMultiplier
 from apps.django_projects.core.strategies import multiplier_save

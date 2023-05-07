@@ -7,6 +7,8 @@ from typing import Optional, Tuple
 
 # Libraries
 import numpy as np
+
+# Internal
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.prediction import utils
 from apps.prediction.constants import (

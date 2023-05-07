@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-# Libraries
+# Internal
 from apps.django_projects.predictions import services
 from apps.django_projects.predictions.constants import BotType, ModelStatus
 from apps.utils.django.mixin import APIErrorsMixin
@@ -208,3 +208,19 @@ class EvaluateModelView(
         out_serializer = self.OutputSerializer(data=data)
         out_serializer.is_valid(raise_exception=True)
         return Response(data=out_serializer.validated_data)
+
+
+class GetPositionValuesView(
+    APIErrorsMixin,
+    APIView,
+):
+    permission_classes = [IsAuthenticated]
+
+    class InputSerializer(serializers.Serializer):
+        home_bet_id = serializers.IntegerField()
+
+    def get(self, request):
+        in_serializer = self.InputSerializer(data=request.GET)
+        in_serializer.is_valid(raise_exception=True)
+        data = services.get_position_values(**in_serializer.validated_data)
+        return Response(data=data)

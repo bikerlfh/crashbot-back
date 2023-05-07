@@ -1,7 +1,7 @@
 # Django
 from django.contrib import admin
 
-# Libraries
+# Internal
 from apps.django_projects.core.models import Currency, HomeBet
 
 

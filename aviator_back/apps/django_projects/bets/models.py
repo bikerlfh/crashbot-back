@@ -1,7 +1,7 @@
 # Django
 from django.db import models
 
-# Libraries
+# Internal
 from apps.django_projects.bets.constants import BetStatus, BetType
 from apps.django_projects.customers.models import CustomerBalance
 from apps.utils.django.models import BaseModel

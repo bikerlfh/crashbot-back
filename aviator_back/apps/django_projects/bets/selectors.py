@@ -4,7 +4,7 @@ from typing import Optional
 # Django
 from django.db.models import F, QuerySet
 
-# Libraries
+# Internal
 from apps.django_projects.bets.models import Bet
 
 

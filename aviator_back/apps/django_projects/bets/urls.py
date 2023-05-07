@@ -4,7 +4,7 @@ from typing import Any
 # Django
 from django.urls import path
 
-# Libraries
+# Internal
 from apps.django_projects.bets import views
 
 urlpatterns: list[Any] = [

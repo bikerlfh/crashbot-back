@@ -4,6 +4,8 @@ from typing import Optional, Tuple
 
 # Libraries
 import numpy as np
+
+# Internal
 from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.django_projects.predictions.models import ModelHomeBet

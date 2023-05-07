@@ -5,6 +5,13 @@ from typing import Optional, Tuple
 
 # Libraries
 import numpy as np
+from keras import losses
+from keras.layers import LSTM, Dense, Dropout
+from keras.models import Sequential, load_model
+from keras.optimizers import Adam
+from sklearn.model_selection import train_test_split
+
+# Internal
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.prediction import utils
 from apps.prediction.constants import (
@@ -22,9 +29,6 @@ from apps.prediction.models.constants import (
     EPOCHS_SEQUENTIAL,
     EPOCHS_SEQUENTIAL_LSTM,
 )
-from keras.layers import LSTM, Dense, Dropout
-from keras.models import Sequential, load_model
-from sklearn.model_selection import train_test_split
 
 
 class SequentialModel(AbstractBaseModel):
@@ -63,7 +67,7 @@ class SequentialModel(AbstractBaseModel):
                 self._epochs = EPOCHS_SEQUENTIAL_LSTM
             case _:
                 raise ValueError("Invalid model type")
-        model.compile(loss="mse", optimizer="adam")
+        model.compile(loss=losses.Huber(), optimizer=Adam(learning_rate=0.001))
         return model
 
     def train(

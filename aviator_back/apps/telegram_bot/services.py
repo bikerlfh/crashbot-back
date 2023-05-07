@@ -2,7 +2,7 @@
 import typing
 from typing import Union
 
-# Libraries
+# Internal
 from apps.telegram_bot.bot import TelegramBot
 
 

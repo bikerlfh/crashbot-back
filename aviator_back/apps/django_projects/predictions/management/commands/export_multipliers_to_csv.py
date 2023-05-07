@@ -4,7 +4,7 @@ import logging
 # Django
 from django.core.management import BaseCommand
 
-# Libraries
+# Internal
 from apps.prediction import services
 
 logger = logging.getLogger(__name__)

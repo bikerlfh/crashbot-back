@@ -4,7 +4,7 @@ from typing import Optional
 # Django
 from django.db.models import F, QuerySet
 
-# Libraries
+# Internal
 from apps.django_projects.predictions.constants import (
     NUMBER_OF_MODELS_TO_PREDICT,
     ModelStatus,

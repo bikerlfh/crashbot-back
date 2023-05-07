@@ -2,7 +2,7 @@
 import inspect
 import logging
 
-# Libraries
+# Internal
 from apps.django_projects.customers import selectors as customers_selectors
 from apps.sockets.exceptions import WSCustomerNotFound, WSFunctionNotFound
 from apps.sockets.models import SocketMessage

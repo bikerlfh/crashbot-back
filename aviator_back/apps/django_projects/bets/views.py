@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-# Libraries
+# Internal
 from apps.django_projects.bets import services
 from apps.django_projects.bets.constants import BetType
 from apps.utils import tools

@@ -4,7 +4,7 @@ import logging
 # Django
 from django.core.management import BaseCommand
 
-# Libraries
+# Internal
 from apps.django_projects.predictions import services
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.prediction.constants import ModelType

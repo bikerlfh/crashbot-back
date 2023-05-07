@@ -1,10 +1,21 @@
 # Django
 from rest_framework.exceptions import ValidationError
 
-# Libraries
+# Internal
 from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.customers import selectors
 from apps.django_projects.customers.models import CustomerBalance
+
+
+def get_customer_data(*, user_id: int) -> dict[str, any]:
+    customer = selectors.filter_customer(user_id=user_id).first()
+    if not customer:
+        raise ValidationError("Customer does not exist")
+    # TODO add more data if required
+    data = dict(
+        customer_id=customer.id,
+    )
+    return data
 
 
 def create_customer_balance(

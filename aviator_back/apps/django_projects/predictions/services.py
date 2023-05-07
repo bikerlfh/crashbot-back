@@ -10,7 +10,7 @@ from typing import Optional
 from django.db.models import Max, Q
 from rest_framework.exceptions import ValidationError
 
-# Libraries
+# Internal
 from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.core.models import HomeBet
 from apps.django_projects.predictions import selectors
@@ -216,7 +216,7 @@ def generate_model(
     # now = datetime.now().date()
     multipliers = core_selectors.get_last_multipliers(
         home_bet_id=home_bet_id,
-        count=500,
+        count=400,
         # filter_=dict(multiplier_dt__date__lt=now),
     )
     if not multipliers:
@@ -479,4 +479,74 @@ def evaluate_model(
         average_predictions=average_result.average_predictions,
         category_results=category_results,
     )
+    return data
+
+
+def get_position_values(
+    *, home_bet_id: int, multipliers: Optional[list[int]] = None
+) -> dict[str, any]:
+    """
+    Returns the number of positions that each value has in the home bet
+    dict(
+        all_time=dict(
+            count=number of positions,
+            positions=dict(
+                multiplier: number of positions
+            )
+        ),
+        today=dict(
+            count=number of positions,
+            positions=dict(
+                multiplier: number of positions
+           )
+        )
+    )
+    """
+
+    def count_positions(
+        multipliers_: list[Decimal],
+        threshold: float,
+        next_threshold: Optional[float] = None,
+    ):
+        count = 0
+        if not multipliers_:
+            return None
+        for num in multipliers_:
+            next_threshold = next_threshold or num + Decimal(0.01)
+            if threshold <= num < next_threshold:
+                count += 1
+
+        if count > 0:
+            return round(len(multipliers_) / count, 2)
+        return None
+
+    multipliers = multipliers or [2, 10, 100, 1000]
+    all_multipliers = core_selectors.get_last_multipliers(
+        home_bet_id=home_bet_id
+    )
+    today_multipliers = core_selectors.get_today_multipliers(
+        home_bet_id=home_bet_id
+    )
+    if not all_multipliers:
+        raise ValidationError(
+            f"home bet {home_bet_id} does not have multipliers"
+        )
+    data = dict(
+        all_time=dict(count=len(all_multipliers), positions={}),
+    )
+    if today_multipliers:
+        data["today"] = (dict(count=len(today_multipliers), positions={}),)
+    for i in range(len(multipliers) - 1):
+        data["all_time"]["positions"][multipliers[i]] = count_positions(
+            all_multipliers,
+            multipliers[i],
+            multipliers[i + 1],
+        )
+        if not today_multipliers:
+            continue
+        data["today"]["positions"][multipliers[i]] = count_positions(
+            today_multipliers,
+            multipliers[i],
+            multipliers[i + 1],
+        )
     return data
