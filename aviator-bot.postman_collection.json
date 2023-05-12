@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "balance",
+			"name": "customer",
 			"item": [
 				{
 					"name": "get-customer-balance",
@@ -96,6 +96,37 @@
 							"body": "{\n    \"amount\": 1200000\n}"
 						}
 					]
+				},
+				{
+					"name": "customer-data",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/customers/me/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"customers",
+								"me",
+								""
+							]
+						}
+					},
+					"response": []
 				},
 				{
 					"name": "update-customer-balance",
@@ -334,7 +365,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY4MTY1OTA2NywiaWF0IjoxNjgxNTcyNjY3LCJqdGkiOiI4MTg0ZDE3MGQ2NTY0YWZlYWNkYjNjY2EyNDEyYmM1MCIsInVzZXJfaWQiOjF9.0YjInlusEvFrUeg959O4kpZLxegCEcbxuG2q0kqAq3o\"\n}",
+							"raw": "{\n    \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY4MjQ3NjM5NCwiaWF0IjoxNjgyMzg5OTk0LCJqdGkiOiI5ZDllY2YyNjBlMjQ0NjI5OWVjZTdkYjU0MDMwYzAzNCIsInVzZXJfaWQiOjF9.MsCc1XI4gXCfHFF76I6MiJHbmOllQNJ4nIjVBG9Hphc\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -811,7 +842,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8000/predictions/models/?home_bet_id=2&status=active",
+					"raw": "http://localhost:8000/predictions/models/?home_bet_id=1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -825,11 +856,7 @@
 					"query": [
 						{
 							"key": "home_bet_id",
-							"value": "2"
-						},
-						{
-							"key": "status",
-							"value": "active"
+							"value": "1"
 						}
 					]
 				}
@@ -995,7 +1022,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8000/predictions/models/evaluate/?model_home_bet_id=171",
+					"raw": "http://localhost:8000/predictions/models/evaluate/?model_home_bet_id=220&probability_to_eval=0.5&today_multipliers=true",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -1010,7 +1037,7 @@
 					"query": [
 						{
 							"key": "model_home_bet_id",
-							"value": "171"
+							"value": "220"
 						},
 						{
 							"key": "count_multipliers",
@@ -1019,8 +1046,11 @@
 						},
 						{
 							"key": "probability_to_eval",
-							"value": "0.5",
-							"disabled": true
+							"value": "0.5"
+						},
+						{
+							"key": "today_multipliers",
+							"value": "true"
 						}
 					]
 				}
@@ -1073,6 +1103,88 @@
 					],
 					"cookie": [],
 					"body": "{\n    \"model_type\": \"sequential_lstm\",\n    \"status\": \"active\",\n    \"seq_len\": 18,\n    \"average_predictions\": 0.75,\n    \"category_results\": [\n        {\n            \"category\": 2,\n            \"correct_predictions\": 2,\n            \"incorrect_predictions\": 0,\n            \"percentage_predictions\": 1.0\n        },\n        {\n            \"category\": 1,\n            \"correct_predictions\": 1,\n            \"incorrect_predictions\": 1,\n            \"percentage_predictions\": 0.5\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "get-position-values",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/predictions/positions/?home_bet_id=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"predictions",
+						"positions",
+						""
+					],
+					"query": [
+						{
+							"key": "home_bet_id",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "get-models",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/predictions/models/?home_bet_id=2&status=active",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"predictions",
+								"models",
+								""
+							],
+							"query": [
+								{
+									"key": "home_bet_id",
+									"value": "2"
+								},
+								{
+									"key": "status",
+									"value": "active"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json",
+							"name": "Content-Type",
+							"description": "",
+							"type": "text"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 47,\n        \"home_bet_id\": 2,\n        \"model_type\": \"gru\",\n        \"status\": \"active\",\n        \"seq_len\": 18,\n        \"average_predictions\": 0.52,\n        \"average_bets\": 0.76,\n        \"result_date\": \"2023-04-15T11:00:41.964864-05:00\",\n        \"others\": {\n            \"metrics\": {\n                \"f1\": 0.4938653267783493,\n                \"loss\": 3.0135226249694824,\n                \"recall\": 0.4944933920704846,\n                \"accuracy\": 0.49449339509010315,\n                \"precision\": 0.4943911815743849,\n                \"specificity\": [\n                    0.45916114790286977,\n                    0.5296703296703297\n                ]\n            },\n            \"num_multipliers_to_train\": 4554\n        },\n        \"category_results\": [\n            {\n                \"category\": 1,\n                \"correct_predictions\": 46,\n                \"incorrect_predictions\": 43,\n                \"percentage_predictions\": 0.52,\n                \"correct_bets\": 46,\n                \"incorrect_bets\": 43,\n                \"percentage_bets\": 0.52,\n                \"other_info\": null\n            },\n            {\n                \"category\": 2,\n                \"correct_predictions\": 48,\n                \"incorrect_predictions\": 44,\n                \"percentage_predictions\": 0.52,\n                \"correct_bets\": 92,\n                \"incorrect_bets\": 0,\n                \"percentage_bets\": 1,\n                \"other_info\": null\n            }\n        ]\n    },\n    {\n        \"id\": 41,\n        \"home_bet_id\": 2,\n        \"model_type\": \"gru\",\n        \"status\": \"active\",\n        \"seq_len\": 11,\n        \"average_predictions\": 0.51,\n        \"average_bets\": 0.75,\n        \"result_date\": \"2023-04-15T11:00:08.712631-05:00\",\n        \"others\": {\n            \"metrics\": {\n                \"f1\": 0.523678923473727,\n                \"loss\": 1.108013391494751,\n                \"recall\": 0.5236907730673317,\n                \"accuracy\": 0.5236907601356506,\n                \"precision\": 0.5236735870926257,\n                \"specificity\": [\n                    0.5175879396984925,\n                    0.5297029702970297\n                ]\n            },\n            \"num_multipliers_to_train\": 4020\n        },\n        \"category_results\": [\n            {\n                \"category\": 1,\n                \"correct_predictions\": 46,\n                \"incorrect_predictions\": 46,\n                \"percentage_predictions\": 0.5,\n                \"correct_bets\": 46,\n                \"incorrect_bets\": 46,\n                \"percentage_bets\": 0.5,\n                \"other_info\": null\n            },\n            {\n                \"category\": 2,\n                \"correct_predictions\": 49,\n                \"incorrect_predictions\": 47,\n                \"percentage_predictions\": 0.51,\n                \"correct_bets\": 96,\n                \"incorrect_bets\": 0,\n                \"percentage_bets\": 1,\n                \"other_info\": null\n            }\n        ]\n    },\n    {\n        \"id\": 42,\n        \"home_bet_id\": 2,\n        \"model_type\": \"sequential_lstm\",\n        \"status\": \"active\",\n        \"seq_len\": 11,\n        \"average_predictions\": 0.49,\n        \"average_bets\": 0.7,\n        \"result_date\": \"2023-04-15T11:00:15.419376-05:00\",\n        \"others\": {\n            \"metrics\": {\n                \"lost\": 0.39317262172698975\n            },\n            \"num_multipliers_to_train\": 4020\n        },\n        \"category_results\": [\n            {\n                \"category\": 1,\n                \"correct_predictions\": 48,\n                \"incorrect_predictions\": 44,\n                \"percentage_predictions\": 0.52,\n                \"correct_bets\": 40,\n                \"incorrect_bets\": 52,\n                \"percentage_bets\": 0.43,\n                \"other_info\": null\n            },\n            {\n                \"category\": 2,\n                \"correct_predictions\": 45,\n                \"incorrect_predictions\": 51,\n                \"percentage_predictions\": 0.47,\n                \"correct_bets\": 94,\n                \"incorrect_bets\": 2,\n                \"percentage_bets\": 0.98,\n                \"other_info\": null\n            }\n        ]\n    },\n    {\n        \"id\": 46,\n        \"home_bet_id\": 2,\n        \"model_type\": \"gru\",\n        \"status\": \"active\",\n        \"seq_len\": 18,\n        \"average_predictions\": 0.46,\n        \"average_bets\": 0.73,\n        \"result_date\": \"2023-04-15T11:00:37.577267-05:00\",\n        \"others\": {\n            \"metrics\": {\n                \"f1\": 0.4908967910968014,\n                \"loss\": 2.735874891281128,\n                \"recall\": 0.4908675799086758,\n                \"accuracy\": 0.49086758494377136,\n                \"precision\": 0.4909311159171132,\n                \"specificity\": [\n                    0.4788732394366197,\n                    0.5022222222222222\n                ]\n            },\n            \"num_multipliers_to_train\": 4396\n        },\n        \"category_results\": [\n            {\n                \"category\": 1,\n                \"correct_predictions\": 41,\n                \"incorrect_predictions\": 48,\n                \"percentage_predictions\": 0.46,\n                \"correct_bets\": 41,\n                \"incorrect_bets\": 48,\n                \"percentage_bets\": 0.46,\n                \"other_info\": null\n            },\n            {\n                \"category\": 2,\n                \"correct_predictions\": 43,\n                \"incorrect_predictions\": 49,\n                \"percentage_predictions\": 0.47,\n                \"correct_bets\": 92,\n                \"incorrect_bets\": 0,\n                \"percentage_bets\": 1,\n                \"other_info\": null\n            }\n        ]\n    },\n    {\n        \"id\": 39,\n        \"home_bet_id\": 2,\n        \"model_type\": \"gru\",\n        \"status\": \"active\",\n        \"seq_len\": 11,\n        \"average_predictions\": 0.46,\n        \"average_bets\": 0.74,\n        \"result_date\": \"2023-04-15T11:00:00.376905-05:00\",\n        \"others\": {\n            \"metrics\": {\n                \"f1\": 0.4266169707931466,\n                \"loss\": 3.018333673477173,\n                \"recall\": 0.42643391521197005,\n                \"accuracy\": 0.4264339208602905,\n                \"precision\": 0.42707494918506855,\n                \"specificity\": [\n                    0.5175879396984925,\n                    0.3867069486404834,\n                    0.1095890410958904\n                ]\n            },\n            \"num_multipliers_to_train\": 4020\n        },\n        \"category_results\": [\n            {\n                \"category\": 1,\n                \"correct_predictions\": 46,\n                \"incorrect_predictions\": 46,\n                \"percentage_predictions\": 0.5,\n                \"correct_bets\": 46,\n                \"incorrect_bets\": 46,\n                \"percentage_bets\": 0.5,\n                \"other_info\": null\n            },\n            {\n                \"category\": 2,\n                \"correct_predictions\": 40,\n                \"incorrect_predictions\": 56,\n                \"percentage_predictions\": 0.42,\n                \"correct_bets\": 94,\n                \"incorrect_bets\": 2,\n                \"percentage_bets\": 0.98,\n                \"other_info\": null\n            },\n            {\n                \"category\": 3,\n                \"correct_predictions\": 11,\n                \"incorrect_predictions\": 3,\n                \"percentage_predictions\": 0.79,\n                \"correct_bets\": 14,\n                \"incorrect_bets\": 0,\n                \"percentage_bets\": 1,\n                \"other_info\": null\n            }\n        ]\n    },\n    {\n        \"id\": 40,\n        \"home_bet_id\": 2,\n        \"model_type\": \"sequential_lstm\",\n        \"status\": \"active\",\n        \"seq_len\": 11,\n        \"average_predictions\": 0.43,\n        \"average_bets\": 0.64,\n        \"result_date\": \"2023-04-15T11:00:05.042791-05:00\",\n        \"others\": {\n            \"metrics\": {\n                \"lost\": 0.9494871497154236\n            },\n            \"num_multipliers_to_train\": 4020\n        },\n        \"category_results\": [\n            {\n                \"category\": 1,\n                \"correct_predictions\": 38,\n                \"incorrect_predictions\": 54,\n                \"percentage_predictions\": 0.41,\n                \"correct_bets\": 31,\n                \"incorrect_bets\": 61,\n                \"percentage_bets\": 0.34,\n                \"other_info\": null\n            },\n            {\n                \"category\": 2,\n                \"correct_predictions\": 43,\n                \"incorrect_predictions\": 53,\n                \"percentage_predictions\": 0.45,\n                \"correct_bets\": 90,\n                \"incorrect_bets\": 6,\n                \"percentage_bets\": 0.94,\n                \"other_info\": null\n            },\n            {\n                \"category\": 3,\n                \"correct_predictions\": 11,\n                \"incorrect_predictions\": 3,\n                \"percentage_predictions\": 0.79,\n                \"correct_bets\": 14,\n                \"incorrect_bets\": 0,\n                \"percentage_bets\": 1,\n                \"other_info\": null\n            }\n        ]\n    }\n]"
 				}
 			]
 		}
