@@ -207,7 +207,8 @@ class AbstractBaseModel(abc.ABC):
             dict_value.percentage_bets = utils.to_float(
                 (dict_value.correct_bets / dict_value.count)  # * 100
             )
-            if key == Category.CATEGORY_3.value:
+            # if not is category 2 then, skip
+            if key in [Category.CATEGORY_3.value, Category.CATEGORY_1.value]:
                 continue
             count_categories += 1
             sum_percentage_predictions += dict_value.percentage_predictions

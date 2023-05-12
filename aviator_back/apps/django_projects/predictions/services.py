@@ -1,4 +1,5 @@
 # Standard Library
+import copy
 import json
 import logging
 from datetime import datetime
@@ -490,14 +491,24 @@ def get_position_values(
     dict(
         all_time=dict(
             count=number of positions,
-            positions=dict(
-                multiplier: number of positions
-            )
+            multipliers=dict(
+                multiplier: dict(
+                    count: max number of times that the multiplier has been in that position,
+                    positions: dict(
+                        position: count
+                    )
+                )
+           )
         ),
         today=dict(
             count=number of positions,
-            positions=dict(
-                multiplier: number of positions
+            multipliers=dict(
+                multiplier: dict(
+                    count: max number of times that the multiplier has been in that position,
+                    positions: dict(
+                        position: count
+                    )
+                )
            )
         )
     )
@@ -511,16 +522,23 @@ def get_position_values(
         count = 0
         if not multipliers_:
             return None
+        data_ = {}
+        position = 0
         for num in multipliers_:
+            position += 1
             next_threshold = next_threshold or num + Decimal(0.01)
-            if threshold <= num < next_threshold:
+            # if threshold <= num < next_threshold:
+            if threshold <= num:
                 count += 1
+                if position in data_:
+                    data_[position] += 1
+                else:
+                    data_[position] = 1
+                position = 0
+        return dict(count=count, positions=dict(sorted(data_.items())))
 
-        if count > 0:
-            return round(len(multipliers_) / count, 2)
-        return None
-
-    multipliers = multipliers or [2, 10, 100, 1000]
+    values = multipliers or [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 50, 100]
+    # values = multipliers or [2]
     all_multipliers = core_selectors.get_last_multipliers(
         home_bet_id=home_bet_id
     )
@@ -532,21 +550,67 @@ def get_position_values(
             f"home bet {home_bet_id} does not have multipliers"
         )
     data = dict(
-        all_time=dict(count=len(all_multipliers), positions={}),
+        all_time=dict(),
     )
     if today_multipliers:
-        data["today"] = (dict(count=len(today_multipliers), positions={}),)
-    for i in range(len(multipliers) - 1):
-        data["all_time"]["positions"][multipliers[i]] = count_positions(
-            all_multipliers,
-            multipliers[i],
-            multipliers[i + 1],
+        data["today"] = dict()
+    for i in range(len(values)):
+        data["all_time"][values[i]] = count_positions(
+            all_multipliers, values[i]
         )
         if not today_multipliers:
             continue
-        data["today"]["positions"][multipliers[i]] = count_positions(
+        data["today"][values[i]] = count_positions(
             today_multipliers,
-            multipliers[i],
-            multipliers[i + 1],
+            values[i],
         )
     return data
+
+
+def _evaluate_data(
+    *,
+    data: dict[str, any],
+    last_multipliers: Optional[list[float]] = None,
+) -> tuple[int, float]:
+    """
+    Returns the number of positions that each value has in the home bet
+    dict(
+        count=number of positions,
+        multipliers=dict(
+            multiplier: dict(
+                count: max number of times that the multiplier has been in that position,
+                positions: dict(
+                    position: count
+                )
+            )
+       )
+    )
+    """
+
+    def _get_last_position_multiplier(multiplier_: int) -> int:
+        multi = copy.copy(last_multipliers)
+        multi.reverse()
+        for i in range(len(multi)):
+            if multi[i] >= multiplier_:
+                return i + 1
+        return -1
+
+    data_ = data.get("all_time")
+    max_value = (0, 0)
+    for key in reversed(data_):
+        values = data_[key]
+        multiplier = int(key)
+        if multiplier < 2:
+            continue
+        index_ = _get_last_position_multiplier(multiplier)
+        if index_ < 0:
+            continue
+        count = int(values.get("count"))
+        positions = values.get("positions")
+        for position, position_count in positions.items():
+            position_ = int(position)
+            if index_ > position_:
+                percentage = round(position_count / count, 2)
+                if max_value[1] < percentage:
+                    max_value = (multiplier, percentage)
+    return max_value

@@ -1,6 +1,6 @@
 # Django
 from django.contrib import admin
-from django.forms import CharField, ChoiceField, ModelForm
+from django.forms import ChoiceField, ModelForm
 
 # Internal
 from apps.django_projects.predictions.constants import BotType
