@@ -3,10 +3,15 @@ from rest_framework import serializers, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.http import HttpResponse
 
 # Internal
 from apps.django_projects.core import services
 from apps.utils.django.mixin import APIErrorsMixin
+
+
+def health_check(request):
+    return HttpResponse(status=200)
 
 
 class HomeBetView(

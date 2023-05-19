@@ -1,6 +1,5 @@
 # Standard Library
 import copy
-import json
 import logging
 from datetime import datetime
 from decimal import Decimal
@@ -8,7 +7,7 @@ from operator import itemgetter
 from typing import Optional
 
 # Django
-from django.db.models import Max, Q
+from django.db.models import Max
 from rest_framework.exceptions import ValidationError
 
 # Internal
@@ -31,7 +30,6 @@ from apps.django_projects.predictions.models import (
 )
 from apps.prediction import services as prediction_services
 from apps.prediction.constants import ModelType
-from apps.prediction.models.base import AverageInfo
 
 logger = logging.getLogger(__name__)
 
@@ -236,17 +234,32 @@ def generate_model(
         model_type=model_type,
         seq_len=seq_len,
     )
-    model_home_bet = create_model_home_bet(
-        home_bet=home_bet,
-        name=name,
-        model_type=model_type,
-        seq_len=seq_len,
-        others=dict(
+    model_home_bet = selectors.filter_model_home_bet(
+        home_bet_id=home_bet_id, model_type=model_type
+    ).first()
+    if not model_home_bet:
+        model_home_bet = create_model_home_bet(
+            home_bet=home_bet,
+            name=name,
+            model_type=model_type,
+            seq_len=seq_len,
+            others=dict(
+                num_multipliers_to_train=len(multipliers),
+                metrics=metrics,
+            ),
+        )
+    else:
+        old_model_name = model_home_bet.name
+        model_home_bet.name = name
+        model_home_bet.seq_len = seq_len
+        model_home_bet.others = dict(
             num_multipliers_to_train=len(multipliers),
-            # metrics=json.dumps(metrics),
             metrics=metrics,
-        ),
-    )
+        )
+        model_home_bet.save()
+        prediction_services.remove_model_file(
+            name=old_model_name
+        )
     generate_category_result_of_model(model_home_bet=model_home_bet)
     return model_home_bet
 
@@ -334,9 +347,12 @@ def generate_category_results_of_models():
     )
     if home_bet_ids_with_no_active_model:
         # create models for home bets with no active models
-        generate_model_for_in_play_home_bet(
+        models = generate_model_for_in_play_home_bet(
             home_bet_ids=home_bet_ids_with_no_active_model
         )
+        for model in models:
+            if model.id in model_ids_to_inactive:
+                model_ids_to_inactive.remove(model.id)
     # inactive models
     ModelHomeBet.objects.filter(id__in=model_ids_to_inactive).update(
         status=ModelStatus.INACTIVE.value,

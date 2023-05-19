@@ -5,9 +5,6 @@ from typing import Optional, Tuple
 
 # Libraries
 import numpy as np
-from keras.layers import GRU, Dense
-from keras.models import Sequential, load_model
-from keras.utils import to_categorical
 from sklearn.metrics import (
     confusion_matrix,
     f1_score,
@@ -15,6 +12,9 @@ from sklearn.metrics import (
     recall_score,
 )
 from sklearn.model_selection import train_test_split
+from keras.layers import GRU, Dense
+from keras.models import Sequential, load_model
+from keras.utils import to_categorical
 
 # Internal
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
@@ -26,7 +26,8 @@ from apps.prediction.models.base import AbstractBaseModel, PredictionData
 class GRUModel(AbstractBaseModel):
     """
     GRU model class
-    not use directly. Use CoreModel instead
+    doesn't use directly.
+    Use CoreModel instead
     """
 
     APPLY_MIN_PROBABILITY = False
@@ -58,12 +59,12 @@ class GRUModel(AbstractBaseModel):
     ) -> Tuple[np.array, np.array]:
         """
         get the list of sequences and the list of next values
-        @return: Tuple[train_data, test_data]
+        @return: Tuple[train_data, test_data],
         the list of sequences and the list of next values
         """
         x, y = [], []
         for i in range(len(data) - self.seq_len):
-            x.append(data[i : i + self.seq_len])
+            x.append(data[i: i + self.seq_len])
             y.append(data[i + self.seq_len])
         x = np.array(x).reshape(-1, self.seq_len, 1) / float(self.num_classes)
         y = to_categorical(y, num_classes=self.num_classes)
@@ -92,15 +93,9 @@ class GRUModel(AbstractBaseModel):
             home_bet_id=home_bet_id
         )
         model.save(model_path)
-        print(
-            "-------------------------------------------------------------------"
-        )
-        print(
-            f"--------MODEL: {name} LOSS: {loss} ACCURRACY: {accuracy}----------"
-        )
-        print(
-            "-------------------------------------------------------------------"
-        )
+        print("----------------------------------------------------------")
+        print(f"-----MODEL: {name} LOSS: {loss} ACCURACY: {accuracy}-----")
+        print("----------------------------------------------------------")
         # generate others metrics
         y_pred_prob = model.predict(x_test)  # NOQA
         y_pred = np.argmax(y_pred_prob, axis=1)  # NOQA
@@ -128,7 +123,7 @@ class GRUModel(AbstractBaseModel):
         self.model = load_model(model_path)
 
     def predict(self, *, data: list[int]) -> PredictionData:
-        input_sequence = np.array(data[-self.seq_len :]).reshape(
+        input_sequence = np.array(data[-self.seq_len:]).reshape(
             1, self.seq_len, 1
         ) / float(self.num_classes)
         probabilities = self.model.predict(input_sequence)[0]

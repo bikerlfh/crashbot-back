@@ -1,4 +1,5 @@
 # Standard Library
+import os
 from decimal import Decimal
 from typing import Optional, Tuple
 
@@ -10,7 +11,7 @@ from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.django_projects.predictions.models import ModelHomeBet
 from apps.prediction import utils
-from apps.prediction.constants import DATA_EXPORT_PATH, ModelType
+from apps.prediction.constants import DATA_EXPORT_PATH, ModelType, MODELS_PATH
 from apps.prediction.models.base import AverageInfo, PredictionData
 from apps.prediction.models.main import CoreModel
 
@@ -86,3 +87,12 @@ def extract_multipliers_to_csv(
         fmt="% s",
     )
     return file_path
+
+
+def remove_model_file(*, name: str) -> None:
+    """
+    Removes a model file
+    @param name: The name of the model file
+    """
+    path = f"{MODELS_PATH}{name}"
+    os.path.isfile(path=path) and os.remove(path=path)

@@ -29,6 +29,7 @@ class ModelHomeBet(BaseModel):
 
     class Meta:
         db_table = "model_homebet"
+        unique_together = ("home_bet", "model_type")
 
 
 class ModelCategoryResult(BaseModel):
