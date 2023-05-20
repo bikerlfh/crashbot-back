@@ -29,8 +29,8 @@ from apps.prediction.models.constants import (
 
 class SequentialModel(AbstractBaseModel):
     """
-    sequential model class
-    not use directly. Use CoreModel instead
+    Sequential model class
+    do not use directly.Use CoreModel instead
     """
 
     APPLY_MIN_PROBABILITY = True
