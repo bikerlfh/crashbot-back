@@ -24,8 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = (
-    "django-insecure-t51n%nso)q=wdk6%n-@8h28jqq1!-!4u&+^(9xbai%+%m5$(cu"
+SECRET_KEY = getenv(
+    "SECRET_KEY",
+    "%?Ebn%R2nf6Gc9hrg5Y3J=zP5@Dg+P%kwqu6JMUkMTH!u+7eELbtJgqY#US%w?JK-2"
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -35,8 +36,7 @@ ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
-
-INSTALLED_APPS = [
+DEFAULT_APPS = [
     "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -44,9 +44,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_extensions",
+]
+
+THIRD_PARTY_APPS = [
     "channels",
+    "rest_framework",
     "rest_framework_simplejwt",
+]
+
+LOCAL_APPS = [
     "apps.django_projects.core",
     "apps.django_projects.customers",
     "apps.django_projects.bets",
@@ -150,8 +156,11 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CELERY_BROKER_URL = "redis://redis:6379"
-CELERY_RESULT_BACKEND = "redis://redis:6379"
+REDIS_HOSTNAME = getenv("REDIS_HOSTNAME", "redis")
+REDIS_PORT = int(getenv("REDIS_PORT", 6379))
+
+CELERY_BROKER_URL = f"redis://{REDIS_HOSTNAME}:{REDIS_PORT}"
+CELERY_RESULT_BACKEND = f"redis://{REDIS_HOSTNAME}:{REDIS_PORT}"
 
 CELERY_BEAT_SCHEDULE = {
     "task_generate_category_result": {
@@ -169,7 +178,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("redis", 6379)],
+            "hosts": [(REDIS_HOSTNAME, REDIS_PORT)],
         },
     },
 }
