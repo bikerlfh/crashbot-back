@@ -51,8 +51,12 @@ Thumbs.db
 
 # .env
 
+# ipynb
+.ipynb_checkpoints/
+
+celerybeat-schedule
+
 # Elastic Beanstalk Files
-.elasticbeanstalk/*
 .elasticbeanstalk/
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
