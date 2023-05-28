@@ -14,7 +14,6 @@ from apps.prediction.models.base import (
 )
 from apps.prediction.models.gru_model import GRUModel
 from apps.prediction.models.sequential_model import SequentialModel
-from apps.prediction.models.transformer_model import TransformerModel
 
 
 class CoreModel:
@@ -57,8 +56,6 @@ class CoreModel:
                 )
             case ModelType.GRU:
                 model = GRUModel(model_type=ModelType.GRU, seq_len=seq_len)
-            case ModelType.TRANSFORMER:
-                model = TransformerModel(seq_len=seq_len)
             case _:
                 raise ValueError(
                     f"model_type: {self.model_type} is not supported"

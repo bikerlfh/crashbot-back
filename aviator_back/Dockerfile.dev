@@ -1,6 +1,6 @@
 FROM python:3.11-slim-buster as intermediate
 
-FROM python:3.11-slim-buster
+# FROM python:3.11-slim-buster
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONUNBUFFERED=1

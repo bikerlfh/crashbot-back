@@ -11,7 +11,6 @@ class ModelType(str, Enum):
     SEQUENTIAL = "sequential"
     SEQUENTIAL_LSTM = "sequential_lstm"
     GRU = "gru"
-    TRANSFORMER = "transformer"
     DECISION_TREE_REGRESSOR = "decision_tree_regressor"
     LINEAR_REGRESSOR = "linear_regression"
 
