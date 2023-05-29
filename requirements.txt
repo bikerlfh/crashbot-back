@@ -1,1 +1,1 @@
--r aviator_back/requirements/aws_requirements.txt
+-r requirements/aws_requirements.txt
