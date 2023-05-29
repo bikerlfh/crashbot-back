@@ -62,30 +62,30 @@ environment=$djangoenv
 "
 
 # Create the supervisord conf script
-echo "$daemonconf" | sudo tee /opt/python/etc/daemon.conf
+echo "$daemonconf" | sudo tee /etc/supervisor/conf.d/daemon.conf
 
 # Add configuration script to supervisord conf (if not there already)
-if ! grep -Fxq "[include]" /opt/python/etc/supervisord.conf
+if ! grep -Fxq "[include]" /etc/supervisor/conf.d/supervisord.conf
     then
-    echo "" | sudo tee -a /opt/python/etc/supervisord.conf
-    echo "[include]" | sudo tee -a /opt/python/etc/supervisord.conf
-    echo "files: daemon.conf" | sudo tee -a /opt/python/etc/supervisord.conf
+    echo "" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
+    echo "[include]" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
+    echo "files: daemon.conf" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
 fi
-if ! grep -Fxq "[inet_http_server]" /opt/python/etc/supervisord.conf
+if ! grep -Fxq "[inet_http_server]" /etc/supervisor/conf.d/supervisord.conf
     then
-    echo "" | sudo tee -a /opt/python/etc/supervisord.conf
-    echo "[inet_http_server]" | sudo tee -a /opt/python/etc/supervisord.conf
-    echo "port = 127.0.0.1:9001" | sudo tee -a /opt/python/etc/supervisord.conf
+    echo "" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
+    echo "[inet_http_server]" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
+    echo "port = 127.0.0.1:9001" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
 fi
 
 # Reread the supervisord config
-sudo /usr/local/bin/supervisorctl -c /opt/python/etc/supervisord.conf reread
+sudo //usr/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf reread
 
 # Update supervisord in cache without restarting all services
-sudo /usr/local/bin/supervisorctl -c /opt/python/etc/supervisord.conf update
+sudo //usr/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf update
 
 # Start/Restart processes through supervisord
-sudo /usr/local/bin/supervisorctl -c /opt/python/etc/supervisord.conf restart daphne
-sudo /usr/local/bin/supervisorctl -c /opt/python/etc/supervisord.conf restart worker
-# sudo /usr/local/bin/supervisorctl -c /opt/python/etc/supervisord.conf restart celeryworker &
-# sudo /usr/local/bin/supervisorctl -c /opt/python/etc/supervisord.conf restart celeryheartbeat &
+sudo //usr/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart daphne
+sudo //usr/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart worker
+# sudo //usr/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart celeryworker &
+# sudo //usr/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart celeryheartbeat &
