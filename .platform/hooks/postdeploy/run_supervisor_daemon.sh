@@ -59,6 +59,8 @@ killasgroup=true
 priority=998
 
 environment=$djangoenv
+
+[supervisorctl]
 "
 
 # Create the supervisord conf script
