@@ -32,21 +32,31 @@ if [ ! -d /etc/supervisor/conf.d ]; then
     echo "create supervisor configs directory"
 fi
 
+config_file="/etc/supervisor/conf.d/supervisord.conf"
+
+# Verificar si el archivo existe
+if [ -f "$config_file" ]; then
+    echo "Config file already exists"
+else
+    echo "Config file created."
+    touch "$config_file"
+fi
+
 #. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisord.conf > /etc/supervisor/supervisord.conf
 #. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisord.conf > /etc/supervisord.conf
 #. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisor_laravel.conf > /etc/supervisor/conf.d/supervisor_laravel.conf
 
-if ps aux | grep "[/]usr/local/bin/supervisord"; then
-    echo "supervisor is running"
-else
-    echo "starting supervisor"
-    /usr/local/bin/supervisord
-fi
+#if ps aux | grep "[/]usr/local/bin/supervisord"; then
+#    echo "supervisor is running"
+#else
+#    echo "starting supervisor"
+#    /usr/local/bin/supervisord
+#fi
 
 # /usr/local/bin/supervisorctl reread
 # /usr/local/bin/supervisorctl update
 
-echo "Supervisor Running!"
+#echo "Supervisor Running!"
 
 # Get django environment variables
 djangoenv=`export | tr '\n' ',' | sed 's/%/%%/g' | sed 's/export //g' | sed 's/$PATH/%(ENV_PATH)s/g' | sed 's/$PYTHONPATH//g' | sed 's/$LD_LIBRARY_PATH//g'`
