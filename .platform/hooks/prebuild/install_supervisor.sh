@@ -11,9 +11,12 @@
 echo "Supervisor - starting setup"
 . /opt/elasticbeanstalk/deployment/env
 
-if [ ! -f /usr/bin/supervisord ]; then
+
+
+if [ ! -f /usr/local/bin/supervisord ]; then
     echo "installing supervisor"
-    easy_install supervisor
+    yum install pip
+    pip install supervisor
 else
     echo "supervisor already installed"
 fi
@@ -28,18 +31,18 @@ if [ ! -d /etc/supervisor/conf.d ]; then
     echo "create supervisor configs directory"
 fi
 
-. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisord.conf > /etc/supervisor/supervisord.conf
-. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisord.conf > /etc/supervisord.conf
-. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisor_laravel.conf > /etc/supervisor/conf.d/supervisor_laravel.conf
+#. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisord.conf > /etc/supervisor/supervisord.conf
+#. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisord.conf > /etc/supervisord.conf
+#. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisor_laravel.conf > /etc/supervisor/conf.d/supervisor_laravel.conf
 
-if ps aux | grep "[/]usr/bin/supervisord"; then
+if ps aux | grep "[/]usr/local/bin/supervisord"; then
     echo "supervisor is running"
 else
     echo "starting supervisor"
-    /usr/bin/supervisord
+    /usr/local/bin/supervisord
 fi
 
-/usr/bin/supervisorctl reread
-/usr/bin/supervisorctl update
+/usr/local/bin/supervisorctl reread
+/usr/local/bin/supervisorctl update
 
 echo "Supervisor Running!"

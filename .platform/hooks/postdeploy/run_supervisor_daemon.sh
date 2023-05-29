@@ -79,13 +79,13 @@ if ! grep -Fxq "[inet_http_server]" /etc/supervisor/conf.d/supervisord.conf
 fi
 
 # Reread the supervisord config
-sudo //usr/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf reread
+sudo /usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf reread
 
 # Update supervisord in cache without restarting all services
-sudo //usr/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf update
+sudo /usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf update
 
 # Start/Restart processes through supervisord
-sudo //usr/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart daphne
-sudo //usr/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart worker
-# sudo //usr/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart celeryworker &
-# sudo //usr/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart celeryheartbeat &
+sudo /usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart daphne
+sudo /usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart worker
+# sudo //usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart celeryworker &
+# sudo //usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart celeryheartbeat &
