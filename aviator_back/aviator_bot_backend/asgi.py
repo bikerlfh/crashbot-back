@@ -21,7 +21,7 @@ from channels.security.websocket import AllowedHostsOriginValidator
 # Internal
 from apps.sockets import routing as sockets_rounting
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "aviator_bot_backend.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "aviator_bot_backend.settings.development")
 
 django_asgi_app = get_asgi_application()
 
