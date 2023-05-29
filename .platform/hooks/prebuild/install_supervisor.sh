@@ -42,7 +42,7 @@ else
     /usr/local/bin/supervisord
 fi
 
-/usr/local/bin/supervisorctl reread
-/usr/local/bin/supervisorctl update
+# /usr/local/bin/supervisorctl reread
+# /usr/local/bin/supervisorctl update
 
 echo "Supervisor Running!"
