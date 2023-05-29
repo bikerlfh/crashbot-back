@@ -59,8 +59,6 @@ killasgroup=true
 priority=998
 
 environment=$djangoenv
-
-[supervisorctl]
 "
 
 # Create the supervisord conf script
@@ -78,6 +76,13 @@ if ! grep -Fxq "[inet_http_server]" /etc/supervisor/conf.d/supervisord.conf
     echo "" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
     echo "[inet_http_server]" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
     echo "port = 127.0.0.1:9001" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
+    echo "add inet_http_server to supervisord conf"
+fi
+if ! grep -Fxq "[supervisorctl]" /etc/supervisor/conf.d/supervisord.conf
+    then
+    echo "[supervisorctl]" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
+    echo "serverurl=http://127.0.0.1:9001" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
+    echo "add supervisorctl to supervisord conf"
 fi
 
 # Reread the supervisord config
