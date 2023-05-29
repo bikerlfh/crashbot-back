@@ -15,21 +15,21 @@ echo "Supervisor - starting setup"
 
 if [ ! -f /usr/local/bin/supervisord ]; then
     echo "installing supervisor"
-    yum install pip
-    pip install supervisor
+    sudo yum install pip
+    sudo pip install supervisor
 else
     echo "supervisor already installed"
 fi
 
-if [ ! -d /etc/supervisor ]; then
-    mkdir /etc/supervisor
-    echo "create supervisor directory"
-fi
+# if [ ! -d /etc/supervisor ]; then
+#    mkdir /etc/supervisor
+#    echo "create supervisor directory"
+# fi
 
-if [ ! -d /etc/supervisor/conf.d ]; then
-    mkdir /etc/supervisor/conf.d
-    echo "create supervisor configs directory"
-fi
+# if [ ! -d /etc/supervisor/conf.d ]; then
+#    mkdir /etc/supervisor/conf.d
+#    echo "create supervisor configs directory"
+# fi
 
 #. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisord.conf > /etc/supervisor/supervisord.conf
 #. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisord.conf > /etc/supervisord.conf

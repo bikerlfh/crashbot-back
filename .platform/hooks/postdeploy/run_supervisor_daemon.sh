@@ -71,18 +71,18 @@ if ! grep -Fxq "[include]" /etc/supervisor/conf.d/supervisord.conf
     echo "[include]" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
     echo "files: daemon.conf" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
 fi
-if ! grep -Fxq "[inet_http_server]" /etc/supervisor/conf.d/supervisord.conf
+if ! grep -Fxq "[unix_http_server]" /etc/supervisor/conf.d/supervisord.conf
     then
     echo "" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
-    echo "[inet_http_server]" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
-    echo "port = 127.0.0.1:9001" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
-    echo "add inet_http_server to supervisord conf"
+    echo "[unix_http_server]" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
+    echo "file=/var/run/supervisor.sock" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
+    echo "pidfile=/var/run/supervisord.pid"
+    echo "childlogdir=/var/log/supervisor"
 fi
 if ! grep -Fxq "[supervisorctl]" /etc/supervisor/conf.d/supervisord.conf
     then
     echo "[supervisorctl]" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
-    echo "serverurl=http://127.0.0.1:9001" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
-    echo "add supervisorctl to supervisord conf"
+    echo "serverurl=unix:///var/run/supervisor.sock" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
 fi
 
 # Reread the supervisord config
