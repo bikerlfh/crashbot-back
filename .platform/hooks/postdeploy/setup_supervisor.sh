@@ -32,7 +32,7 @@ if [ ! -d /etc/supervisor/conf.d ]; then
     echo "create supervisor configs directory"
 fi
 
-config_file="/etc/supervisor/conf.d/supervisord.conf"
+config_file="/etc/supervisor/supervisord.conf"
 
 # Verificar si el archivo existe
 if [ -f "$config_file" ]; then
@@ -59,7 +59,7 @@ fi
 #echo "Supervisor Running!"
 
 # Get django environment variables
-djangoenv=`export | tr '\n' ',' | sed 's/%/%%/g' | sed 's/export //g' | sed 's/$PATH/%(ENV_PATH)s/g' | sed 's/$PYTHONPATH//g' | sed 's/$LD_LIBRARY_PATH//g'`
+djangoenv=`export | tr '\n' ',' | sed 's/declare -x //g'  | sed 's/%/%%/g' | sed 's/export //g' | sed 's/$PATH/%(ENV_PATH)s/g' | sed 's/$PYTHONPATH//g' | sed 's/$LD_LIBRARY_PATH//g'`
 djangoenv=${djangoenv%?}
 
 # Create daemon configuraiton script
@@ -122,34 +122,40 @@ environment=$djangoenv
 echo "$daemonconf" | sudo tee /etc/supervisor/conf.d/daemon.conf
 
 # Add configuration script to supervisord conf (if not there already)
-if ! grep -Fxq "[include]" /etc/supervisor/conf.d/supervisord.conf
+if ! grep -Fxq "[include]" $config_file
     then
-    echo "" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
-    echo "[include]" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
-    echo "files: daemon.conf" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
+    echo "" | sudo tee -a $config_file
+    echo "[include]" | sudo tee -a $config_file
+    echo "files: /etc/supervisor/conf.d/*.conf" | sudo tee -a $config_file
 fi
-if ! grep -Fxq "[unix_http_server]" /etc/supervisor/conf.d/supervisord.conf
+if ! grep -Fxq "[unix_http_server]" $config_file
     then
-    echo "" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
-    echo "[unix_http_server]" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
-    echo "file=/var/run/supervisor.sock" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
-    echo "pidfile=/var/run/supervisord.pid"
-    echo "childlogdir=/var/log/supervisor"
+    echo "" | sudo tee -a $config_file
+    echo "[unix_http_server]" | sudo tee -a $config_file
+    echo "file=/var/run/supervisor.sock" | sudo tee -a $config_file
+    echo "chmod=0700"
 fi
-if ! grep -Fxq "[supervisorctl]" /etc/supervisor/conf.d/supervisord.conf
+if ! grep -Fxq "[supervisord]" $config_file
     then
-    echo "[supervisorctl]" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
-    echo "serverurl=unix:///var/run/supervisor.sock" | sudo tee -a /etc/supervisor/conf.d/supervisord.conf
+    mkdir /var/log/supervisor
+    echo "[supervisord]" | sudo tee -a $config_file
+    echo "pidfile=/var/run/supervisord.pid" | sudo tee -a $config_file
+    echo "childlogdir=/var/log/supervisor" | sudo tee -a $config_file
+fi
+if ! grep -Fxq "[supervisorctl]" $config_file
+    then
+    echo "[supervisorctl]" | sudo tee -a $config_file
+    echo "serverurl=unix:///var/run/supervisor.sock" | sudo tee -a $config_file
 fi
 
 # Reread the supervisord config
-sudo /usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf reread
+sudo /usr/local/bin/supervisorctl -c $config_file reread
 
 # Update supervisord in cache without restarting all services
-sudo /usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf update
+sudo /usr/local/bin/supervisorctl -c $config_file update
 
 # Start/Restart processes through supervisord
-sudo /usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart daphne
-sudo /usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart worker
+sudo /usr/local/bin/supervisorctl -c $config_file restart daphne
+sudo /usr/local/bin/supervisorctl -c $config_file restart worker
 # sudo //usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart celeryworker &
 # sudo //usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart celeryheartbeat &
