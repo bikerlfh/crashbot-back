@@ -43,13 +43,13 @@ else
 fi
 
 # add alias to supervisord and supervisorctl
-if ! grep -Fxq "alias supervisord" $config_file
+if ! grep -Fxq "alias supervisord=/usr/local/bin/supervisord" $config_file
     then
     echo "" | sudo tee -a ~/.bashrc
     echo alias supervisord=/usr/local/bin/supervisord | sudo tee -a ~/.bashrc
 fi
 
-if ! grep -Fxq "alias supervisord" $config_file
+if ! grep -Fxq "alias supervisorctl=/usr/local/bin/supervisorctl" $config_file
     then
     echo alias supervisorctl=/usr/local/bin/supervisorctl | sudo tee -a ~/.bashrc
 fi
