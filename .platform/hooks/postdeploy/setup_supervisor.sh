@@ -59,7 +59,8 @@ fi
 #echo "Supervisor Running!"
 
 # Get django environment variables
-djangoenv=`export | tr '\n' ',' | sed 's/declare -x //g'  | sed 's/%/%%/g' | sed 's/export //g' | sed 's/$PATH/%(ENV_PATH)s/g' | sed 's/$PYTHONPATH//g' | sed 's/$LD_LIBRARY_PATH//g'`
+# djangoenv=`export | tr '\n' ',' | sed 's/declare -x //g'  | sed 's/%/%%/g' | sed 's/export //g' | sed 's/$PATH/%(ENV_PATH)s/g' | sed 's/$PYTHONPATH//g' | sed 's/$LD_LIBRARY_PATH//g'`
+djangoenv="RDS_DB_NAME=$RDS_DB_NAME,RDS_HOSTNAME=$RDS_HOSTNAME,RDS_PASSWORD=$RDS_PASSWORD,RDS_PORT=$RDS_PORT,RDS_USERNAME=$RDS_USERNAME,REDIS_HOSTNAME=$REDIS_HOSTNAME,REDIS_PORT=$REDIS_PORT,DEFAULT_SEQ_LEN=$DEFAULT_SEQ_LEN,GENERATE_AUTOMATIC_MODEL_TYPES=$GENERATE_AUTOMATIC_MODEL_TYPES,EPOCHS_SEQUENTIAL_LSTM=$EPOCHS_SEQUENTIAL_LSTM,PERCENTAGE_ACCEPTABLE=$PERCENTAGE_ACCEPTABLE,PERCENTAGE_MODEL_TO_INACTIVE=$PERCENTAGE_MODEL_TO_INACTIVE,DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL=$DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL,NUMBER_OF_MODELS_TO_PREDICT=$NUMBER_OF_MODELS_TO_PREDICT,NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL=$NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL"
 djangoenv=${djangoenv%?}
 
 # Create daemon configuraiton script
@@ -88,7 +89,7 @@ killasgroup=true
 ; so it starts first
 priority=998
 
-; environment=$djangoenv
+environment=$djangoenv
 
 [program:daphne]
 ; Set full path to channels program if using virtualenv
@@ -115,7 +116,7 @@ killasgroup=true
 ; so it starts first
 priority=998
 
-; environment=$djangoenv
+environment=$djangoenv
 "
 
 # Create the supervisord conf script
