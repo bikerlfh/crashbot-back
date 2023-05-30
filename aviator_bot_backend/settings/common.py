@@ -12,9 +12,15 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 # Standard Library
 from os import getenv
+from os.path import abspath, basename, dirname, join, normpath
 from pathlib import Path
 from datetime import timedelta
 from celery.schedules import crontab
+
+
+DJANGO_ROOT = dirname(dirname(abspath(__file__)))
+
+SITE_NAME = basename(DJANGO_ROOT)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -69,7 +75,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "aviator_bot_backend.urls"
+ROOT_URLCONF = f"{SITE_NAME}.urls"
 
 TEMPLATES = [
     {
