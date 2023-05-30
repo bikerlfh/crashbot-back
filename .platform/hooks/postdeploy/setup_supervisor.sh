@@ -42,16 +42,30 @@ else
     touch "$config_file"
 fi
 
+# add alias to supervisord and supervisorctl
+if ! grep -Fxq "alias supervisord" $config_file
+    then
+    echo "" | sudo tee -a ~/.bashrc
+    echo alias supervisord=/usr/local/bin/supervisord | sudo tee -a ~/.bashrc
+fi
+
+if ! grep -Fxq "alias supervisord" $config_file
+    then
+    echo alias supervisorctl=/usr/local/bin/supervisorctl | sudo tee -a ~/.bashrc
+fi
+
 #. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisord.conf > /etc/supervisor/supervisord.conf
 #. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisord.conf > /etc/supervisord.conf
 #. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisor_laravel.conf > /etc/supervisor/conf.d/supervisor_laravel.conf
 
-#if ps aux | grep "[/]usr/local/bin/supervisord"; then
-#    echo "supervisor is running"
-#else
-#    echo "starting supervisor"
-#    /usr/local/bin/supervisord
-#fi
+if ps aux | grep "[/]usr/local/bin/supervisord"; then
+    echo "supervisor is running"
+    sudo supervisorctl -c $config_file stop all
+    echo "supervisor stopped"
+else
+    echo "starting supervisor"
+    # sudo supervisord -c $config_file
+fi
 
 # /usr/local/bin/supervisorctl reread
 # /usr/local/bin/supervisorctl update
@@ -173,20 +187,6 @@ if ! grep -Fxq "[rpcinterface:supervisor]" $config_file
     echo "supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface" | sudo tee -a $config_file
 fi
 
-# add alias to supervisord and supervisorctl
-if ! grep -Fxq "alias supervisord" $config_file
-    then
-    echo "" | sudo tee -a ~/.bashrc
-    echo alias supervisord=/usr/local/bin/supervisord | sudo tee -a ~/.bashrc
-fi
-
-if ! grep -Fxq "alias supervisord" $config_file
-    then
-    echo alias supervisorctl=/usr/local/bin/supervisorctl | sudo tee -a ~/.bashrc
-fi
-
-# sudo supervisorctl -c /etc/supervisor/supervisord.conf stop all
-sudo supervisord -c $config_file
 # Reread the supervisord config
 sudo supervisorctl -c $config_file reread
 
