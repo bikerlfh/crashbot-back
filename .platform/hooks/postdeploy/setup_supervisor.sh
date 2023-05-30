@@ -137,8 +137,12 @@ if ! grep -Fxq "[unix_http_server]" $config_file
 fi
 if ! grep -Fxq "[supervisord]" $config_file
     then
-    mkdir /var/log/supervisor
+    # validate if path exists
+    if [ ! -d /var/log/supervisor ]; then
+        mkdir /var/log/supervisor
+    fi
     echo "[supervisord]" | sudo tee -a $config_file
+    echo "logfile=/var/log/supervisor/supervisord.log" | sudo tee -a $config_file
     echo "pidfile=/var/run/supervisord.pid" | sudo tee -a $config_file
     echo "childlogdir=/var/log/supervisor" | sudo tee -a $config_file
 fi
@@ -147,15 +151,17 @@ if ! grep -Fxq "[supervisorctl]" $config_file
     echo "[supervisorctl]" | sudo tee -a $config_file
     echo "serverurl=unix:///var/run/supervisor.sock" | sudo tee -a $config_file
 fi
-
+echo alias supervisord=/usr/local/bin/supervisord | sudo tee -a ~/.bashrc
+echo alias supervisorctl=/usr/local/bin/supervisorctl | sudo tee -a ~/.bashrc
+sudo supervisord -c $config_file
 # Reread the supervisord config
-sudo /usr/local/bin/supervisorctl -c $config_file reread
+sudo supervisorctl -c $config_file reread
 
 # Update supervisord in cache without restarting all services
-sudo /usr/local/bin/supervisorctl -c $config_file update
+sudo supervisorctl -c $config_file update
 
 # Start/Restart processes through supervisord
-sudo /usr/local/bin/supervisorctl -c $config_file restart daphne
-sudo /usr/local/bin/supervisorctl -c $config_file restart worker
-# sudo //usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart celeryworker &
-# sudo //usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart celeryheartbeat &
+sudo supervisorctl -c $config_file restart daphne
+sudo supervisorctl -c $config_file restart worker
+# sudo /usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart celeryworker &
+# sudo /usr/local/bin/supervisorctl -c /etc/supervisor/conf.d/supervisord.conf restart celeryheartbeat &
