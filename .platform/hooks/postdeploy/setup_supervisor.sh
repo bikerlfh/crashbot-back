@@ -1,77 +1,5 @@
-#!/usr/bin/env bash
-# ref: https://hackernoon.com/setting-up-django-channels-on-aws-elastic-beanstalk-716fd5a49c4a
-#!/bin/bash
-
-# If you want to have more than one application, and in just one of them to run the supervisor, uncomment the lines below, 
-# and add the env variable IS_WORKER as true in the EBS application you want the supervisor
-
-#if [ "${IS_WORKER}" != "true" ]; then
-#    echo "Not a worker. Set variable IS_WORKER=true to run supervisor on this instance"
-#    exit 0
-#fi
-
-echo "Supervisor - starting setup"
-. /opt/elasticbeanstalk/deployment/env
-
-
-if [ ! -f /usr/local/bin/supervisord ]; then
-    echo "installing supervisor"
-    sudo yum install pip
-    sudo pip install supervisor
-else
-    echo "supervisor already installed"
-fi
-
-if [ ! -d /etc/supervisor ]; then
-    mkdir /etc/supervisor
-    echo "create supervisor directory"
-fi
-
-if [ ! -d /etc/supervisor/conf.d ]; then
-    mkdir /etc/supervisor/conf.d
-    echo "create supervisor configs directory"
-fi
-
+# declare supervisord config file
 config_file="/etc/supervisor/supervisord.conf"
-
-# Verificar si el archivo existe
-if [ -f "$config_file" ]; then
-    echo "Config file already exists"
-else
-    echo "Config file created."
-    touch "$config_file"
-fi
-
-# add alias to supervisord and supervisorctl
-if ! grep -Fxq "alias supervisord" $config_file
-    then
-    echo "" | sudo tee -a ~/.bashrc
-    echo alias supervisord=/usr/local/bin/supervisord | sudo tee -a ~/.bashrc
-fi
-
-if ! grep -Fxq "alias supervisord" $config_file
-    then
-    echo alias supervisorctl=/usr/local/bin/supervisorctl | sudo tee -a ~/.bashrc
-fi
-
-#. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisord.conf > /etc/supervisor/supervisord.conf
-#. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisord.conf > /etc/supervisord.conf
-#. /opt/elasticbeanstalk/deployment/env && cat .ebextensions/supervisor/supervisor_laravel.conf > /etc/supervisor/conf.d/supervisor_laravel.conf
-
-if ps aux | grep "[/]usr/local/bin/supervisord"; then
-    echo "supervisor is running"
-    sudo supervisorctl -c $config_file stop all
-    echo "supervisor stopped"
-else
-    echo "starting supervisor"
-    # sudo supervisord -c $config_file
-fi
-
-# /usr/local/bin/supervisorctl reread
-# /usr/local/bin/supervisorctl update
-
-#echo "Supervisor Running!"
-
 # Get django environment variables
 # djangoenv=`export | tr '\n' ',' | sed 's/declare -x //g'  | sed 's/%/%%/g' | sed 's/export //g' | sed 's/$PATH/%(ENV_PATH)s/g' | sed 's/$PYTHONPATH//g' | sed 's/$LD_LIBRARY_PATH//g'`
 djangoenv="DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE,RDS_DB_NAME=$RDS_DB_NAME,RDS_HOSTNAME=$RDS_HOSTNAME,RDS_PASSWORD=$RDS_PASSWORD,RDS_PORT=$RDS_PORT,RDS_USERNAME=$RDS_USERNAME,REDIS_HOSTNAME=$REDIS_HOSTNAME,REDIS_PORT=$REDIS_PORT,DEFAULT_SEQ_LEN=$DEFAULT_SEQ_LEN,GENERATE_AUTOMATIC_MODEL_TYPES=$GENERATE_AUTOMATIC_MODEL_TYPES,EPOCHS_SEQUENTIAL_LSTM=$EPOCHS_SEQUENTIAL_LSTM,PERCENTAGE_ACCEPTABLE=$PERCENTAGE_ACCEPTABLE,PERCENTAGE_MODEL_TO_INACTIVE=$PERCENTAGE_MODEL_TO_INACTIVE,DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL=$DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL,NUMBER_OF_MODELS_TO_PREDICT=$NUMBER_OF_MODELS_TO_PREDICT,NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL=$NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL"
@@ -186,6 +114,7 @@ if ! grep -Fxq "[rpcinterface:supervisor]" $config_file
     echo "[rpcinterface:supervisor]" | sudo tee -a $config_file
     echo "supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface" | sudo tee -a $config_file
 fi
+
 
 # Reread the supervisord config
 sudo supervisorctl -c $config_file reread
