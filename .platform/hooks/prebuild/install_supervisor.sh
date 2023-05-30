@@ -11,7 +11,7 @@
 #fi
 
 echo "Supervisor - starting setup"
-. /opt/elasticbeanstalk/deployment/env
+# . /opt/elasticbeanstalk/deployment/env
 
 
 if [ ! -f /usr/local/bin/supervisord ]; then
