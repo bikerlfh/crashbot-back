@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+#!/bin/bash
+
 # declare supervisord config file
 config_file="/etc/supervisor/supervisord.conf"
 # Get django environment variables
