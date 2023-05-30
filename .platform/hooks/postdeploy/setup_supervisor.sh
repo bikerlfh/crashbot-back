@@ -65,7 +65,7 @@ djangoenv=${djangoenv%?}
 # Create daemon configuraiton script
 daemonconf="[program:worker]
 ; Set full path to program if using virtualenv
-command=/bin/bash -c 'source /var/app/venv/*/bin/activate && python /var/app/current/manage.py runworker channels default'
+command=/bin/bash -c 'source /var/app/venv/*/bin/activate && python /var/app/current/manage.py runworker channels default --settings=$DJANGO_SETTINGS_MODULE'
 directory=/var/app/current
 user=ec2-user
 numprocs=1
@@ -173,9 +173,18 @@ if ! grep -Fxq "[rpcinterface:supervisor]" $config_file
 fi
 
 # add alias to supervisord and supervisorctl
-echo alias supervisord=/usr/local/bin/supervisord | sudo tee -a ~/.bashrc
-echo alias supervisorctl=/usr/local/bin/supervisorctl | sudo tee -a ~/.bashrc
+if ! grep -Fxq "alias supervisord" $config_file
+    then
+    echo "" | sudo tee -a ~/.bashrc
+    echo alias supervisord=/usr/local/bin/supervisord | sudo tee -a ~/.bashrc
+fi
 
+if ! grep -Fxq "alias supervisord" $config_file
+    then
+    echo alias supervisorctl=/usr/local/bin/supervisorctl | sudo tee -a ~/.bashrc
+fi
+
+# sudo supervisorctl -c /etc/supervisor/supervisord.conf stop all
 sudo supervisord -c $config_file
 # Reread the supervisord config
 sudo supervisorctl -c $config_file reread
