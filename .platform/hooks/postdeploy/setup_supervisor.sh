@@ -65,7 +65,7 @@ djangoenv=${djangoenv%?}
 # Create daemon configuraiton script
 daemonconf="[program:worker]
 ; Set full path to program if using virtualenv
-command=/var/app/venv/*/bin/python /var/app/current/manage.py runworker channels default
+command=/bin/bash -c 'source /var/app/venv/*/bin/activate && python /var/app/current/manage.py runworker channels default'
 directory=/var/app/current
 user=ec2-user
 numprocs=1
@@ -88,11 +88,11 @@ killasgroup=true
 ; so it starts first
 priority=998
 
-environment=$djangoenv
+; environment=$djangoenv
 
 [program:daphne]
 ; Set full path to channels program if using virtualenv
-command=/var/app/venv/*/bin/daphne -b 0.0.0.0 -p 5000 aviator_bot_backend.asgi:application
+command=/bin/bash -c 'source /var/app/venv/*/bin/activate && daphne -b 0.0.0.0 -p 5000 aviator_bot_backend.asgi:application'
 directory=/var/app/current
 user=ec2-user
 numprocs=1
@@ -115,7 +115,7 @@ killasgroup=true
 ; so it starts first
 priority=998
 
-environment=$djangoenv
+; environment=$djangoenv
 "
 
 # Create the supervisord conf script
@@ -128,31 +128,54 @@ if ! grep -Fxq "[include]" $config_file
     echo "[include]" | sudo tee -a $config_file
     echo "files: /etc/supervisor/conf.d/*.conf" | sudo tee -a $config_file
 fi
-if ! grep -Fxq "[unix_http_server]" $config_file
-    then
-    echo "" | sudo tee -a $config_file
-    echo "[unix_http_server]" | sudo tee -a $config_file
-    echo "file=/var/run/supervisor.sock" | sudo tee -a $config_file
-    echo "chmod=0700"
-fi
+
+# if ! grep -Fxq "[unix_http_server]" $config_file
+#    then
+#    echo "" | sudo tee -a $config_file
+#    echo "[unix_http_server]" | sudo tee -a $config_file
+#    echo "file=/var/run/supervisor.sock" | sudo tee -a $config_file
+#    echo "chmod=0700" | sudo tee -a $config_file
+#fi
+
 if ! grep -Fxq "[supervisord]" $config_file
     then
     # validate if path exists
     if [ ! -d /var/log/supervisor ]; then
         mkdir /var/log/supervisor
     fi
+    echo "" | sudo tee -a $config_file
     echo "[supervisord]" | sudo tee -a $config_file
     echo "logfile=/var/log/supervisor/supervisord.log" | sudo tee -a $config_file
     echo "pidfile=/var/run/supervisord.pid" | sudo tee -a $config_file
     echo "childlogdir=/var/log/supervisor" | sudo tee -a $config_file
 fi
+
+if ! grep -Fxq "[inet_http_server]" $config_file
+    then
+    echo "" | sudo tee -a $config_file
+    echo "[inet_http_server]" | sudo tee -a $config_file
+    echo "port=127.0.0.1:9001" | sudo tee -a $config_file
+fi
+
 if ! grep -Fxq "[supervisorctl]" $config_file
     then
+    echo "" | sudo tee -a $config_file
     echo "[supervisorctl]" | sudo tee -a $config_file
-    echo "serverurl=unix:///var/run/supervisor.sock" | sudo tee -a $config_file
+    # echo "serverurl=unix:///var/run/supervisor.sock" | sudo tee -a $config_file
+    echo "serverurl=http://127.0.0.1:9001" | sudo tee -a $config_file
 fi
+
+if ! grep -Fxq "[rpcinterface:supervisor]" $config_file
+    then
+    echo "" | sudo tee -a $config_file
+    echo "[rpcinterface:supervisor]" | sudo tee -a $config_file
+    echo "supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface" | sudo tee -a $config_file
+fi
+
+# add alias to supervisord and supervisorctl
 echo alias supervisord=/usr/local/bin/supervisord | sudo tee -a ~/.bashrc
 echo alias supervisorctl=/usr/local/bin/supervisorctl | sudo tee -a ~/.bashrc
+
 sudo supervisord -c $config_file
 # Reread the supervisord config
 sudo supervisorctl -c $config_file reread
