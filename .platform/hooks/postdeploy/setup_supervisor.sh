@@ -8,6 +8,12 @@ config_file="/etc/supervisor/supervisord.conf"
 djangoenv="DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE,RDS_DB_NAME=$RDS_DB_NAME,RDS_HOSTNAME=$RDS_HOSTNAME,RDS_PASSWORD=$RDS_PASSWORD,RDS_PORT=$RDS_PORT,RDS_USERNAME=$RDS_USERNAME,REDIS_HOSTNAME=$REDIS_HOSTNAME,REDIS_PORT=$REDIS_PORT,DEFAULT_SEQ_LEN=$DEFAULT_SEQ_LEN,GENERATE_AUTOMATIC_MODEL_TYPES=$GENERATE_AUTOMATIC_MODEL_TYPES,EPOCHS_SEQUENTIAL_LSTM=$EPOCHS_SEQUENTIAL_LSTM,PERCENTAGE_ACCEPTABLE=$PERCENTAGE_ACCEPTABLE,PERCENTAGE_MODEL_TO_INACTIVE=$PERCENTAGE_MODEL_TO_INACTIVE,DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL=$DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL,NUMBER_OF_MODELS_TO_PREDICT=$NUMBER_OF_MODELS_TO_PREDICT,NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL=$NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL"
 djangoenv=${djangoenv%?}
 
+
+if [ ! -d /run/daphne/ ]; then
+    mkdir /run/daphne/
+    echo "create /run/daphne/ directory"
+fi
+
 # Create daemon configuraiton script
 daemonconf="[program:worker]
 ; Set full path to program if using virtualenv
@@ -37,13 +43,19 @@ priority=998
 environment=$djangoenv
 
 [program:daphne]
+# TCP socket used by Nginx backend upstream
+socket=tcp://localhost:8080
+command=/bin/bash -c 'source /var/app/venv/*/bin/activate && daphne -u /run/daphne/daphne%(process_num)d.sock --fd 0 --access-log - --proxy-headers aviator_bot_backend.asgi:application'
 ; Set full path to channels program if using virtualenv
-command=/bin/bash -c 'source /var/app/venv/*/bin/activate && daphne -b 0.0.0.0 -p 5000 aviator_bot_backend.asgi:application'
+; command=/bin/bash -c 'source /var/app/venv/*/bin/activate && daphne -b 0.0.0.0 -p 5000 aviator_bot_backend.asgi:application'
 directory=/var/app/current
 user=ec2-user
 numprocs=1
+# Give each process a unique name so they can be told apart
+process_name=asgi%(process_num)d
 stdout_logfile=/var/log/stdout_daphne.log
-stderr_logfile=/var/log/stderr_daphne.log
+;stderr_logfile=/var/log/stderr_daphne.log
+redirect_stderr=true
 autostart=true
 autorestart=true
 startsecs=10
