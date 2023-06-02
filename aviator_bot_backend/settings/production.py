@@ -3,7 +3,9 @@ from os import getenv
 
 DEBUG = False
 
-ALLOWED_HOSTS = getenv("ALLOWED_HOSTS", "").split(", ")
+ALLOWED_HOSTS = [
+    host.strip() for host in getenv("ALLOWED_HOSTS", "").split(",")
+]
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
