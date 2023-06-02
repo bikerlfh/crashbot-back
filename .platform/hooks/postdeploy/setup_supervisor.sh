@@ -12,37 +12,41 @@ djangoenv=${djangoenv%?}
 if [ ! -d /run/daphne/ ]; then
     mkdir /run/daphne/
     echo "create /run/daphne/ directory"
+    sudo chown -R ec2-user:ec2-user /run/daphne/
+    sudo chmod -R 755 /run/daphne/
 fi
 
+
 # Create daemon configuraiton script
-daemonconf="[program:worker]
-; Set full path to program if using virtualenv
-command=/bin/bash -c 'source /var/app/venv/*/bin/activate && python /var/app/current/manage.py runworker channels default --settings=$DJANGO_SETTINGS_MODULE'
-directory=/var/app/current
-user=ec2-user
-numprocs=1
-stdout_logfile=/var/log/stdout_worker.log
-stderr_logfile=/var/log/stderr_worker.log
-autostart=true
-autorestart=true
-startsecs=10
+daemonconf="
+;[program:worker]
+;; Set full path to program if using virtualenv
+;command=/bin/bash -c 'source /var/app/venv/*/bin/activate && python /var/app/current/manage.py runworker channels default --settings=$DJANGO_SETTINGS_MODULE'
+;directory=/var/app/current
+;user=ec2-user
+;numprocs=1
+;stdout_logfile=/var/log/stdout_worker.log
+;stderr_logfile=/var/log/stderr_worker.log
+;autostart=true
+;autorestart=true
+;startsecs=10
 
-; Need to wait for currently executing tasks to finish at shutdown.
-; Increase this if you have very long running tasks.
-stopwaitsecs = 600
+;; Need to wait for currently executing tasks to finish at shutdown.
+;; Increase this if you have very long running tasks.
+;stopwaitsecs = 600
 
-; When resorting to send SIGKILL to the program to terminate it
-; send SIGKILL to its whole process group instead,
-; taking care of its children as well.
-killasgroup=true
+;; When resorting to send SIGKILL to the program to terminate it
+;; send SIGKILL to its whole process group instead,
+;; taking care of its children as well.
+;killasgroup=true
 
-; if rabbitmq is supervised, set its priority higher
-; so it starts first
-priority=998
+;; if rabbitmq is supervised, set its priority higher
+;; so it starts first
+;priority=998
 
-environment=$djangoenv
+;environment=$djangoenv
 
-[program:daphne]
+[fcgi-program:asgi]
 # TCP socket used by Nginx backend upstream
 socket=tcp://localhost:8080
 command=/bin/bash -c 'source /var/app/venv/*/bin/activate && daphne -u /run/daphne/daphne%(process_num)d.sock --fd 0 --access-log - --proxy-headers aviator_bot_backend.asgi:application'
@@ -133,7 +137,6 @@ fi
 
 # Reread the supervisord config
 sudo supervisorctl -c $config_file reread
-
 # Update supervisord in cache without restarting all services
 sudo supervisorctl -c $config_file update
 

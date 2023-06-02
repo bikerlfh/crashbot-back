@@ -11,7 +11,6 @@
 #fi
 
 echo "Supervisor - starting setup"
-# . /opt/elasticbeanstalk/deployment/env
 
 
 if [ ! -f /usr/local/bin/supervisord ]; then
@@ -34,7 +33,6 @@ fi
 
 config_file="/etc/supervisor/supervisord.conf"
 
-# Verificar si el archivo existe
 if [ -f "$config_file" ]; then
     echo "Config file already exists"
 else

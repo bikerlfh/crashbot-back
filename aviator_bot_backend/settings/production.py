@@ -1,9 +1,9 @@
 from .common import *
 from os import getenv
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [host for host in getenv("ALLOWED_HOSTS", "").split(", ")]
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -19,3 +19,11 @@ DATABASES = {
 }
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS  # noqa
+
+# TODO add sentry log
+# sentry_sdk.init(
+#     dsn=environ.get('SENTRY_URL'),
+#     integrations=[DjangoIntegration()],
+#     environment=environ.get('ENVIRONMENT', 'negligent'),
+#     release=environ.get('RELEASE')
+# )
