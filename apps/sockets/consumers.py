@@ -121,8 +121,8 @@ class BotConsumer(AsyncWebsocketConsumer):
         await self._user_joined(
             unique_id=unique_id, channel_name=self.channel_name
         )
-        # remove this
-        client_host = self.scope.get('client')
+        # remove this. only for testing
+        """client_host = self.scope.get('client')
         server_host = self.scope.get('server')
         headers_ = {}
         for header in self.scope['headers']:
@@ -137,7 +137,7 @@ class BotConsumer(AsyncWebsocketConsumer):
                     headers=headers_
                 ),
             },
-        )
+        )"""
 
     async def disconnect(self, close_code):
         home_bet_id = self.scope.get("home_bet_id", None)
