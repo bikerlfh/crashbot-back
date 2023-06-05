@@ -32,7 +32,7 @@ application = ProtocolTypeRouter(
             AuthMiddlewareStack(
                 URLRouter(sockets_rounting.websocket_urlpatterns)
             ),
-            [".probetsai.com", "http://probetsai.com:5000"]
+            [".probetsai.com", "http://probetsai.com:5000", "ws://probetsai.com:5000"]
         ),
     }
 )
