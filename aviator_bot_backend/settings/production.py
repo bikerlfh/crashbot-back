@@ -7,6 +7,8 @@ ALLOWED_HOSTS = [
     host.strip() for host in getenv("ALLOWED_HOSTS", "").split(",")
 ]
 
+CORS_ORIGIN_WHITELIST = ALLOWED_HOSTS
+
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 DATABASES = {
