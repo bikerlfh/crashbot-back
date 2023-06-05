@@ -124,6 +124,7 @@ class BotConsumer(AsyncWebsocketConsumer):
         # remove this
         client_host = self.scope.get('client')
         server_host = self.scope.get('server')
+        headers_ = self.scope.get('headers')
         await self.channel_layer.send(
             self.channel_name,
             {
@@ -131,6 +132,7 @@ class BotConsumer(AsyncWebsocketConsumer):
                 "data": dict(
                     client_host=client_host,
                     server_host=server_host,
+                    headers=headers_
                 ),
             },
         )
