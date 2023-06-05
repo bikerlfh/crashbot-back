@@ -124,7 +124,9 @@ class BotConsumer(AsyncWebsocketConsumer):
         # remove this
         client_host = self.scope.get('client')
         server_host = self.scope.get('server')
-        headers_ = self.scope.get('headers')
+        headers_ = {}
+        for header in self.scope['headers']:
+            headers_[header[0].decode('utf-8')] = header[1].decode('utf-8')
         await self.channel_layer.send(
             self.channel_name,
             {
