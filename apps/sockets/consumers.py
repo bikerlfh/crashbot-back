@@ -121,6 +121,17 @@ class BotConsumer(AsyncWebsocketConsumer):
         await self._user_joined(
             unique_id=unique_id, channel_name=self.channel_name
         )
+        # remove this
+        client_host = self.scope.get('client')
+        await self.channel_layer.send(
+            self.channel_name,
+            {
+                "type": "send_message",
+                "data": dict(
+                    client_host=client_host
+                ),
+            },
+        )
 
     async def disconnect(self, close_code):
         home_bet_id = self.scope.get("home_bet_id", None)

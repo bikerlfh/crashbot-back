@@ -22,7 +22,6 @@ from channels.security.websocket import AllowedHostsOriginValidator, OriginValid
 from apps.sockets import routing as sockets_rounting
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "aviator_bot_backend.settings.development")
-
 django_asgi_app = get_asgi_application()
 
 application = ProtocolTypeRouter(
@@ -32,7 +31,7 @@ application = ProtocolTypeRouter(
             AuthMiddlewareStack(
                 URLRouter(sockets_rounting.websocket_urlpatterns)
             ),
-            [".probetsai.com", "http://.probetsai.com:5000", "http://probetsai.com"],
+            ["*"],
         ),
     }
 )
