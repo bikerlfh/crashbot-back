@@ -13,7 +13,7 @@ CORS_ORIGIN_WHITELIST += [f"ws://{host}" for host in ALLOWED_HOSTS]
 CORS_ORIGIN_WHITELIST += [f"wss://{host}" for host in ALLOWED_HOSTS]
 
 
-SESSION_COOKIE_DOMAIN = '.probetsai.com'
+SESSION_COOKIE_DOMAIN = 'probetsai.com'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
