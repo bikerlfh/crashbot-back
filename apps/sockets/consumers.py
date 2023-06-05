@@ -123,12 +123,14 @@ class BotConsumer(AsyncWebsocketConsumer):
         )
         # remove this
         client_host = self.scope.get('client')
+        server_host = self.scope.get('server')
         await self.channel_layer.send(
             self.channel_name,
             {
                 "type": "send_message",
                 "data": dict(
-                    scope=self.scope
+                    client_host=client_host,
+                    server_host=server_host,
                 ),
             },
         )
