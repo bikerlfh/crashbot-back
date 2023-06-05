@@ -128,7 +128,7 @@ class BotConsumer(AsyncWebsocketConsumer):
             {
                 "type": "send_message",
                 "data": dict(
-                    client_host=client_host
+                    scope=self.scope
                 ),
             },
         )
