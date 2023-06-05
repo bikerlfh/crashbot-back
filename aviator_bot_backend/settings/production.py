@@ -9,6 +9,8 @@ ALLOWED_HOSTS = [
 
 CORS_ORIGIN_WHITELIST = [f"http://{host}" for host in ALLOWED_HOSTS]
 CORS_ORIGIN_WHITELIST += [f"https://{host}" for host in ALLOWED_HOSTS]
+CORS_ORIGIN_WHITELIST += [f"ws://{host}" for host in ALLOWED_HOSTS]
+CORS_ORIGIN_WHITELIST += [f"wss://{host}" for host in ALLOWED_HOSTS]
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
