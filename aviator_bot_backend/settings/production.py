@@ -28,7 +28,7 @@ DATABASES = {
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS  # noqa
 
 # static files
-STORAGES = {"staticfiles": {"BACKEND": "storages.backends.s3boto3.S3StaticStorage", "OPTIONS": {"location": "static"}}}
+STORAGES = {"staticfiles": {"BACKEND": "aviator_bot_backend.custom_storage.StaticStorage"}}
 
 AWS_ACCESS_KEY_ID = getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = getenv("AWS_SECRET_ACCESS_KEY")
