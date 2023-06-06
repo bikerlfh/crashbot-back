@@ -75,3 +75,49 @@ def save_multipliers(
         )
     HomeBetMultiplier.objects.bulk_create(_list_multipliers)
     return multipliers
+
+
+def export_multipliers_to_csv(
+    *, is_production_data: Optional[bool] = True
+) -> str:
+    import csv
+    filter_ = {}
+    file_name = f"multiplier_data_{datetime.now().strftime('%d%m%Y')}.csv"
+    if is_production_data:
+        filter_.update(home_bet_id__in=[2, 3, 4])
+        file_name = f"prod_{file_name}"
+    data = selectors.filter_multipliers(
+        filter_=filter_
+    ).order_by('id').values(
+        "id",
+        "created_at",
+        "updated_at",
+        "multiplier",
+        "multiplier_dt",
+        "home_bet_id"
+    )
+    if not data:
+        raise ValidationError("multipliers not found")
+    file_path = f"data/{file_name}"
+    with open(file_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow([
+            "id",
+            "created_at",
+            "updated_at",
+            "multiplier",
+            "multiplier_dt",
+            "home_bet_id"
+        ])
+        i = 0
+        for item in data:
+            i += 1
+            writer.writerow([
+                i,
+                item["created_at"],
+                item["updated_at"],
+                item["multiplier"],
+                item["multiplier_dt"],
+                item["home_bet_id"]
+            ])
+    return file_path

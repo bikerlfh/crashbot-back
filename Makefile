@@ -46,7 +46,7 @@ generate-category-result: ## generate category result for all models
 	docker compose run --rm --entrypoint=python worker manage.py generate_category_results
 
 export-multipliers-to-csv: ## export multipliers to csv
-	docker compose run --rm --entrypoint=python worker manage.py export_multipliers_to_csv ${home_bet_id}
+	docker compose run --rm --entrypoint=python worker manage.py export_multipliers_to_csv ${is_production_data}
 
 create-super-user: ## loaddata
 	docker compose run --rm --entrypoint=python worker manage.py createsuperuser

@@ -31,6 +31,14 @@ def filter_home_bet_in_play() -> QuerySet[HomeBet]:
     ).distinct("id")
 
 
+def filter_multipliers(
+    *,
+    filter_: Optional[dict] = None,
+) -> QuerySet[HomeBetMultiplier]:
+    filter_ = filter_ or {}
+    return HomeBetMultiplier.objects.filter(**filter_)
+
+
 def get_last_multipliers(
     *,
     home_bet_id: int,
