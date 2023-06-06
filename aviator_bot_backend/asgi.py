@@ -12,11 +12,12 @@ import os
 
 # Django
 from django.core.asgi import get_asgi_application
+from django.conf import settings
 
 # Libraries
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.security.websocket import OriginValidator  # AllowedHostsOriginValidator
+from channels.security.websocket import OriginValidator, AllowedHostsOriginValidator
 
 # Internal
 from apps.sockets import routing as sockets_rounting
@@ -24,14 +25,27 @@ from apps.sockets import routing as sockets_rounting
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "aviator_bot_backend.settings.development")
 django_asgi_app = get_asgi_application()
 
-application = ProtocolTypeRouter(
-    {
-        # "http": django_asgi_app,
-        "websocket": OriginValidator(
-            AuthMiddlewareStack(
-                URLRouter(sockets_rounting.websocket_urlpatterns)
+
+if not settings.DEBUG:
+    # PRODUCTION
+    application = ProtocolTypeRouter(
+        {
+            "websocket": OriginValidator(
+                AuthMiddlewareStack(
+                    URLRouter(sockets_rounting.websocket_urlpatterns)
+                ),
+                ["*"],  # CUSTOM SECURITY
             ),
-            ["*"],  # CUSTOM SECURITY
-        ),
-    }
-)
+        }
+    )
+else:
+    application = ProtocolTypeRouter(
+        {
+            "http": django_asgi_app,
+            "websocket": AllowedHostsOriginValidator(
+                AuthMiddlewareStack(
+                    URLRouter(sockets_rounting.websocket_urlpatterns)
+                )
+            ),
+        }
+    )
