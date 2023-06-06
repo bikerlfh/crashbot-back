@@ -1,6 +1,6 @@
 # Django
 from rest_framework import serializers
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -10,6 +10,8 @@ from apps.django_projects.predictions.constants import BotType, ModelStatus
 from apps.utils.django.mixin import APIErrorsMixin
 from apps.utils.rest.serializers import inline_serializer
 from apps.utils.tools import enum_to_choices
+from apps.utils.django.views.cache import cache_on_request_data
+
 
 
 class PredictionView(
@@ -65,7 +67,7 @@ class ModelHomeBetView(
     APIErrorsMixin,
     APIView,
 ):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     class InputSerializer(serializers.Serializer):
         home_bet_id = serializers.IntegerField()
@@ -153,6 +155,7 @@ class BotView(
             many=True,
         )
 
+    @cache_on_request_data(cache_timeout=60 * 60 * 24 * 7)
     def get(self, request):
         in_serializer = self.InputSerializer(data=request.GET)
         in_serializer.is_valid(raise_exception=True)
@@ -166,7 +169,7 @@ class EvaluateModelView(
     APIErrorsMixin,
     APIView,
 ):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     class InputSerializer(serializers.Serializer):
         model_home_bet_id = serializers.IntegerField()
@@ -219,6 +222,7 @@ class GetPositionValuesView(
     class InputSerializer(serializers.Serializer):
         home_bet_id = serializers.IntegerField()
 
+    @cache_on_request_data(cache_timeout=60 * 15)
     def get(self, request):
         in_serializer = self.InputSerializer(data=request.GET)
         in_serializer.is_valid(raise_exception=True)

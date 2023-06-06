@@ -1,6 +1,6 @@
 # Django
 from rest_framework import serializers, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.http import HttpResponse
@@ -8,6 +8,7 @@ from django.http import HttpResponse
 # Internal
 from apps.django_projects.core import services
 from apps.utils.django.mixin import APIErrorsMixin
+from apps.utils.django.views.cache import cache_on_request_data
 
 
 def health_check(request):
@@ -34,6 +35,7 @@ class HomeBetView(
             child=serializers.CharField(max_length=3)
         )
 
+    @cache_on_request_data(cache_timeout=60*60*24*7)
     def get(self, request):
         in_serializer = self.InputSerializer(data=request.GET)
         in_serializer.is_valid(raise_exception=True)
@@ -69,6 +71,8 @@ class HomeBetMultiplierView(
         )
 
     def get(self, request):
+        self.permission_classes = [IsAdminUser]
+        self.check_permissions(request)
         in_serializer = self.InputGetSerializer(data=request.GET)
         in_serializer.is_valid(raise_exception=True)
         multipliers = services.get_home_bet_multipliers(

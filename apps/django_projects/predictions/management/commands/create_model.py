@@ -21,6 +21,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "model_type",
             type=str,
+            nargs="?",
             help="model type (sequential, sequential_lstm, transformer)",
         )
         parser.add_argument(
@@ -30,7 +31,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         home_bet_id = options["home_bet_id"]
         seq_len = options["seq_len"] or DEFAULT_SEQ_LEN
-        model_type = ModelType(options["model_type"])
+        model_type_ = options["model_type"] or ModelType.SEQUENTIAL_LSTM.value
+        model_type = ModelType(model_type_)
         model_home_bet = services.generate_model(
             home_bet_id=home_bet_id,
             seq_len=seq_len,

@@ -1,15 +1,18 @@
 # Standard Library
+import logging
 from datetime import datetime
 from decimal import Decimal
 from typing import Any, Optional
-
 # Django
+from django.conf import settings
 from rest_framework.exceptions import ValidationError
 
 # Internal
 from apps.django_projects.core import selectors
 from apps.django_projects.core.models import HomeBetMultiplier
 from apps.django_projects.core.strategies import multiplier_save
+
+logger = logging.getLogger(__name__)
 
 
 def get_home_bet(
@@ -121,3 +124,31 @@ def export_multipliers_to_csv(
                 item["home_bet_id"]
             ])
     return file_path
+
+
+def load_data_from_csv(*, file_path: str) -> None:
+    import csv
+    if not settings.DEBUG:
+        logger.warning(
+            "load_data_from_csv only works in debug mode"
+        )
+        return
+    data = []
+    with open(file_path, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            data.append(HomeBetMultiplier(
+                id=int(row["id"]),
+                created_at=row["created_at"],
+                updated_at=row["updated_at"],
+                multiplier=row["multiplier"],
+                multiplier_dt=row["multiplier_dt"],
+                home_bet_id=int(row["home_bet_id"])
+            ))
+    batch_size = 100
+    batches = [data[i:i + batch_size] for i in range(0, len(data), batch_size)]
+    for batch in batches:
+        HomeBetMultiplier.objects.bulk_create(batch, batch_size, ignore_conflicts=True)
+        # from apps.django_projects.core.services import load_data_from_csv
+        # load_data_from_csv(file_path='data/prod_multiplier_data_05062023.csv')
+

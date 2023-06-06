@@ -9,7 +9,7 @@ from django.conf import settings
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 # Internal
-from apps.sockets.constants import BOT_CHANNEL_NAME
+from apps.sockets.constants import BOT_CHANNEL_NAME, APP_VERSION
 from apps.sockets.models import SocketMessage, UserConnection
 
 logger = logging.getLogger(__name__)
@@ -132,23 +132,18 @@ class BotConsumer(AsyncWebsocketConsumer):
         await self._user_joined(
             unique_id=unique_id, channel_name=self.channel_name
         )
-        # remove this. only for testing
-        """client_host = self.scope.get('client')
-        server_host = self.scope.get('server')
-        headers_ = {}
-        for header in self.scope['headers']:
-            headers_[header[0].decode('utf-8')] = header[1].decode('utf-8')
+        # TODO implement md5 hash to validate the app version
         await self.channel_layer.send(
             self.channel_name,
             {
                 "type": "send_message",
                 "data": dict(
-                    client_host=client_host,
-                    server_host=server_host,
-                    headers=headers_
+                    func="validate_app_version", data=dict(
+                        app_version=APP_VERSION
+                    )
                 ),
             },
-        )"""
+        )
 
     async def disconnect(self, close_code):
         home_bet_id = self.scope.get("home_bet_id", None)

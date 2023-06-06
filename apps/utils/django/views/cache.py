@@ -5,19 +5,28 @@ from rest_framework.response import Response
 
 
 def cache_on_request_data(cache_timeout=None):
+    """
+    Decorator for views that caches the response of a request
+    based on the request data.
+    cache_timeout: timeout in seconds
+    send 'refresh=True' in the request (QueryParams) to delete the cache
+    """
     def decorator(view_func):
         def _wrapped_view_func(view, request, *args, **kwargs):
             request_data = ''
+            refresh_cache = request.GET.get('refresh', "False")
             # Serialize request data
             if request.method == 'GET':
-                request_data = json.dumps(request.GET.dict(), sort_keys=True)
+                data = request.GET.dict()
+                data.pop('refresh', None)
+                request_data = json.dumps(data, sort_keys=True)
             elif request.method == 'POST':
                 request_data = json.dumps(request.data, sort_keys=True)
             # Use serialized request data to generate a unique cache key
             cache_key = f"{view.__class__.__name__}" \
                         f"{hashlib.sha256(request_data.encode()).hexdigest()}"
             # If 'refresh' parameter is True, delete the cache
-            if request.GET.get('refresh') == 'True':
+            if refresh_cache == 'True':
                 cache.delete(cache_key)
             cache_response = cache.get(cache_key)
             if not cache_response:
