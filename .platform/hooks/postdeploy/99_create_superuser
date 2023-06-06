@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Obtén el nombre de usuario y el correo electrónico para el superusuario
+username="admin"
+email="admin@example.com"
+
+# Verifica si el superusuario ya existe en la base de datos de Django
+if ! python manage.py shell -c "from django.contrib.auth import get_user_model; User = get_user_model(); exit(0) if User.objects.filter(is_superuser=True).exists() else exit(1)"; then
+  echo "Superuser already exists. Skipping superuser creation."
+  exit 0
+fi
+
+# Crea el superusuario
+if python manage.py createsuperuser --username="$username" --email="$email" --noinput; then
+  echo "Superuser created successfully."
+else
+  echo "Error creating superuser."
+  exit 1
+fi
+
+exit 0
