@@ -5,6 +5,7 @@ import uuid
 from typing import Optional
 
 # Libraries
+from django.conf import settings
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 # Internal
@@ -117,6 +118,16 @@ class BotConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(
             self.room_group_name, self.channel_name
         )
+        if not settings.DEBUG:
+            headers = self.scope.get("headers", [])
+            header_host = None
+            for header in headers:
+                if header[0].decode("utf-8") == "host":
+                    header_host = header[1].decode("utf-8")
+                    break
+            if header_host != settings.DOMAIN_NAME:
+                await self.close()
+                return
         await self.accept()
         await self._user_joined(
             unique_id=unique_id, channel_name=self.channel_name

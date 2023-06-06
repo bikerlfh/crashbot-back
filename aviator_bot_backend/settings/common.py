@@ -40,6 +40,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+DOMAIN_NAME = getenv("DOMAIN_NAME", "localhost")
 
 # Application definition
 DEFAULT_APPS = [
@@ -53,7 +54,7 @@ DEFAULT_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    'corsheaders',
+    # 'corsheaders',
     "channels",
     "rest_framework",
     "rest_framework_simplejwt",
