@@ -98,6 +98,90 @@
 					]
 				},
 				{
+					"name": "update-customer-balance",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customer_id\": 1,\n    \"home_bet_id\": 2,\n    \"amount\": 2000000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_local}}/customers/balance/",
+							"host": [
+								"{{url_local}}"
+							],
+							"path": [
+								"customers",
+								"balance",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "get-customer-balance",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8000/customers/balance/?home_bet_id=2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"customers",
+										"balance",
+										""
+									],
+									"query": [
+										{
+											"key": "customer_id",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "home_bet_id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"amount\": 1200000\n}"
+						}
+					]
+				},
+				{
 					"name": "customer-data",
 					"request": {
 						"auth": {
@@ -180,7 +264,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"home_bet_id\": 2,\n    \"balance_amount\": 1003.4455,\n    \"bets\": [\n        {\n            \"external_id\": \"test123\",\n            \"prediction\": 2.1,\n            \"multiplier\": 2.54,\n            \"multiplier_result\": 1.03,\n            \"amount\": 200\n        },\n        {\n            \"external_id\": \"test3444\",\n            \"prediction\": 2.1,\n            \"multiplier\": 2.54,\n            \"multiplier_result\": 1.03,\n            \"amount\": 500\n        }\n    ]\n}",
+							"raw": "{\n    \"home_bet_id\": 2,\n    \"bets\": [\n        {\n            \"external_id\": \"test123\",\n            \"prediction\": 2.1,\n            \"multiplier\": 2.54,\n            \"multiplier_result\": 1.03,\n            \"amount\": 200,\n            \"bet_type\": \"automatic\"\n        },\n        {\n            \"external_id\": \"test3444\",\n            \"prediction\": 2.1,\n            \"multiplier\": 2.54,\n            \"multiplier_result\": 1.03,\n            \"amount\": 500,\n            \"bet_type\": \"automatic\"\n        }\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -188,12 +272,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8000/bets/",
-							"protocol": "http",
+							"raw": "{{url_local}}/bets/",
 							"host": [
-								"localhost"
+								"{{url_local}}"
 							],
-							"port": "8000",
 							"path": [
 								"bets",
 								""
@@ -674,12 +756,13 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8000/home-bet/",
+					"raw": "http://crashbot.probetsai.com/home-bet/",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"crashbot",
+						"probetsai",
+						"com"
 					],
-					"port": "8000",
 					"path": [
 						"home-bet",
 						""
@@ -759,7 +842,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"home_bet_id\":2,\n    \"multipliers_\": [\n        4.25, 1.73, 3.42, 3.00, 2.63,\n        2.34, 1.32, 1.02, 48.56, 1.50,\n        1.60, 5.60, 3.40, 1.00, 1.64,\n        5.82, 5, 3, 2\n    ]\n}",
+					"raw": "{\n    \"home_bet_id\":2,\n    \"multipliers\": [\n        4.25, 1.73, 3.42, 3.00, 2.63,\n        2.34, 1.32, 1.02, 48.56, 1.50,\n        1.60, 5.60, 3.40, 1.00, 1.64,\n        5.82, 5, 3, 2\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -767,12 +850,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/predictions/predict/",
-					"protocol": "http",
+					"raw": "{{url_local}}/predictions/predict/",
 					"host": [
-						"localhost"
+						"{{url_local}}"
 					],
-					"port": "8000",
 					"path": [
 						"predictions",
 						"predict",
@@ -943,6 +1024,11 @@
 						{
 							"key": "bot_id",
 							"value": "4",
+							"disabled": true
+						},
+						{
+							"key": "refresh",
+							"value": "True",
 							"disabled": true
 						}
 					]

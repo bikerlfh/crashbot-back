@@ -11,15 +11,7 @@ class CustomerAdmin(admin.ModelAdmin):
 
 
 class CustomerBalanceAdmin(admin.ModelAdmin):
-    class BalanceForm(ModelForm):
-        password = CharField(widget=PasswordInput(render_value=True))
-
-        class Meta:
-            model = CustomerBalance
-            fields = "__all__"
-
-    list_display = ["customer", "amount"]
-    form = BalanceForm
+    list_display = ["customer", "home_bet", "amount"]
 
 
 admin.site.register(Customer, CustomerAdmin)

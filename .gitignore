@@ -7,7 +7,7 @@
 node_modules/
 dist/
 storage/
-
+*.h5
 # Compiled Java class files
 *.class
 

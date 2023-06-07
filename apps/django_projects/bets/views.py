@@ -31,9 +31,6 @@ class BetView(APIErrorsMixin, APIView):
 
     class InputPOSTSerializer(serializers.Serializer):
         home_bet_id = serializers.IntegerField()
-        balance_amount = serializers.DecimalField(
-            max_digits=18, decimal_places=2
-        )
         bets = inline_serializer(
             fields=dict(
                 external_id=serializers.CharField(max_length=50),
@@ -43,8 +40,6 @@ class BetView(APIErrorsMixin, APIView):
                 multiplier_result=serializers.FloatField(),
                 bet_type=serializers.ChoiceField(
                     choices=tools.enum_to_choices(BetType),
-                    allow_null=True,
-                    allow_blank=True,
                 ),
             ),
             many=True,
