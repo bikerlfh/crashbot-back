@@ -7,4 +7,9 @@ if [ ! -d /tmp/models_created ]; then
     echo "create temporal models_created directory"
 fi
 
-sudo cp /var/app/current/models_created/*.h5 /tmp/models_created/
+if ls /var/app/current/models_created/*.h5 1> /dev/null 2>&1; then
+    sudo cp /var/app/current/models_created/*.h5 /tmp/models_created/
+    echo "files .h5 copied successfully"
+else
+    echo "no files .h5 to copy"
+fi
