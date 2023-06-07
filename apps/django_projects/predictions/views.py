@@ -13,7 +13,6 @@ from apps.utils.tools import enum_to_choices
 from apps.utils.django.views.cache import cache_on_request_data
 
 
-
 class PredictionView(
     APIErrorsMixin,
     APIView,
@@ -54,6 +53,7 @@ class PredictionView(
             many=True,
         )
 
+    @cache_on_request_data(cache_timeout=60*2)
     def post(self, request):
         in_serializer = self.InputSerializer(data=request.data)
         in_serializer.is_valid(raise_exception=True)

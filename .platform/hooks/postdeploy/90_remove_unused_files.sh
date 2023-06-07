@@ -12,3 +12,5 @@ sudo rm /var/app/current/Dockerfile_telegram.dev
 sudo rm /var/app/current/postgres-healthy.sh
 sudo rm /var/app/current/tox.ini
 sudo rm /var/app/current/.envrc
+
+sudo chmod 777 /var/app/current/models_created
