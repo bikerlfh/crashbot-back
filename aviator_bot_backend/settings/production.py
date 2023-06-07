@@ -1,6 +1,9 @@
 from .common import *
 from os import getenv
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 DEBUG = False
 
 ALLOWED_HOSTS = [
@@ -35,10 +38,10 @@ AWS_SECRET_ACCESS_KEY = getenv("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = getenv("AWS_STORAGE_BUCKET_NAME")
 
 
-# TODO add sentry log
-# sentry_sdk.init(
-#     dsn=environ.get('SENTRY_URL'),
-#     integrations=[DjangoIntegration()],
-#     environment=environ.get('ENVIRONMENT', 'negligent'),
-#     release=environ.get('RELEASE')
-# )
+sentry_sdk.init(
+    dsn=getenv('SENTRY_URL'),
+    integrations=[DjangoIntegration()],
+    environment=getenv('ENVIRONMENT', 'negligent'),
+    release=getenv('RELEASE'),
+    traces_sample_rate=1.0,
+)

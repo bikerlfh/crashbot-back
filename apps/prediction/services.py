@@ -1,5 +1,6 @@
 # Standard Library
 import os
+import logging
 from decimal import Decimal
 from typing import Optional, Tuple
 
@@ -7,13 +8,13 @@ from typing import Optional, Tuple
 import numpy as np
 
 # Internal
-from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.django_projects.predictions.models import ModelHomeBet
-from apps.prediction import utils
-from apps.prediction.constants import DATA_EXPORT_PATH, ModelType, MODELS_PATH
+from apps.prediction.constants import ModelType, MODELS_PATH
 from apps.prediction.models.base import AverageInfo, PredictionData
 from apps.prediction.models.main import CoreModel
+
+logger = logging.getLogger(__name__)
 
 
 def create_model(

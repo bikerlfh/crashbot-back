@@ -1,4 +1,5 @@
 # Standard Library
+import logging
 from typing import Optional
 
 # Django
@@ -9,6 +10,8 @@ from apps.django_projects.bets import selectors
 from apps.django_projects.bets.constants import BetStatus, BetType
 from apps.django_projects.bets.models import Bet
 from apps.django_projects.customers import selectors as customer_selectors
+
+logger = logging.getLogger(__name__)
 
 
 def create_bets(

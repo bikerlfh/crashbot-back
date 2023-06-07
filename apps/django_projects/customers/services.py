@@ -1,3 +1,4 @@
+import logging
 # Django
 from rest_framework.exceptions import ValidationError
 
@@ -5,6 +6,8 @@ from rest_framework.exceptions import ValidationError
 from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.customers import selectors
 from apps.django_projects.customers.models import CustomerBalance
+
+logger = logging.getLogger(__name__)
 
 
 def get_customer_data(*, user_id: int) -> dict[str, any]:

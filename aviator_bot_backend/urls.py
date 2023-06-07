@@ -23,7 +23,8 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
     TokenVerifyView,
 )
-
+def trigger_error(request):
+    division_by_zero = 1 / 0
 urlpatterns = [
     path("admin/", admin.site.urls),
     path(
@@ -37,4 +38,8 @@ urlpatterns = [
     path("customers/", include("apps.django_projects.customers.urls")),
     path("bets/", include("apps.django_projects.bets.urls")),
     path("predictions/", include("apps.django_projects.predictions.urls")),
+    path('sentry-debug/', trigger_error),
 ]
+
+
+
