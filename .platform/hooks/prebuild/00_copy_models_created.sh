@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+#!/bin/bash
+
 if [ ! -d /tmp/models_created ]; then
     mkdir /tmp/models_created
     sudo chmod 777 /tmp/models_created
