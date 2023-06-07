@@ -1,8 +1,10 @@
 from .common import *
 from os import getenv
-
+import logging
 import sentry_sdk
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 DEBUG = False
 
@@ -38,9 +40,13 @@ AWS_SECRET_ACCESS_KEY = getenv("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = getenv("AWS_STORAGE_BUCKET_NAME")
 
 
+sentry_logging = LoggingIntegration(
+    level=logging.INFO, event_level=logging.WARNING
+)
+
 sentry_sdk.init(
     dsn=getenv('SENTRY_URL'),
-    integrations=[DjangoIntegration()],
+    integrations=[sentry_logging, DjangoIntegration(), CeleryIntegration()],
     environment=getenv('ENVIRONMENT', 'negligent'),
     release=getenv('RELEASE'),
     traces_sample_rate=1.0,
