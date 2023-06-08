@@ -25,7 +25,6 @@ from apps.sockets import routing as sockets_rounting
 os.environ.setdefault(
     "DJANGO_SETTINGS_MODULE", "aviator_bot_backend.settings.development"
 )
-django_asgi_app = get_asgi_application()
 
 
 if not settings.DEBUG:
@@ -39,6 +38,7 @@ if not settings.DEBUG:
         }
     )
 else:
+    django_asgi_app = get_asgi_application()
     application = ProtocolTypeRouter(
         {
             "http": django_asgi_app,
