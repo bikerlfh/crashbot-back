@@ -23,9 +23,7 @@ class _ChannelListener:
 
 
 class ChannelListener:
-    CHANNELS = [
-        _ChannelListener(**channel) for channel in CHANNEL_LISTENERS_CONFIG
-    ]
+    CHANNELS = [_ChannelListener(**channel) for channel in CHANNEL_LISTENERS_CONFIG]
 
     @staticmethod
     async def read_message(chat_id: int, message: str):
@@ -43,6 +41,4 @@ class ChannelListener:
             max_multiplier=channel_.max_multiplier,
             chat_id=channel_.chat_id,
         )
-        logger.info(
-            f"ChannelListener :: " f"multiplier bet sent to bots :: {channel_}"
-        )
+        logger.info(f"ChannelListener :: " f"multiplier bet sent to bots :: {channel_}")

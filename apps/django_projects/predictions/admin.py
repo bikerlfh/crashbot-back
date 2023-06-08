@@ -4,7 +4,7 @@ from django.forms import ChoiceField, ModelForm
 
 # Internal
 from apps.django_projects.predictions.constants import BotType
-from apps.django_projects.predictions.models import Bot, BotStrategy
+from apps.django_projects.predictions.models import Bot, BotStrategy, ModelHomeBet
 from apps.utils.tools import enum_to_choices
 
 
@@ -26,5 +26,37 @@ class BotStrategyAdmin(admin.ModelAdmin):
     list_filter = ["bot", "is_active"]
 
 
+class ModelHomeBetAdmin(admin.ModelAdmin):
+    list_display = [
+        "home_bet",
+        "model_type",
+        "status",
+        "average_predictions",
+        "result_date",
+    ]
+    list_filter = ["home_bet", "model_type", "status"]
+    readonly_fields = [
+        "name",
+        "home_bet",
+        "model_type",
+        "seq_len",
+        "status",
+        "average_predictions",
+        "average_bets",
+        "result_date",
+        "others",
+    ]
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 admin.site.register(Bot, BotAdmin)
 admin.site.register(BotStrategy, BotStrategyAdmin)
+admin.site.register(ModelHomeBet, ModelHomeBetAdmin)

@@ -35,16 +35,14 @@ class HomeBetView(
             child=serializers.CharField(max_length=3)
         )
 
-    @cache_on_request_data(cache_timeout=60*60*24*7)
+    @cache_on_request_data(cache_timeout=60 * 60 * 24 * 7)
     def get(self, request):
         in_serializer = self.InputSerializer(data=request.GET)
         in_serializer.is_valid(raise_exception=True)
         data = services.get_home_bet(
             home_bet_id=in_serializer.data.get("home_bet_id", None)
         )
-        out_serializer = self.OutputSerializer(
-            data=data, many=isinstance(data, list)
-        )
+        out_serializer = self.OutputSerializer(data=data, many=isinstance(data, list))
         out_serializer.is_valid(raise_exception=True)
         return Response(data=out_serializer.validated_data)
 
@@ -66,21 +64,15 @@ class HomeBetMultiplierView(
         )
 
     class OutputSerializer(serializers.Serializer):
-        multipliers = serializers.ListSerializer(
-            child=serializers.FloatField()
-        )
+        multipliers = serializers.ListSerializer(child=serializers.FloatField())
 
     def get(self, request):
         self.permission_classes = [IsAdminUser]
         self.check_permissions(request)
         in_serializer = self.InputGetSerializer(data=request.GET)
         in_serializer.is_valid(raise_exception=True)
-        multipliers = services.get_home_bet_multipliers(
-            **in_serializer.validated_data
-        )
-        out_serializer = self.OutputSerializer(
-            data=dict(multipliers=multipliers)
-        )
+        multipliers = services.get_home_bet_multipliers(**in_serializer.validated_data)
+        out_serializer = self.OutputSerializer(data=dict(multipliers=multipliers))
         out_serializer.is_valid(raise_exception=True)
         return Response(data=out_serializer.data)
 
@@ -88,10 +80,6 @@ class HomeBetMultiplierView(
         in_serializer = self.InputPostSerializer(data=request.data)
         in_serializer.is_valid(raise_exception=True)
         multipliers = services.save_multipliers(**in_serializer.validated_data)
-        out_serializer = self.OutputSerializer(
-            data=dict(multipliers=multipliers)
-        )
+        out_serializer = self.OutputSerializer(data=dict(multipliers=multipliers))
         out_serializer.is_valid(raise_exception=True)
-        return Response(
-            data=out_serializer.data, status=status.HTTP_201_CREATED
-        )
+        return Response(data=out_serializer.data, status=status.HTTP_201_CREATED)

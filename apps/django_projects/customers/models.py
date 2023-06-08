@@ -32,3 +32,6 @@ class CustomerBalance(BaseModel):
     class Meta:
         db_table = "customer_balance"
         unique_together = ("customer", "home_bet")
+
+    def __str__(self):
+        return f"{self.customer} - {self.home_bet}"

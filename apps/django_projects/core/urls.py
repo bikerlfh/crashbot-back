@@ -8,7 +8,7 @@ from django.urls import path
 from apps.django_projects.core import views
 
 urlpatterns: list[Any] = [
-    path('health/', views.health_check),
+    path("health/", views.health_check),
     path(
         "home-bet/",
         views.HomeBetView.as_view(),

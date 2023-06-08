@@ -75,19 +75,14 @@ class AbstractBaseModel(abc.ABC):
     def _compile_model(self) -> any:
         ...
 
-    def _split_data_to_train(
-        self, data: list[int]
-    ) -> Tuple[np.array, np.array]:
+    def _split_data_to_train(self, data: list[int]) -> Tuple[np.array, np.array]:
         """
         get the list of sequences and the list of next values
         @return: Tuple[train_data, test_data]
         the list of sequences and the list of next values
         """
         X = np.array(  # NOQA
-            [
-                data[i : i + self.seq_len]
-                for i in range(len(data) - self.seq_len)
-            ]
+            [data[i : i + self.seq_len] for i in range(len(data) - self.seq_len)]
         )
         y = np.array(data[self.seq_len :])
         return X, y
@@ -119,9 +114,7 @@ class AbstractBaseModel(abc.ABC):
     def predict(self, *, data: list[int]) -> PredictionData:
         ...
 
-    def _generate_model_path_to_save(
-        self, *, home_bet_id: int
-    ) -> Tuple[str, str]:
+    def _generate_model_path_to_save(self, *, home_bet_id: int) -> Tuple[str, str]:
         """
         generate the model path
         @param home_bet_id: the home bet id
@@ -151,9 +144,7 @@ class AbstractBaseModel(abc.ABC):
         @param probability_to_eval: the minimum probability of prediction to be considered
         @return: AverageInfo
         """
-        probability_to_eval = (
-            probability_to_eval or MIN_PROBABILITY_TO_EVALUATE_MODEL
-        )
+        probability_to_eval = probability_to_eval or MIN_PROBABILITY_TO_EVALUATE_MODEL
         data = utils.transform_multipliers_to_data(multipliers=multipliers)
         X, y = self._split_data_to_train(data)  # NOQA
         y_multiplier = np.array(multipliers[self.seq_len :])
@@ -179,10 +170,7 @@ class AbstractBaseModel(abc.ABC):
                     percentage_bets=0,
                 ),
             )
-            if (
-                self.APPLY_MIN_PROBABILITY
-                and probability < probability_to_eval
-            ):
+            if self.APPLY_MIN_PROBABILITY and probability < probability_to_eval:
                 continue
             if prediction > 3:
                 prediction = 3

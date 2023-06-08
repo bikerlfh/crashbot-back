@@ -1,4 +1,5 @@
 import logging
+
 # Django
 from rest_framework.exceptions import ValidationError
 
@@ -47,9 +48,7 @@ def create_customer_balance(
     return balance
 
 
-def get_customer_balance_data(
-    *, customer_id: int, home_bet_id: int
-) -> dict[str, any]:
+def get_customer_balance_data(*, customer_id: int, home_bet_id: int) -> dict[str, any]:
     balance = selectors.filter_balance(
         customer_id=customer_id, home_bet_id=home_bet_id
     ).first()

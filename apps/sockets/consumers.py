@@ -30,9 +30,7 @@ class BotConsumer(AsyncWebsocketConsumer):
     """
 
     GROUP_NAME = BOT_CHANNEL_NAME
-    user_connections: dict[int | str, dict[str, UserConnection]] = {
-        "initial": {}
-    }
+    user_connections: dict[int | str, dict[str, UserConnection]] = {"initial": {}}
 
     def _find_user(self, *, unique_id: str) -> UserConnection | None:
         for key, values in self.user_connections.items():
@@ -62,9 +60,7 @@ class BotConsumer(AsyncWebsocketConsumer):
             channel_name,
             {
                 "type": "send_message",
-                "data": dict(
-                    func="notify_allowed_to_save", data=dict(allowed=True)
-                ),
+                "data": dict(func="notify_allowed_to_save", data=dict(allowed=True)),
             },
         )
 
@@ -72,9 +68,7 @@ class BotConsumer(AsyncWebsocketConsumer):
         user = UserConnection(channel_name=channel_name, allowed_to_save=False)
         self.user_connections["initial"][unique_id] = user
 
-    async def _user_joined_to_home_bet(
-        self, *, home_bet_id: int, unique_id: str
-    ):
+    async def _user_joined_to_home_bet(self, *, home_bet_id: int, unique_id: str):
         user_allowed = self._find_user_allowed_to_save_multiplier(
             home_bet_id=home_bet_id
         )
@@ -90,9 +84,7 @@ class BotConsumer(AsyncWebsocketConsumer):
                 home_bet_id=home_bet_id, unique_id=unique_id
             )
 
-    async def _user_left(
-        self, *, unique_id: str, home_bet_id: Optional[int] = None
-    ):
+    async def _user_left(self, *, unique_id: str, home_bet_id: Optional[int] = None):
         if not home_bet_id:
             self.user_connections["initial"].pop(unique_id)
             return
@@ -107,17 +99,13 @@ class BotConsumer(AsyncWebsocketConsumer):
         if not home_bet_users:
             return
         unique_id = home_bet_users[0]
-        await self._notify_allowed_to_save(
-            home_bet_id=home_bet_id, unique_id=unique_id
-        )
+        await self._notify_allowed_to_save(home_bet_id=home_bet_id, unique_id=unique_id)
 
     async def connect(self):
         unique_id = str(uuid.uuid4())
         self.room_group_name = self.GROUP_NAME
         self.scope["unique_id"] = unique_id
-        await self.channel_layer.group_add(
-            self.room_group_name, self.channel_name
-        )
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         if not settings.DEBUG:
             headers = self.scope.get("headers", [])
             header_host = None
@@ -129,18 +117,14 @@ class BotConsumer(AsyncWebsocketConsumer):
                 await self.close()
                 return
         await self.accept()
-        await self._user_joined(
-            unique_id=unique_id, channel_name=self.channel_name
-        )
+        await self._user_joined(unique_id=unique_id, channel_name=self.channel_name)
         # TODO implement md5 hash to validate the app version
         await self.channel_layer.send(
             self.channel_name,
             {
                 "type": "send_message",
                 "data": dict(
-                    func="validate_app_version", data=dict(
-                        app_version=APP_VERSION
-                    )
+                    func="validate_app_version", data=dict(app_version=APP_VERSION)
                 ),
             },
         )
@@ -149,9 +133,7 @@ class BotConsumer(AsyncWebsocketConsumer):
         home_bet_id = self.scope.get("home_bet_id", None)
         unique_id = self.scope["unique_id"]
         await self._user_left(home_bet_id=home_bet_id, unique_id=unique_id)
-        await self.channel_layer.group_discard(
-            self.room_group_name, self.channel_name
-        )
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data=None, bytes_data=None):
         if text_data is None:

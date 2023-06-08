@@ -54,9 +54,7 @@ class GRUModel(AbstractBaseModel):
         )
         return model
 
-    def _split_data_to_train_gru(
-        self, data: list[int]
-    ) -> Tuple[np.array, np.array]:
+    def _split_data_to_train_gru(self, data: list[int]) -> Tuple[np.array, np.array]:
         """
         get the list of sequences and the list of next values
         @return: Tuple[train_data, test_data],
@@ -64,7 +62,7 @@ class GRUModel(AbstractBaseModel):
         """
         x, y = [], []
         for i in range(len(data) - self.seq_len):
-            x.append(data[i: i + self.seq_len])
+            x.append(data[i : i + self.seq_len])
             y.append(data[i + self.seq_len])
         x = np.array(x).reshape(-1, self.seq_len, 1) / float(self.num_classes)
         y = to_categorical(y, num_classes=self.num_classes)
@@ -85,13 +83,9 @@ class GRUModel(AbstractBaseModel):
             x, y, test_size=test_size, random_state=42
         )
         model = self._compile_model()
-        model.fit(
-            x_train, y_train, epochs=self._epochs, batch_size=32, verbose=2
-        )
+        model.fit(x_train, y_train, epochs=self._epochs, batch_size=32, verbose=2)
         loss, accuracy = model.evaluate(x_test, y_test, verbose=2)
-        name, model_path = self._generate_model_path_to_save(
-            home_bet_id=home_bet_id
-        )
+        name, model_path = self._generate_model_path_to_save(home_bet_id=home_bet_id)
         model.save(model_path)
         print("----------------------------------------------------------")
         print(f"-----MODEL: {name} LOSS: {loss} ACCURACY: {accuracy}-----")
@@ -123,7 +117,7 @@ class GRUModel(AbstractBaseModel):
         self.model = load_model(model_path)
 
     def predict(self, *, data: list[int]) -> PredictionData:
-        input_sequence = np.array(data[-self.seq_len:]).reshape(
+        input_sequence = np.array(data[-self.seq_len :]).reshape(
             1, self.seq_len, 1
         ) / float(self.num_classes)
         probabilities = self.model.predict(input_sequence)[0]

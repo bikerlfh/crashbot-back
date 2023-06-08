@@ -31,9 +31,7 @@ def send_message_to_user(*, message: str, customer_id: int, **_kwargs):
 def send_message(message: SocketMessage) -> None:
     frame = inspect.currentframe()
     functions = [
-        obj
-        for obj in frame.f_back.f_locals.values()
-        if inspect.isfunction(obj)
+        obj for obj in frame.f_back.f_locals.values() if inspect.isfunction(obj)
     ]
     func = [func for func in functions if func.__name__ == message.func]
     if not func:

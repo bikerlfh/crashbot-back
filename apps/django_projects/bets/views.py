@@ -67,6 +67,4 @@ class BetView(APIErrorsMixin, APIView):
             **serializer.validated_data, customer_id=request.user.customer.id
         )
         bet_ids = [bet.id for bet in bets]
-        return Response(
-            data={"bet_ids": bet_ids}, status=status.HTTP_201_CREATED
-        )
+        return Response(data={"bet_ids": bet_ids}, status=status.HTTP_201_CREATED)

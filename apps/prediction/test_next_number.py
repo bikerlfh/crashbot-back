@@ -94,6 +94,4 @@ def test_():
 
         count = count if count > 0 else 1
         print(f"corrects predictions: {correct} ({round(correct/count, 2)})")
-        print(
-            f"incorrect predictions: {incorrect} ({round(incorrect / count, 2)})"
-        )
+        print(f"incorrect predictions: {incorrect} ({round(incorrect / count, 2)})")

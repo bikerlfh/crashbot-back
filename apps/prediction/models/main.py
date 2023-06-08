@@ -37,9 +37,7 @@ class CoreModel:
             if self.model_home_bet
             else model_type
         )
-        self.seq_len = (
-            self.model_home_bet.seq_len if self.model_home_bet else seq_len
-        )
+        self.seq_len = self.model_home_bet.seq_len if self.model_home_bet else seq_len
         self.model = self.__get_model(seq_len=self.seq_len)
         if self.model_home_bet:
             self.model.load_model(name=self.model_home_bet.name)
@@ -57,9 +55,7 @@ class CoreModel:
             case ModelType.GRU:
                 model = GRUModel(model_type=ModelType.GRU, seq_len=seq_len)
             case _:
-                raise ValueError(
-                    f"model_type: {self.model_type} is not supported"
-                )
+                raise ValueError(f"model_type: {self.model_type} is not supported")
         return model
 
     def train(
@@ -97,9 +93,7 @@ class CoreModel:
         @param probability_to_eval: The probability to evaluate the model on
         @return: The average info
         """
-        assert (
-            self.model_home_bet is not None
-        ), "model_home_bet must be provided"
+        assert self.model_home_bet is not None, "model_home_bet must be provided"
         return self.model.evaluate(
             multipliers=multipliers, probability_to_eval=probability_to_eval
         )
@@ -110,8 +104,6 @@ class CoreModel:
         @param multipliers: The data to predict the next multiplier on
         @return: The next multiplier
         """
-        assert (
-            self.model_home_bet is not None
-        ), "model_home_bet must be provided"
+        assert self.model_home_bet is not None, "model_home_bet must be provided"
         data = utils.transform_multipliers_to_data(multipliers=multipliers)
         return self.model.predict(data=data)

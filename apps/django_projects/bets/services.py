@@ -53,7 +53,7 @@ def create_bets(
         ).exists()
         if bet_exists:
             continue
-        profit_amount = amount * (multiplier - 1)
+        profit_amount = round(amount * (multiplier - 1), 2)
         status = BetStatus.WON.value
         if multiplier >= multiplier_result:
             profit_amount = -amount

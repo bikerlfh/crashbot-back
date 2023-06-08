@@ -43,9 +43,7 @@ class SequentialModel(AbstractBaseModel):
         seq_len: Optional[int] = DEFAULT_SEQ_LEN,
     ):
         self._epochs = 2500
-        super(SequentialModel, self).__init__(
-            model_type=model_type, seq_len=seq_len
-        )
+        super(SequentialModel, self).__init__(model_type=model_type, seq_len=seq_len)
 
     def _compile_model(self) -> Sequential:
         model = Sequential()
@@ -83,9 +81,7 @@ class SequentialModel(AbstractBaseModel):
         model = self._compile_model()
         model.fit(X_train, y_train, epochs=self._epochs, batch_size=16)
         lost = model.evaluate(X_test, y_test)
-        name, model_path = self._generate_model_path_to_save(
-            home_bet_id=home_bet_id
-        )
+        name, model_path = self._generate_model_path_to_save(home_bet_id=home_bet_id)
         model.save(model_path)
         metrics = dict(
             lost=lost,
