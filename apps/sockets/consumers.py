@@ -4,12 +4,14 @@ import logging
 import uuid
 from typing import Optional
 
-# Libraries
+# Django
 from django.conf import settings
+
+# Libraries
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 # Internal
-from apps.sockets.constants import BOT_CHANNEL_NAME, APP_VERSION
+from apps.sockets.constants import APP_VERSION, BOT_CHANNEL_NAME
 from apps.sockets.models import SocketMessage, UserConnection
 
 logger = logging.getLogger(__name__)

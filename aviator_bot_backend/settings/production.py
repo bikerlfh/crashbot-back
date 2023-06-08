@@ -1,10 +1,15 @@
-from .common import *
-from os import getenv
+# Standard Library
 import logging
+from os import getenv
+
+# Libraries
 import sentry_sdk
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
+
+# Current Folder
+from .common import *
 
 DEBUG = False
 

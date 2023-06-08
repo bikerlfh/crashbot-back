@@ -11,13 +11,16 @@ https://docs.djangoproject.com/en/4.1/howto/deployment/asgi/
 import os
 
 # Django
-from django.core.asgi import get_asgi_application
 from django.conf import settings
+from django.core.asgi import get_asgi_application
 
 # Libraries
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.security.websocket import OriginValidator, AllowedHostsOriginValidator
+from channels.security.websocket import (
+    AllowedHostsOriginValidator,
+    OriginValidator,
+)
 
 # Internal
 from apps.sockets import routing as sockets_rounting

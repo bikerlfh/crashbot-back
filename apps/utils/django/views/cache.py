@@ -1,5 +1,8 @@
-import json
+# Standard Library
 import hashlib
+import json
+
+# Django
 from django.core.cache import cache
 from rest_framework.response import Response
 

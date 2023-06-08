@@ -14,13 +14,8 @@ from sklearn.model_selection import train_test_split
 # Internal
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.prediction import utils
-from apps.prediction.constants import (
-    ModelType,
-)
-from apps.prediction.models.base import (
-    AbstractBaseModel,
-    PredictionData,
-)
+from apps.prediction.constants import ModelType
+from apps.prediction.models.base import AbstractBaseModel, PredictionData
 from apps.prediction.models.constants import (
     EPOCHS_SEQUENTIAL,
     EPOCHS_SEQUENTIAL_LSTM,

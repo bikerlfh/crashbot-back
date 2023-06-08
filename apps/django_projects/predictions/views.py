@@ -1,6 +1,6 @@
 # Django
 from rest_framework import serializers
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -8,9 +8,9 @@ from rest_framework.views import APIView
 from apps.django_projects.predictions import services
 from apps.django_projects.predictions.constants import BotType, ModelStatus
 from apps.utils.django.mixin import APIErrorsMixin
+from apps.utils.django.views.cache import cache_on_request_data
 from apps.utils.rest.serializers import inline_serializer
 from apps.utils.tools import enum_to_choices
-from apps.utils.django.views.cache import cache_on_request_data
 
 
 class PredictionView(

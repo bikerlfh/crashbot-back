@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 # Internal
 from apps.django_projects.customers import services
 from apps.utils.django.mixin import APIErrorsMixin
+from apps.utils.rest.serializers import inline_serializer
 
 
 class CustomerDataView(APIErrorsMixin, APIView):
@@ -14,6 +15,16 @@ class CustomerDataView(APIErrorsMixin, APIView):
 
     class OutputGETSerializer(serializers.Serializer):
         customer_id = serializers.IntegerField()
+        home_bets = inline_serializer(
+            many=True,
+            fields=dict(
+                id=serializers.IntegerField(),
+                name=serializers.CharField(),
+                url=serializers.CharField(),
+                min_bet=serializers.FloatField(),
+                max_bet=serializers.FloatField(),
+            ),
+        )
 
     def get(self, request):
         user_id = request.user.id

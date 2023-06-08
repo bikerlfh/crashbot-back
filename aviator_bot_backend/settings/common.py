@@ -11,12 +11,13 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 # Standard Library
+from datetime import timedelta
 from os import getenv
 from os.path import abspath, basename, dirname, join, normpath
 from pathlib import Path
-from datetime import timedelta
-from celery.schedules import crontab
 
+# Libraries
+from celery.schedules import crontab
 
 DJANGO_ROOT = dirname(dirname(abspath(__file__)))
 

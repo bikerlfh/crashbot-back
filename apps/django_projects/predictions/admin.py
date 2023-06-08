@@ -4,7 +4,11 @@ from django.forms import ChoiceField, ModelForm
 
 # Internal
 from apps.django_projects.predictions.constants import BotType
-from apps.django_projects.predictions.models import Bot, BotStrategy, ModelHomeBet
+from apps.django_projects.predictions.models import (
+    Bot,
+    BotStrategy,
+    ModelHomeBet,
+)
 from apps.utils.tools import enum_to_choices
 
 

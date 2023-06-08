@@ -1,3 +1,4 @@
+# Standard Library
 import logging
 
 # Django
@@ -12,13 +13,27 @@ logger = logging.getLogger(__name__)
 
 
 def get_customer_data(*, user_id: int) -> dict[str, any]:
-    customer = selectors.filter_customer(user_id=user_id).first()
+    customer = (
+        selectors.filter_customer(user_id=user_id)
+        .prefetch_related("balances", "balances__home_bet")
+        .first()
+    )
     if not customer:
         raise ValidationError("Customer does not exist")
     # TODO add more data if required
-    data = dict(
-        customer_id=customer.id,
-    )
+    home_bets = []
+    for balance in customer.balances.all().order_by("home_bet__id"):
+        home_bet = balance.home_bet
+        home_bets.append(
+            dict(
+                id=home_bet.id,
+                name=home_bet.name,
+                url=home_bet.url,
+                min_bet=home_bet.min_bet,
+                max_bet=home_bet.max_bet,
+            )
+        )
+    data = dict(customer_id=customer.id, home_bets=home_bets)
     return data
 
 
@@ -26,10 +41,7 @@ def create_customer_balance(
     *,
     customer_id: int,
     home_bet_id: int,
-    currency_id: int,
     amount: float,
-    username: str | None = None,
-    password: str | None = None,
 ) -> CustomerBalance:
     customer = selectors.filter_customer(id=customer_id).first()
     if not customer:
@@ -40,9 +52,6 @@ def create_customer_balance(
     balance = CustomerBalance.objects.create(
         customer_id=customer_id,
         home_bet_id=home_bet_id,
-        username=username,
-        password=password,
-        currency_id=currency_id,
         amount=amount,
     )
     return balance
@@ -56,8 +65,6 @@ def get_customer_balance_data(*, customer_id: int, home_bet_id: int) -> dict[str
         raise ValidationError("Balance does not exist")
     data = dict(
         amount=balance.amount,
-        # username=balance.username,
-        # password=balance.get_password(),
     )
     return data
 
@@ -67,8 +74,6 @@ def update_customer_balance(
     customer_id: int,
     home_bet_id: int,
     amount: float,
-    username: str | None = None,
-    password: str | None = None,
 ) -> CustomerBalance:
     balance = selectors.filter_balance(
         customer_id=customer_id, home_bet_id=home_bet_id
@@ -76,9 +81,5 @@ def update_customer_balance(
     if not balance:
         raise ValidationError("Balance does not exist")
     balance.amount = amount
-    if username is not None:
-        balance.username = username
-    if password is not None:
-        balance.password = password
     balance.save()
     return balance

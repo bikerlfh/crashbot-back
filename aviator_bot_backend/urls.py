@@ -24,11 +24,6 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-
-def trigger_error(request):
-    division_by_zero = 1 / 0
-
-
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
@@ -38,5 +33,4 @@ urlpatterns = [
     path("customers/", include("apps.django_projects.customers.urls")),
     path("bets/", include("apps.django_projects.bets.urls")),
     path("predictions/", include("apps.django_projects.predictions.urls")),
-    path("sentry-debug/", trigger_error),
 ]
