@@ -184,6 +184,12 @@ CELERY_BEAT_SCHEDULE = {
     # },
 }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": f"redis://{REDIS_HOSTNAME}:{REDIS_PORT}",
+    }
+}
 
 CHANNEL_LAYERS = {
     "default": {

@@ -63,9 +63,7 @@ def get_customer_balance_data(*, customer_id: int, home_bet_id: int) -> dict[str
     ).first()
     if not balance:
         raise ValidationError("Balance does not exist")
-    data = dict(
-        amount=balance.amount,
-    )
+    data = dict(amount=balance.amount)
     return data
 
 

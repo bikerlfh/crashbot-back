@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from apps.django_projects.customers import services
 from apps.utils.django.mixin import APIErrorsMixin
 from apps.utils.rest.serializers import inline_serializer
+from apps.utils.django.views.cache import cache_on_request_data
 
 
 class CustomerDataView(APIErrorsMixin, APIView):
@@ -26,6 +27,7 @@ class CustomerDataView(APIErrorsMixin, APIView):
             ),
         )
 
+    @cache_on_request_data(cache_timeout=60 * 60 * 24)
     def get(self, request):
         user_id = request.user.id
         data = services.get_customer_data(user_id=user_id)
