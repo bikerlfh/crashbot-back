@@ -1,4 +1,5 @@
 # Standard Library
+import logging
 from decimal import Decimal
 from typing import Optional, Tuple
 
@@ -14,6 +15,8 @@ from apps.prediction.models.base import (
 )
 from apps.prediction.models.gru_model import GRUModel
 from apps.prediction.models.sequential_model import SequentialModel
+
+logger = logging.getLogger(__name__)
 
 
 class CoreModel:

@@ -250,6 +250,7 @@ def generate_model(
             num_multipliers_to_train=len(multipliers),
             metrics=metrics,
         )
+        model_home_bet.status = ModelStatus.ACTIVE.value
         model_home_bet.save()
         prediction_services.remove_model_file(name=old_model_name)
     generate_category_result_of_model(model_home_bet=model_home_bet)

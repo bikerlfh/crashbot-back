@@ -44,15 +44,14 @@ class ModelHomeBetAdmin(admin.ModelAdmin):
         "home_bet",
         "model_type",
         "seq_len",
-        "status",
         "average_predictions",
         "average_bets",
         "result_date",
         "others",
     ]
 
-    def has_change_permission(self, request, obj=None):
-        return False
+    # def has_change_permission(self, request, obj=None):
+    #     return False
 
     def has_add_permission(self, request, obj=None):
         return False

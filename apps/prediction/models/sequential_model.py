@@ -1,5 +1,6 @@
 # Standard Library
 import os
+import logging
 from decimal import Decimal
 from typing import Optional, Tuple
 
@@ -20,6 +21,9 @@ from apps.prediction.models.constants import (
     EPOCHS_SEQUENTIAL,
     EPOCHS_SEQUENTIAL_LSTM,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 class SequentialModel(AbstractBaseModel):
