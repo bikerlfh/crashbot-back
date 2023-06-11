@@ -49,7 +49,7 @@ class PredictionView(
             many=True,
         )
 
-    @cache_on_request_data(cache_timeout=60 * 2)
+    # @cache_on_request_data(cache_timeout=60 * 2)
     def post(self, request):
         in_serializer = self.InputSerializer(data=request.data)
         in_serializer.is_valid(raise_exception=True)

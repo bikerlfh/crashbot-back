@@ -22,6 +22,7 @@ from apps.prediction.models.constants import (
     EPOCHS_SEQUENTIAL_LSTM,
 )
 
+import tensorflow as tf
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +89,7 @@ class SequentialModel(AbstractBaseModel):
         print("---------------------------------------------")
         print(f"--------MODEL: {name} ERROR: {lost}----------")
         print("---------------------------------------------")
-        return name, metrics
+        return model_path, metrics
 
     def load_model(self, *, name: str) -> None:
         model_path = self._get_model_path(name=name)
@@ -97,7 +98,8 @@ class SequentialModel(AbstractBaseModel):
         self.model = load_model(model_path)
 
     def predict(self, *, data: list[int]) -> PredictionData:
-        next_num = self.model.predict(np.array([data[-self.seq_len :]]))[0][0]
+        data_ = tf.convert_to_tensor(np.array([data[-self.seq_len:]]), dtype=tf.int64)
+        next_num = self.model.predict(data_)[0][0]
         prediction = round(next_num, 2)
         # TODO: refactor if the categories change. this is only for 1 and 2
         prediction_round = 2 if prediction > 1 else 1

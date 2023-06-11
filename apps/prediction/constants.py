@@ -24,3 +24,6 @@ class Category(int, Enum):
 MIN_PROBABILITY_TO_EVALUATE_MODEL = round(
     float(getenv("MIN_PROBABILITY_TO_EVALUATE_MODEL", 0.5)), 2
 )
+
+# bucket to store models
+S3_BUCKET_MODELS = getenv("S3_BUCKET_MODELS")

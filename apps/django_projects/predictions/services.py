@@ -560,3 +560,20 @@ def get_position_values(
             values[i],
         )
     return data
+
+
+def download_models_from_s3() -> None:
+    """
+    Download all active models from s3
+    """
+    active_model_names = selectors.filter_model_home_bet(
+        status=ModelStatus.ACTIVE.value,
+    ).values_list("name", flat=True)
+    if not active_model_names:
+        logger.info("download_models_from_s3 :: no active models")
+        return
+    for model_name in active_model_names:
+        # validate if model exists
+        prediction_services.download_model_from_s3(
+            model_name=model_name,
+        )

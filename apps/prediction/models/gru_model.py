@@ -108,7 +108,7 @@ class GRUModel(AbstractBaseModel):
             f1=f1,
             specificity=specificity.tolist(),
         )
-        return name, metrics
+        return model_path, metrics
 
     def load_model(self, *, name: str) -> None:
         model_path = self._get_model_path(name=name)

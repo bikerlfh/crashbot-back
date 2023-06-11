@@ -75,7 +75,7 @@ class CoreModel:
         @param multipliers: The multipliers to train the model on
         @param test_size: The size of the test data
         @param epochs: The number of epochs to train the model
-        @return: The name to the model and the loss error and accurracy
+        @return: The model_path to the model and the loss error and accuracy
         """
         return self.model.train(
             home_bet_id=home_bet_id,

@@ -35,15 +35,6 @@ DATABASES = {
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS  # noqa
 
-# static files
-STORAGES = {
-    "staticfiles": {"BACKEND": "aviator_bot_backend.custom_storage.StaticStorage"}
-}
-
-AWS_ACCESS_KEY_ID = getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = getenv("AWS_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = getenv("AWS_STORAGE_BUCKET_NAME")
-
 
 sentry_logging = LoggingIntegration(level=logging.INFO, event_level=logging.WARNING)
 

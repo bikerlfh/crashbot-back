@@ -71,7 +71,6 @@ def test_():
     X = scaler.fit_transform(X)
     while True:
         probability = 0.6
-        breakpoint()
         correct = 0
         incorrect = 0
         count = 0

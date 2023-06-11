@@ -48,6 +48,9 @@ generate-category-result: ## generate category result for all models
 export-multipliers-to-csv: ## export multipliers to csv
 	docker compose run --rm --entrypoint=python worker manage.py export_multipliers_to_csv ${is_production_data}
 
+download-models-from-s3: ## generate category result for all models
+	docker compose run --rm --entrypoint=python worker manage.py download_models_from_s3
+
 create-superuser: ## loaddata
 	docker compose run --rm --entrypoint=python worker manage.py createsuperuser
 
