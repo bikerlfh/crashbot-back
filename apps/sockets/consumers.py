@@ -11,7 +11,11 @@ from django.conf import settings
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 # Internal
-from apps.sockets.constants import APP_VERSION, BOT_CHANNEL_NAME
+from apps.sockets.constants import (
+    APP_VERSION,
+    BOT_CHANNEL_NAME,
+    WSErrorCodes
+)
 from apps.sockets.models import SocketMessage, UserConnection
 
 logger = logging.getLogger(__name__)
@@ -38,6 +42,12 @@ class BotConsumer(AsyncWebsocketConsumer):
         for key, values in self.user_connections.items():
             if unique_id in list(values.keys()):
                 return self.user_connections[key][unique_id]
+
+    def _find_user_by_customer_id(self, *, customer_id: int) -> UserConnection | None:
+        for key, values in self.user_connections.items():
+            for _, user in values.items():
+                if user.customer_id == customer_id:
+                    return user
 
     def _find_user_allowed_to_save_multiplier(
         self, *, home_bet_id: int
@@ -67,16 +77,27 @@ class BotConsumer(AsyncWebsocketConsumer):
         )
 
     async def _user_joined(self, *, unique_id: str, channel_name: str):
-        user = UserConnection(channel_name=channel_name, allowed_to_save=False)
+        user = UserConnection(
+            channel_name=channel_name,
+            unique_id=unique_id,
+            allowed_to_save=False
+        )
         self.user_connections["initial"][unique_id] = user
 
-    async def _user_joined_to_home_bet(self, *, home_bet_id: int, unique_id: str):
+    async def _user_joined_to_home_bet(
+        self,
+        *,
+        home_bet_id: int,
+        unique_id: str,
+        customer_id: int,
+    ):
         user_allowed = self._find_user_allowed_to_save_multiplier(
             home_bet_id=home_bet_id
         )
         allowed_ = user_allowed is None
         user = self.user_connections["initial"][unique_id]
         user.home_bet_id = home_bet_id
+        user.customer_id = customer_id
         if home_bet_id not in self.user_connections:
             self.user_connections[home_bet_id] = {}
         self.user_connections[home_bet_id][unique_id] = user
@@ -160,10 +181,39 @@ class BotConsumer(AsyncWebsocketConsumer):
         """
         data = event["data"]
         home_bet_id = data.get("home_bet_id", None)
-        if not home_bet_id:
+        customer_id = data.get("customer_id", None)
+        if not home_bet_id or not customer_id:
+            await self.channel_layer.send(
+                self.channel_name,
+                {
+                    "type": "send_message",
+                    "data": dict(func="error_event", data=dict(
+                        ws_error_code=WSErrorCodes.W01.value
+                    )),
+                },
+            )
+            return
+        user = self._find_user_by_customer_id(
+            customer_id=customer_id
+        )
+        unique_id = self.scope["unique_id"]
+        if user and user.unique_id != unique_id:
+            await self.channel_layer.send(
+                self.channel_name,
+                {
+                    "type": "send_message",
+                    "data": dict(
+                        func="user_already_connected",
+                        data=dict()
+                    ),
+                },
+            )
+            # await self.close()
             return
         self.scope["home_bet_id"] = home_bet_id
-        unique_id = self.scope["unique_id"]
+        self.scope["customer_id"] = customer_id
         await self._user_joined_to_home_bet(
-            home_bet_id=home_bet_id, unique_id=unique_id
+            home_bet_id=home_bet_id,
+            unique_id=unique_id,
+            customer_id=customer_id
         )
