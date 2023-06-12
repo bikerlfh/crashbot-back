@@ -5,6 +5,7 @@ from django.contrib import admin
 from apps.django_projects.bets.models import Bet
 
 
+@admin.register(Bet)
 class BetAdmin(admin.ModelAdmin):
     list_display = ["balance", "prediction", "status", "multiplier", "profit_amount"]
     list_filter = ["status"]
@@ -18,6 +19,3 @@ class BetAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
-
-
-admin.site.register(Bet, BetAdmin)

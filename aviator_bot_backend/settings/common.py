@@ -160,16 +160,6 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-# static files
-STORAGES = {
-    "staticfiles": {"BACKEND": "aviator_bot_backend.custom_storage.StaticStorage"}
-}
-
-AWS_ACCESS_KEY_ID = getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = getenv("AWS_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = getenv("AWS_STORAGE_BUCKET_NAME")
-
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 

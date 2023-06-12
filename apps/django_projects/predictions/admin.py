@@ -12,6 +12,7 @@ from apps.django_projects.predictions.models import (
 from apps.utils.tools import enum_to_choices
 
 
+@admin.register(Bot)
 class BotAdmin(admin.ModelAdmin):
     class StrategyForm(ModelForm):
         bot_type = ChoiceField(choices=enum_to_choices(BotType))
@@ -25,11 +26,13 @@ class BotAdmin(admin.ModelAdmin):
     form = StrategyForm
 
 
+@admin.register(BotStrategy)
 class BotStrategyAdmin(admin.ModelAdmin):
     list_display = ["bot", "number_of_bets", "profit_percentage", "is_active"]
     list_filter = ["bot", "is_active"]
 
 
+@admin.register(ModelHomeBet)
 class ModelHomeBetAdmin(admin.ModelAdmin):
     list_display = [
         "home_bet",
@@ -59,7 +62,3 @@ class ModelHomeBetAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-
-admin.site.register(Bot, BotAdmin)
-admin.site.register(BotStrategy, BotStrategyAdmin)
-admin.site.register(ModelHomeBet, ModelHomeBetAdmin)

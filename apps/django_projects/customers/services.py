@@ -1,15 +1,92 @@
 # Standard Library
 import logging
+from typing import Optional
 
 # Django
+from django.db import transaction
 from rest_framework.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 # Internal
 from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.customers import selectors
-from apps.django_projects.customers.models import CustomerBalance
+from apps.django_projects.customers.models import CustomerBalance, Customer
 
 logger = logging.getLogger(__name__)
+
+
+@transaction.atomic
+def create_customer(
+    *,
+    username: str,
+    password: str,
+    email: str,
+    phone_number: str,
+    home_bet_ids: list[int],
+    first_name: Optional[str] = None,
+    last_name: Optional[str] = None,
+) -> Customer:
+    user_exists = selectors.filter_user_by_username(
+        username=username
+    ).exists()
+    if user_exists:
+        raise ValidationError(
+            f"User {username} already exists"
+        )
+    home_bets = core_selectors.filter_home_bet(
+        filter_=dict(id__in=home_bet_ids)
+    ).all()
+    user_data = dict(
+        username=username,
+        email=email,
+        password=password,
+    )
+    if first_name:
+        user_data.update(first_name=first_name)
+    if last_name:
+        user_data.update(last_name=last_name)
+    user = User.objects.create_user(**user_data)
+    customer = Customer.objects.create(
+        user=user,
+        phone_number=phone_number
+    )
+    if not home_bets:
+        return customer
+    balances = []
+    for home_bet in home_bets:
+        balances.append(
+            CustomerBalance(
+                customer=customer,
+                home_bet=home_bet,
+                amount=0
+            )
+        )
+    CustomerBalance.objects.bulk_create(balances)
+    return customer
+
+
+@transaction.atomic
+def update_customer(
+    *,
+    customer_id: int,
+    email: str,
+    phone_number: str,
+    first_name: Optional[str] = None,
+    last_name: Optional[str] = None,
+) -> Customer | None:
+    customer = selectors.filter_customer(id=customer_id).first()
+    if not customer:
+        return None
+    user = customer.user
+    user.email = email
+    if first_name:
+        user.first_name = first_name
+    if last_name:
+        user.last_name = last_name
+    customer.phone_number = phone_number
+    user.save()
+    customer.save()
+    return customer
 
 
 def get_customer_data(*, user_id: int) -> dict[str, any]:
@@ -35,26 +112,6 @@ def get_customer_data(*, user_id: int) -> dict[str, any]:
         )
     data = dict(customer_id=customer.id, home_bets=home_bets)
     return data
-
-
-def create_customer_balance(
-    *,
-    customer_id: int,
-    home_bet_id: int,
-    amount: float,
-) -> CustomerBalance:
-    customer = selectors.filter_customer(id=customer_id).first()
-    if not customer:
-        raise ValidationError("Customer does not exist")
-    home_bet = core_selectors.filter_home_bet(home_bet_id=home_bet_id).first()
-    if not home_bet:
-        raise ValidationError("Home bet does not exist")
-    balance = CustomerBalance.objects.create(
-        customer_id=customer_id,
-        home_bet_id=home_bet_id,
-        amount=amount,
-    )
-    return balance
 
 
 def get_customer_balance_data(*, customer_id: int, home_bet_id: int) -> dict[str, any]:
