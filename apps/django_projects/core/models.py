@@ -42,3 +42,22 @@ class HomeBetMultiplier(BaseModel):
         indexes = [
             models.Index(fields=["home_bet", "multiplier_dt"]),
         ]
+
+
+class Plan(BaseModel):
+    name = models.CharField(max_length=50, unique=True)
+    description = models.CharField(max_length=200, null=True, blank=True)
+    price = models.DecimalField(max_digits=18, decimal_places=2)
+    currency = models.ForeignKey(
+        Currency,
+        related_name="plans",
+        on_delete=models.DO_NOTHING
+    )
+    duration_in_days = models.IntegerField()
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = "plan"
+
+    def __str__(self):
+        return self.name

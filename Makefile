@@ -30,6 +30,9 @@ down-d: ## down
 run:  ## run
 	docker compose run --rm --service-ports worker ${ARGS}
 
+startapp:  ## makemigrations
+	docker compose run --rm --entrypoint=python worker manage.py startapp ${app_name}
+
 makemigrations:  ## makemigrations
 	docker compose run --rm --entrypoint=python worker manage.py makemigrations
 

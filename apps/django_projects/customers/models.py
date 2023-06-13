@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 # Internal
-from apps.django_projects.core.models import HomeBet
+from apps.django_projects.core.models import HomeBet, Plan
 from apps.utils.django.models import BaseModel
 
 
@@ -35,3 +35,21 @@ class CustomerBalance(BaseModel):
 
     def __str__(self):
         return f"{self.customer} - {self.home_bet}"
+
+
+class CustomerPlan(BaseModel):
+    customer = models.ForeignKey(
+        Customer, on_delete=models.DO_NOTHING, related_name="plans"
+    )
+    plan = models.ForeignKey(
+        Plan, on_delete=models.DO_NOTHING, related_name="customer_plans"
+    )
+    start_dt = models.DateField()
+    end_dt = models.DateField()
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = "customer_plan"
+
+    def __str__(self):
+        return f"{self.customer} - {self.plan}"

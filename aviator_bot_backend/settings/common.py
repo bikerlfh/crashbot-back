@@ -177,10 +177,17 @@ CELERY_BEAT_SCHEDULE = {
     "task_generate_category_result": {
         "task": "apps.django_projects.predictions.tasks.task_generate_category_result",
         "schedule": crontab(minute=SCHEDULE_GENERATE_CATEGORY_RESULT),
+        "relative": True,
+    },
+    "task_inactive_customer_plans_at_end_dt": {
+        "task": "apps.django_projects.customers.tasks.task_inactive_customer_plans_at_end_dt",
+        "schedule": crontab(minute=5, hour=5),
+        "relative": True,
     },
     # "task_generate_models": {
     #    "task": "apps.django_projects.predictions.tasks.task_generate_models",
     #    "schedule": crontab(minute="*/8"),
+    #    "relative": True,
     # },
 }
 

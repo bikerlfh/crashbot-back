@@ -1,8 +1,13 @@
+from datetime import datetime, timedelta
 # Django
 from django.contrib import admin
 from django import forms
 # Internal
-from apps.django_projects.customers.models import Customer, CustomerBalance
+from apps.django_projects.customers.models import (
+    Customer,
+    CustomerBalance,
+    CustomerPlan
+)
 from apps.django_projects.customers import services, selectors
 from apps.django_projects.core.models import HomeBet
 
@@ -161,4 +166,60 @@ class CustomerAdmin(admin.ModelAdmin):
 @admin.register(CustomerBalance)
 class CustomerBalanceAdmin(admin.ModelAdmin):
     list_display = ["customer", "home_bet", "amount"]
+
+
+@admin.register(CustomerPlan)
+class CustomerPlanAdmin(admin.ModelAdmin):
+    class CustomerPlanForm(forms.ModelForm):
+        class Meta:
+            model = CustomerPlan
+            fields = ["customer", "plan", "start_dt", "end_dt", "is_active"]
+
+        def clean_customer(self):
+            customer = self.cleaned_data.get("customer")
+            if not self.instance.pk:
+                active_plans = selectors.filter_customer_plans(
+                    customer_id=customer.id,
+                    is_active=True
+                ).exists()
+                if active_plans:
+                    raise forms.ValidationError(
+                        "Customer already has an active plan"
+                    )
+            return customer
+
+        def save_m2m(self):
+            pass
+
+        def save(self, commit=True):
+            if not self.instance.pk:
+                plan = self.cleaned_data["plan"]
+                start_dt = datetime.now().date()
+                end_dt = start_dt + timedelta(days=plan.duration_in_days)
+                self.instance.start_dt = start_dt
+                self.instance.end_dt = end_dt
+            instance = super().save(commit=True)
+
+            customer = instance.customer
+            user = customer.user
+            if instance.is_active:
+                user.is_active = True
+                user.save()
+            else:
+                active_plans = selectors.filter_customer_plans(
+                    customer_id=customer.id,
+                    is_active=True
+                ).exists()
+                if not active_plans:
+                    user.is_active = False
+                    user.save()
+            return instance
+
+    form = CustomerPlanForm
+    list_display = ["customer", "plan", "start_dt", "end_dt", "is_active"]
+    list_filter = ["is_active", "plan__name"]
+    fields = ["customer", "plan","start_dt", "end_dt", "is_active"]
+
+    def get_readonly_fields(self, request, obj=None):
+        return ["customer", "plan"] if obj else ["start_dt", "end_dt"]
 

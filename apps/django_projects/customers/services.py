@@ -1,6 +1,7 @@
 # Standard Library
 import logging
 from typing import Optional
+from datetime import datetime, timedelta
 
 # Django
 from django.db import transaction
@@ -138,3 +139,32 @@ def update_customer_balance(
     balance.amount = amount
     balance.save()
     return balance
+
+
+def inactive_customer_plans_at_end_dt():
+    """
+    inactive all plans at a day after end_dt
+    """
+    yesterday = (datetime.now() - timedelta(days=1)).date()
+    customer_plans = selectors.filter_customer_plans(
+        end_dt__lte=yesterday, is_active=True
+    ).prefetch_related("customer", "customer__user")
+    if not customer_plans.exists():
+        logger.info(
+            "inactive_customer_plans_at_end_dt :: "
+            "No customer plans to inactive"
+        )
+        return
+    for customer_plan in customer_plans:
+        with transaction.atomic():
+            customer_plan.is_active = False
+            customer_plan.save()
+            customer = customer_plan.customer
+            other_active_plan = customer.plans.filter(
+                is_active=True
+            ).exclude(id=customer_plan.id).exists()
+            if other_active_plan:
+                continue
+            user = customer.user
+            user.is_active = False
+            user.save()
