@@ -19,9 +19,9 @@
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
             "name": "BetPlay",
-            "url": "https://www.betplay.com.co",
+            "url": "https://betplay.com.co/slots",
             "min_bet": 100,
-            "max_bet": 50000,
+            "max_bet": 100000,
             "currencies": [1]
         }
     },
