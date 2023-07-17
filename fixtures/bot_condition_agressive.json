@@ -1,0 +1,86 @@
+[
+    {
+        "model": "predictions.BotCondition",
+        "pk": "1",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "condition_on": "every_loss",
+            "condition_on_value": 1,
+            "condition_action": "reset_bet_amount",
+            "action_value": 0,
+            "others": null
+        }
+    },
+    {
+        "model": "predictions.BotCondition",
+        "pk": "2",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "condition_on": "every_loss",
+            "condition_on_value": 1,
+            "condition_action": "update_multiplier",
+            "action_value": 2.5,
+            "others": null
+        }
+    },
+    {
+        "model": "predictions.BotCondition",
+        "pk": "3",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "condition_on": "streak_losses",
+            "condition_on_value": 5,
+            "condition_action": "update_multiplier",
+            "action_value": 2.7,
+            "others": null
+        }
+    },
+    {
+        "model": "predictions.BotCondition",
+        "pk": "4",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "condition_on": "streak_losses",
+            "condition_on_value": 8,
+            "condition_action": "update_multiplier",
+            "action_value": 3.2,
+            "others": null
+        }
+    },
+    {
+        "model": "predictions.BotCondition",
+        "pk": "5",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "condition_on": "every_win",
+            "condition_on_value": 1,
+            "condition_action": "reset_multiplier",
+            "action_value": 0,
+            "others": null
+        }
+    },
+    {
+        "model": "predictions.BotCondition",
+        "pk": "6",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "condition_on": "streak_wins",
+            "condition_on_value": 5,
+            "condition_action": "increase_bet_amount",
+            "action_value": 0.33,
+            "others": null
+        }
+    }
+]

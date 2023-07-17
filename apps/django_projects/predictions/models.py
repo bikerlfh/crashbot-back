@@ -3,7 +3,12 @@ from django.db import models
 
 # Internal
 from apps.django_projects.core.models import HomeBet
-from apps.django_projects.predictions.constants import BotType, ModelStatus
+from apps.django_projects.predictions.constants import (
+    BotType,
+    ModelStatus,
+    ConditionON,
+    ConditionAction,
+)
 from apps.prediction.constants import Category, ModelType
 from apps.utils.django.models import BaseModel
 from apps.utils.tools import enum_to_choices
@@ -111,3 +116,32 @@ class BotStrategy(BaseModel):
 
     class Meta:
         db_table = "bot_strategy"
+
+
+class BotCondition(BaseModel):
+    bot = models.ForeignKey(
+        Bot, on_delete=models.PROTECT, related_name="conditions"
+    )
+    condition_on = models.CharField(
+        max_length=20,
+        choices=enum_to_choices(ConditionON),
+        default=ConditionON.EVERY_WIN.value,
+    )
+    condition_on_value = models.FloatField(default=0)
+    condition_action = models.CharField(
+        max_length=25,
+        choices=enum_to_choices(ConditionAction),
+        default=ConditionAction.UPDATE_MULTIPLIER.value,
+    )
+    action_value = models.FloatField(default=0)
+    others = models.JSONField(null=True, blank=True)
+
+    class Meta:
+        db_table = "bot_condition"
+        unique_together = (
+            "bot",
+            "condition_on",
+            "condition_on_value",
+            "condition_action"
+        )
+

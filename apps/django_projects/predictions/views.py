@@ -115,7 +115,7 @@ class BotView(
     APIErrorsMixin,
     APIView,
 ):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     class InputSerializer(serializers.Serializer):
         bot_id = serializers.IntegerField(required=False, allow_null=True)
@@ -136,12 +136,13 @@ class BotView(
         min_average_model_prediction = serializers.FloatField()
         stop_loss_percentage = serializers.FloatField()
         take_profit_percentage = serializers.FloatField()
-        strategies = inline_serializer(
+        conditions = inline_serializer(
             fields=dict(
-                number_of_bets=serializers.IntegerField(),
-                profit_percentage=serializers.FloatField(),
-                min_amount_percentage_to_bet=serializers.FloatField(),
-                profit_percentage_to_bet=serializers.FloatField(),
+                id=serializers.IntegerField(),
+                condition_on=serializers.CharField(),
+                condition_on_value=serializers.FloatField(),
+                condition_action=serializers.CharField(),
+                action_value=serializers.FloatField(),
                 others=serializers.JSONField(required=False, allow_null=True),
             ),
             many=True,

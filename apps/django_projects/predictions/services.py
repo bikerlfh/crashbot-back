@@ -404,9 +404,7 @@ def get_active_bots(
     )
     bots_data = []
     for bot in bots:
-        strategies = bot.strategies.filter(is_active=True).order_by(
-            "number_of_bets", "profit_percentage"
-        )
+        conditions = bot.conditions.all().order_by("id")
         bots_data.append(
             dict(
                 id=bot.id,
@@ -421,15 +419,16 @@ def get_active_bots(
                 min_average_model_prediction=bot.min_average_model_prediction,
                 stop_loss_percentage=bot.stop_loss_percentage,
                 take_profit_percentage=bot.take_profit_percentage,
-                strategies=[
+                conditions=[
                     dict(
-                        number_of_bets=strategy.number_of_bets,
-                        profit_percentage=strategy.profit_percentage,
-                        min_amount_percentage_to_bet=strategy.min_amount_percentage_to_bet,
-                        profit_percentage_to_bet=strategy.profit_percentage_to_bet,
-                        others=strategy.others,
+                        id=condition.id,
+                        condition_on=condition.condition_on,
+                        condition_on_value=condition.condition_on_value,
+                        condition_action=condition.condition_action,
+                        action_value=condition.action_value,
+                        others=condition.others,
                     )
-                    for strategy in strategies
+                    for condition in conditions
                 ],
             )
         )

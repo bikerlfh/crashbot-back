@@ -6,7 +6,7 @@ from django.forms import ChoiceField, ModelForm
 from apps.django_projects.predictions.constants import BotType
 from apps.django_projects.predictions.models import (
     Bot,
-    BotStrategy,
+    BotCondition,
     ModelHomeBet,
 )
 from apps.utils.tools import enum_to_choices
@@ -26,10 +26,16 @@ class BotAdmin(admin.ModelAdmin):
     form = StrategyForm
 
 
-@admin.register(BotStrategy)
-class BotStrategyAdmin(admin.ModelAdmin):
-    list_display = ["bot", "number_of_bets", "profit_percentage", "is_active"]
-    list_filter = ["bot", "is_active"]
+@admin.register(BotCondition)
+class BotConditionAdmin(admin.ModelAdmin):
+    list_display = [
+        "bot",
+        "condition_on",
+        "condition_on_value",
+        "condition_action",
+        "action_value"
+    ]
+    list_filter = ["bot", "condition_on", "condition_action"]
 
 
 @admin.register(ModelHomeBet)
