@@ -1,11 +1,11 @@
 [
     {
         "model": "predictions.BotCondition",
-        "pk": "1",
+        "pk": "8",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
-            "bot_id": 1,
+            "bot_id": 2,
             "condition_on": "every_loss",
             "condition_on_value": 1,
             "condition_action": "reset_bet_amount",
@@ -15,11 +15,11 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "2",
+        "pk": "9",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
-            "bot_id": 1,
+            "bot_id": 2,
             "condition_on": "every_loss",
             "condition_on_value": 1,
             "condition_action": "update_multiplier",
@@ -29,11 +29,11 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "3",
+        "pk": "10",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
-            "bot_id": 1,
+            "bot_id": 2,
             "condition_on": "streak_losses",
             "condition_on_value": 4,
             "condition_action": "update_multiplier",
@@ -43,11 +43,11 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "4",
+        "pk": "11",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
-            "bot_id": 1,
+            "bot_id": 2,
             "condition_on": "streak_losses",
             "condition_on_value": 5,
             "condition_action": "update_multiplier",
@@ -57,11 +57,11 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "5",
+        "pk": "12",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
-            "bot_id": 1,
+            "bot_id": 2,
             "condition_on": "streak_losses",
             "condition_on_value": 8,
             "condition_action": "update_multiplier",
@@ -71,11 +71,11 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "6",
+        "pk": "13",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
-            "bot_id": 1,
+            "bot_id": 2,
             "condition_on": "every_win",
             "condition_on_value": 1,
             "condition_action": "reset_multiplier",
@@ -85,11 +85,11 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "7",
+        "pk": "14",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
-            "bot_id": 1,
+            "bot_id": 2,
             "condition_on": "streak_wins",
             "condition_on_value": 5,
             "condition_action": "increase_bet_amount",

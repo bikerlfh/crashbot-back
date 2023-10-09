@@ -102,22 +102,6 @@ class Bot(BaseModel):
         return self.name
 
 
-class BotStrategy(BaseModel):
-    bot = models.ForeignKey(Bot, on_delete=models.PROTECT, related_name="strategies")
-    number_of_bets = models.IntegerField(
-        default=0,
-        help_text="Number of bets (maximum " "bet allowed by home bet)",
-    )
-    profit_percentage = models.FloatField(default=0)
-    min_amount_percentage_to_bet = models.FloatField(default=0)
-    profit_percentage_to_bet = models.FloatField(default=0)
-    others = models.JSONField(null=True, blank=True)
-    is_active = models.BooleanField(default=True)
-
-    class Meta:
-        db_table = "bot_strategy"
-
-
 class BotCondition(BaseModel):
     bot = models.ForeignKey(
         Bot, on_delete=models.PROTECT, related_name="conditions"
