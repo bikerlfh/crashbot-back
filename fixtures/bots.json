@@ -5,7 +5,7 @@
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
-            "name": "AggressiveOne",
+            "name": "BotAggressiveOfficial",
             "bot_type": "aggressive",
             "risk_factor": 0.1,
             "min_multiplier_to_bet": 1.95,
@@ -25,7 +25,7 @@
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
-            "name": "TightOne",
+            "name": "BotTightOfficial",
             "bot_type": "tight",
             "risk_factor": 0.05,
             "min_multiplier_to_bet": 1.95,
@@ -45,7 +45,7 @@
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
-            "name": "LooseOne",
+            "name": "BotLooseOfficial",
             "bot_type": "loose",
             "risk_factor": 0,
             "min_multiplier_to_bet": 1.95,

@@ -36,7 +36,9 @@ if not settings.DEBUG:
     application = ProtocolTypeRouter(
         {
             "websocket": OriginValidator(
-                AuthMiddlewareStack(URLRouter(sockets_rounting.websocket_urlpatterns)),
+                AuthMiddlewareStack(
+                    URLRouter(sockets_rounting.websocket_urlpatterns)
+                ),
                 ["*"],  # CUSTOM SECURITY
             ),
         }
@@ -46,7 +48,9 @@ else:
         {
             "http": django_asgi_app,
             "websocket": AllowedHostsOriginValidator(
-                AuthMiddlewareStack(URLRouter(sockets_rounting.websocket_urlpatterns))
+                AuthMiddlewareStack(
+                    URLRouter(sockets_rounting.websocket_urlpatterns)
+                )
             ),
         }
     )

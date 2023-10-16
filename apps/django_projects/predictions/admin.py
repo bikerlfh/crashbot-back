@@ -33,7 +33,7 @@ class BotConditionAdmin(admin.ModelAdmin):
         "condition_on",
         "condition_on_value",
         "condition_action",
-        "action_value"
+        "action_value",
     ]
     list_filter = ["bot", "condition_on", "condition_action"]
 
@@ -67,4 +67,3 @@ class ModelHomeBetAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
-

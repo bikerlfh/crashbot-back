@@ -4,29 +4,18 @@ import os
 from decimal import Decimal
 from typing import Optional, Tuple
 
-from django.conf import settings
-
 # Internal
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
 from apps.django_projects.predictions.models import ModelHomeBet
-from apps.prediction.constants import (
-    MODELS_PATH,
-    ModelType,
-    S3_BUCKET_MODELS
-)
+from apps.prediction.constants import MODELS_PATH, S3_BUCKET_MODELS, ModelType
 from apps.prediction.models.base import AverageInfo, PredictionData
 from apps.prediction.models.main import CoreModel
 from apps.utils.aws import s3
 
-
 logger = logging.getLogger(__name__)
 
 
-def upload_model_to_s3(
-    *,
-    model_path: str,
-    model_name: str
-) -> None:
+def upload_model_to_s3(*, model_path: str, model_name: str) -> None:
     """
     Uploads a model to S3
     """
@@ -49,9 +38,7 @@ def download_model_from_s3(
     if it does not exist in MODELS_PATH
     """
     if not S3_BUCKET_MODELS:
-        logger.error(
-            "download_model_from_s3 :: S3_BUCKET_MODELS is not set"
-        )
+        logger.error("download_model_from_s3 :: S3_BUCKET_MODELS is not set")
         return False
     # validate if model_name already exists in MODELS_PATH
     model_path = f"{MODELS_PATH}/{model_name}"

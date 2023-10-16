@@ -16,10 +16,12 @@ class BotType(str, Enum):
 
 class ConditionON(str, Enum):
     # values are float
-    EVERY_WIN = "every_wins"
+    EVERY_WIN = "every_win"
     EVERY_LOSS = "every_loss"
     STREAK_WINS = "streak_wins"
     STREAK_LOSSES = "streak_losses"
+    STREAK_N_MULTIPLIER_LESS_THAN = "streak_n_multiplier_less_than"
+    STREAK_N_MULTIPLIER_GREATER_THAN = "streak_multiplier_greater_than"
     # values are percentage
     PROFIT_GREATER_THAN = "profit_greater_than"
     PROFIT_LESS_THAN = "profit_less_than"
@@ -35,6 +37,7 @@ class ConditionAction(str, Enum):
     RESET_MULTIPLIER = "reset_multiplier"
     # values are boolean
     IGNORE_MODEL = "ignore_model"
+    MAKE_BET = "make_bet"
 
 
 DEFAULT_SEQ_LEN = int(getenv("DEFAULT_SEQ_LEN", 18))
@@ -43,7 +46,9 @@ GENERATE_AUTOMATIC_MODEL_TYPES = getenv(
 ).split(",")
 # AVERAGE_PERCENTAGE_ACCEPTABLE
 PERCENTAGE_ACCEPTABLE = float(getenv("AVERAGE_PERCENTAGE_ACCEPTABLE", 0.85))
-PERCENTAGE_MODEL_TO_INACTIVE = float(getenv("PERCENTAGE_MODEL_TO_INACTIVE", 0.59))
+PERCENTAGE_MODEL_TO_INACTIVE = float(
+    getenv("PERCENTAGE_MODEL_TO_INACTIVE", 0.59)
+)
 
 DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL = int(
     getenv("DIFF_MULTIPLIERS_TO_GENERATE_NEW_MODEL", 50)

@@ -49,11 +49,10 @@ class Plan(BaseModel):
     description = models.CharField(max_length=200, null=True, blank=True)
     price = models.DecimalField(max_digits=18, decimal_places=2)
     currency = models.ForeignKey(
-        Currency,
-        related_name="plans",
-        on_delete=models.DO_NOTHING
+        Currency, related_name="plans", on_delete=models.DO_NOTHING
     )
     duration_in_days = models.IntegerField()
+    with_ai = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
     class Meta:

@@ -1,12 +1,12 @@
 # Django
-from django.db.models import QuerySet
 from django.contrib.auth.models import User
+from django.db.models import QuerySet
 
 # Internal
 from apps.django_projects.customers.models import (
     Customer,
     CustomerBalance,
-    CustomerPlan
+    CustomerPlan,
 )
 
 
@@ -35,7 +35,5 @@ def filter_balance(
     return CustomerBalance.objects.filter(**filter_)
 
 
-def filter_customer_plans(
-    **kwargs
-) -> QuerySet[CustomerPlan]:
+def filter_customer_plans(**kwargs) -> QuerySet[CustomerPlan]:
     return CustomerPlan.objects.filter(**kwargs)

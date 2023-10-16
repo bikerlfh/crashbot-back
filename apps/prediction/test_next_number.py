@@ -17,7 +17,7 @@ def create_sequences(data, window_size, threshold):
     X = []
     y = []
     for i in range(len(data) - window_size):
-        X.append(data[i : i + window_size])
+        X.append(data[i : i + window_size])  # noqa
         y.append(1 if data[i + window_size] >= threshold else 0)
     return np.array(X), np.array(y)
 
@@ -88,9 +88,14 @@ def test_():
                 else:
                     incorrect += 1
                 print(
-                    f"Probabilidad de que el siguiente número sea mayor a {threshold}: {prediction[0][0] * 100:.2f}%  ({next_value})"
+                    f"Probabilidad de que el siguiente número "
+                    f"sea mayor a {threshold}: {prediction[0][0] * 100:.2f}% "
+                    f" ({next_value})"
                 )
 
         count = count if count > 0 else 1
         print(f"corrects predictions: {correct} ({round(correct/count, 2)})")
-        print(f"incorrect predictions: {incorrect} ({round(incorrect / count, 2)})")
+        print(
+            f"incorrect predictions: {incorrect} "
+            f"({round(incorrect / count, 2)})"
+        )

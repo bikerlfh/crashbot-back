@@ -15,4 +15,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         services.generate_category_results_of_models()
-        self.stdout.write(self.style.SUCCESS("generate_category_results successfully"))
+        self.stdout.write(
+            self.style.SUCCESS("generate_category_results successfully")
+        )

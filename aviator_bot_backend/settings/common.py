@@ -32,7 +32,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = getenv(
-    "SECRET_KEY", "%?Ebn%R2nf6Gc9hrg5Y3J=zP5@Dg+P%kwqu6JMUkMTH!u+7eELbtJgqY#US%w?JK-2"
+    "SECRET_KEY",
+    "%?Ebn%R2nf6Gc9hrg5Y3J=zP5@Dg+P%kwqu6JMUkMTH!u+7eELbtJgqY#US%w?JK-2",
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -171,14 +172,16 @@ REDIS_PORT = int(getenv("REDIS_PORT", 6379))
 CELERY_BROKER_URL = f"redis://{REDIS_HOSTNAME}:{REDIS_PORT}"
 CELERY_RESULT_BACKEND = f"redis://{REDIS_HOSTNAME}:{REDIS_PORT}"
 
-SCHEDULE_GENERATE_CATEGORY_RESULT = getenv("SCHEDULE_GENERATE_CATEGORY_RESULT", "*/15")
+SCHEDULE_GENERATE_CATEGORY_RESULT = getenv(
+    "SCHEDULE_GENERATE_CATEGORY_RESULT", "*/15"
+)
 
 CELERY_BEAT_SCHEDULE = {
-    "task_generate_category_result": {
-        "task": "apps.django_projects.predictions.tasks.task_generate_category_result",
-        "schedule": crontab(minute=SCHEDULE_GENERATE_CATEGORY_RESULT),
-        "relative": True,
-    },
+    # "task_generate_category_result": {
+    #     "task": "apps.django_projects.predictions.tasks.task_generate_category_result",
+    #     "schedule": crontab(minute=SCHEDULE_GENERATE_CATEGORY_RESULT),
+    #     "relative": True,
+    # },
     "task_inactive_customer_plans_at_end_dt": {
         "task": "apps.django_projects.customers.tasks.task_inactive_customer_plans_at_end_dt",
         "schedule": crontab(minute=5, hour=5),

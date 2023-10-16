@@ -13,7 +13,9 @@ from .common import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = [host.strip() for host in getenv("ALLOWED_HOSTS", "").split(",")]
+ALLOWED_HOSTS = [
+    host.strip() for host in getenv("ALLOWED_HOSTS", "").split(",")
+]
 
 # CORS_ORIGIN_WHITELIST = [f"http://{host}" for host in ALLOWED_HOSTS]
 # CORS_ORIGIN_WHITELIST += [f"https://{host}" for host in ALLOWED_HOSTS]
@@ -37,7 +39,9 @@ INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS  # noqa
 
 # static files
 STORAGES = {
-    "staticfiles": {"BACKEND": "aviator_bot_backend.custom_storage.StaticStorage"}
+    "staticfiles": {
+        "BACKEND": "aviator_bot_backend.custom_storage.StaticStorage"
+    }
 }
 
 AWS_ACCESS_KEY_ID = getenv("AWS_ACCESS_KEY_ID")
@@ -45,7 +49,9 @@ AWS_SECRET_ACCESS_KEY = getenv("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = getenv("AWS_STORAGE_BUCKET_NAME")
 
 
-sentry_logging = LoggingIntegration(level=logging.INFO, event_level=logging.WARNING)
+sentry_logging = LoggingIntegration(
+    level=logging.INFO, event_level=logging.WARNING
+)
 
 sentry_sdk.init(
     dsn=getenv("SENTRY_URL"),
