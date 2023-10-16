@@ -18,13 +18,22 @@ class HomeBetAdmin(admin.ModelAdmin):
 
 @admin.register(Plan)
 class PlanAdmin(admin.ModelAdmin):
-    list_display = ["name", "description", "price", "currency", "duration_in_days", "is_active"]
+    list_display = [
+        "name",
+        "description",
+        "price",
+        "currency",
+        "duration_in_days",
+        "with_ai",
+        "is_active",
+    ]
     fields = [
         "name",
         "description",
         "price",
         "currency",
         "duration_in_days",
+        "with_ai",
         "is_active",
     ]
 

@@ -1,17 +1,17 @@
 # Standard Library
 import logging
-from typing import Optional
 from datetime import datetime, timedelta
+from typing import Optional
 
 # Django
+from django.contrib.auth.models import User
 from django.db import transaction
 from rest_framework.exceptions import ValidationError
-from django.contrib.auth.models import User
 
 # Internal
 from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.customers import selectors
-from apps.django_projects.customers.models import CustomerBalance, Customer
+from apps.django_projects.customers.models import Customer, CustomerBalance
 
 logger = logging.getLogger(__name__)
 
@@ -27,13 +27,9 @@ def create_customer(
     first_name: Optional[str] = None,
     last_name: Optional[str] = None,
 ) -> Customer:
-    user_exists = selectors.filter_user_by_username(
-        username=username
-    ).exists()
+    user_exists = selectors.filter_user_by_username(username=username).exists()
     if user_exists:
-        raise ValidationError(
-            f"User {username} already exists"
-        )
+        raise ValidationError(f"User {username} already exists")
     home_bets = core_selectors.filter_home_bet(
         filter_=dict(id__in=home_bet_ids)
     ).all()
@@ -47,20 +43,13 @@ def create_customer(
     if last_name:
         user_data.update(last_name=last_name)
     user = User.objects.create_user(**user_data)
-    customer = Customer.objects.create(
-        user=user,
-        phone_number=phone_number
-    )
+    customer = Customer.objects.create(user=user, phone_number=phone_number)
     if not home_bets:
         return customer
     balances = []
     for home_bet in home_bets:
         balances.append(
-            CustomerBalance(
-                customer=customer,
-                home_bet=home_bet,
-                amount=0
-            )
+            CustomerBalance(customer=customer, home_bet=home_bet, amount=0)
         )
     CustomerBalance.objects.bulk_create(balances)
     return customer
@@ -93,7 +82,7 @@ def update_customer(
 def get_customer_data(*, user_id: int) -> dict[str, any]:
     customer = (
         selectors.filter_customer(user_id=user_id)
-        .prefetch_related("balances", "balances__home_bet")
+        .prefetch_related("balances", "balances__home_bet", "plans")
         .first()
     )
     if not customer:
@@ -112,10 +101,22 @@ def get_customer_data(*, user_id: int) -> dict[str, any]:
             )
         )
     data = dict(customer_id=customer.id, home_bets=home_bets)
+    customer_plan = customer.plans.filter(is_active=True).first()
+    if customer_plan:
+        plan_data = dict(
+            name=customer_plan.plan.name,
+            with_ai=customer_plan.plan.with_ai,
+            start_dt=customer_plan.start_dt,
+            end_dt=customer_plan.end_dt,
+            is_active=customer_plan.is_active,
+        )
+        data.update(plan=plan_data)
     return data
 
 
-def get_customer_balance_data(*, customer_id: int, home_bet_id: int) -> dict[str, any]:
+def get_customer_balance_data(
+    *, customer_id: int, home_bet_id: int
+) -> dict[str, any]:
     balance = selectors.filter_balance(
         customer_id=customer_id, home_bet_id=home_bet_id
     ).first()
@@ -160,9 +161,11 @@ def inactive_customer_plans_at_end_dt():
             customer_plan.is_active = False
             customer_plan.save()
             customer = customer_plan.customer
-            other_active_plan = customer.plans.filter(
-                is_active=True
-            ).exclude(id=customer_plan.id).exists()
+            other_active_plan = (
+                customer.plans.filter(is_active=True)
+                .exclude(id=customer_plan.id)
+                .exists()
+            )
             if other_active_plan:
                 continue
             user = customer.user

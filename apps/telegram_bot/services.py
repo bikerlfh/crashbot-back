@@ -1,5 +1,4 @@
 # Standard Library
-import typing
 from typing import Union
 
 # Internal

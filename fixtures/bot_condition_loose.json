@@ -1,13 +1,29 @@
 [
     {
         "model": "predictions.BotCondition",
-        "pk": "15",
+        "pk": "21",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
             "bot_id": 3,
-            "condition_on": "every_loss",
+            "condition_on": "every_win",
             "condition_on_value": 1,
+            "condition_on_value_2": null,
+            "condition_action": "reset_multiplier",
+            "action_value": 0,
+            "others": null
+        }
+    },
+    {
+        "model": "predictions.BotCondition",
+        "pk": "22",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 3,
+            "condition_on": "every_win",
+            "condition_on_value": 1,
+            "condition_on_value_2": null,
             "condition_action": "reset_bet_amount",
             "action_value": 0,
             "others": null
@@ -15,13 +31,29 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "16",
+        "pk": "23",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
             "bot_id": 3,
             "condition_on": "every_loss",
             "condition_on_value": 1,
+            "condition_on_value_2": null,
+            "condition_action": "reset_bet_amount",
+            "action_value": 0,
+            "others": null
+        }
+    },
+    {
+        "model": "predictions.BotCondition",
+        "pk": "24",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 3,
+            "condition_on": "every_loss",
+            "condition_on_value": 1,
+            "condition_on_value_2": null,
             "condition_action": "update_multiplier",
             "action_value": 2.0,
             "others": null
@@ -29,13 +61,14 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "17",
+        "pk": "25",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
             "bot_id": 3,
             "condition_on": "streak_losses",
             "condition_on_value": 2,
+            "condition_on_value_2": null,
             "condition_action": "update_multiplier",
             "action_value": 2.3,
             "others": null
@@ -43,13 +76,14 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "18",
+        "pk": "26",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
             "bot_id": 3,
             "condition_on": "streak_losses",
             "condition_on_value": 4,
+            "condition_on_value_2": null,
             "condition_action": "update_multiplier",
             "action_value": 2.5,
             "others": null
@@ -57,29 +91,16 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "19",
+        "pk": "27",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
             "bot_id": 3,
             "condition_on": "streak_losses",
             "condition_on_value": 8,
+            "condition_on_value_2": null,
             "condition_action": "update_multiplier",
             "action_value": 3.0,
-            "others": null
-        }
-    },
-    {
-        "model": "predictions.BotCondition",
-        "pk": "20",
-        "fields": {
-            "created_at": "2022-06-08 14:43",
-            "updated_at": "2022-06-08 14:43",
-            "bot_id": 3,
-            "condition_on": "every_win",
-            "condition_on_value": 1,
-            "condition_action": "reset_multiplier",
-            "action_value": 0,
             "others": null
         }
     }

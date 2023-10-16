@@ -15,4 +15,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         services.download_models_from_s3()
-        self.stdout.write(self.style.SUCCESS("download_models_from_s3 successfully"))
+        self.stdout.write(
+            self.style.SUCCESS("download_models_from_s3 successfully")
+        )

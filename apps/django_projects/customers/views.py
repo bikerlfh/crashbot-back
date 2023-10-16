@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from apps.django_projects.customers import services
 from apps.utils.django.mixin import APIErrorsMixin
 from apps.utils.rest.serializers import inline_serializer
+
 # from apps.utils.django.views.cache import cache_on_request_data
 
 
@@ -26,6 +27,17 @@ class CustomerDataView(APIErrorsMixin, APIView):
                 max_bet=serializers.FloatField(),
             ),
         )
+        plan = inline_serializer(
+            fields=dict(
+                name=serializers.CharField(),
+                with_ai=serializers.BooleanField(),
+                start_dt=serializers.DateField(),
+                end_dt=serializers.DateField(),
+                is_active=serializers.BooleanField(),
+            ),
+            required=False,
+            allow_null=True,
+        )
 
     # @cache_on_request_data(cache_timeout=60 * 60 * 24)
     def get(self, request):
@@ -33,7 +45,9 @@ class CustomerDataView(APIErrorsMixin, APIView):
         data = services.get_customer_data(user_id=user_id)
         out_serializer = self.OutputGETSerializer(data=data)
         out_serializer.is_valid(raise_exception=True)
-        return Response(data=out_serializer.validated_data, status=status.HTTP_200_OK)
+        return Response(
+            data=out_serializer.validated_data, status=status.HTTP_200_OK
+        )
 
 
 class CustomerBalanceView(APIErrorsMixin, APIView):
@@ -60,7 +74,9 @@ class CustomerBalanceView(APIErrorsMixin, APIView):
         )
         out_serializer = self.OutputGETSerializer(data=data)
         out_serializer.is_valid(raise_exception=True)
-        return Response(data=out_serializer.validated_data, status=status.HTTP_200_OK)
+        return Response(
+            data=out_serializer.validated_data, status=status.HTTP_200_OK
+        )
 
     def patch(self, request):
         serializer = self.InputPATCHSerializer(data=request.data)

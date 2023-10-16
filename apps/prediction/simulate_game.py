@@ -47,9 +47,11 @@ def simulate_game(
         return
     for model in models:
         model_ = CoreModel(model_home_bet=model)
-        data = prediction_utils.transform_multipliers_to_data(multipliers=multipliers)
+        data = prediction_utils.transform_multipliers_to_data(
+            multipliers=multipliers
+        )
         X, y = model_.model._split_data_to_train(data)  # NOQA
-        y_multiplier = np.array(multipliers[model.seq_len :])
+        y_multiplier = np.array(multipliers[model.seq_len :])  # noqa
         bets_won = 0
         bets_lost = 0
         total_profit = 0
@@ -83,7 +85,6 @@ def simulate_game(
                 _multiplier_control_1 = 2
                 _min_amount_bet = 0
 
-            # print(f"value_round: {value_round}, next_multiplier: {next_multiplier}")
             if value_round < next_multiplier:
                 bets_won += 1
                 profit = _max_amount_bet * (_multiplier_control_1 - 1)

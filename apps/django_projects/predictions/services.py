@@ -1,5 +1,4 @@
 # Standard Library
-import copy
 import logging
 from datetime import datetime
 from decimal import Decimal
@@ -96,7 +95,9 @@ def generate_category_result_of_model(
     print(f"generation category result for model {model_home_bet_id}")
     print("---------------------------------------------------------")
     now = datetime.now()
-    count_multipliers = count_multipliers or NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL
+    count_multipliers = (
+        count_multipliers or NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL
+    )
     multipliers = core_selectors.get_last_multipliers(
         home_bet_id=model_home_bet.home_bet_id, count=count_multipliers
     )
@@ -109,7 +110,9 @@ def generate_category_result_of_model(
     model_home_bet.average_bets = average_result.average_bets
     model_home_bet.save()
     for key, value in average_result.categories_data.items():
-        category_ = model_home_bet.category_results.filter(category=key).first()
+        category_ = model_home_bet.category_results.filter(
+            category=key
+        ).first()
         if category_:
             category_.correct_predictions = value.correct_predictions
             category_.incorrect_predictions = value.incorrect_predictions
@@ -201,10 +204,11 @@ def generate_model(
     """
     home_bet = core_selectors.filter_home_bet(home_bet_id=home_bet_id).first()
     if not home_bet:
-        logger.error(f"generate_model :: " f"home bet {home_bet_id} does not exists")
+        logger.error(
+            f"generate_model :: " f"home bet {home_bet_id} does not exists"
+        )
         return
 
-    # multipliers = core_selectors.get_today_multipliers(home_bet_id=home_bet_id)
     # USE ALL MULTIPLIERS
     # now = datetime.now().date()
     multipliers = core_selectors.get_last_multipliers(
@@ -317,7 +321,9 @@ def generate_category_results_of_models():
             models_to_inactive.append(model)
     if not models_to_inactive:
         return
-    home_bet_ids_to_create = {model.home_bet_id for model in models_to_inactive}
+    home_bet_ids_to_create = {
+        model.home_bet_id for model in models_to_inactive
+    }
     model_ids_to_inactive = {model.id for model in models_to_inactive}
     # get all models from homes bet to create
     models_ = selectors.filter_model_home_bet(
@@ -353,7 +359,9 @@ def generate_category_results_of_models():
 def get_models_home_bet(
     *, home_bet_id: int, status: Optional[str] = ModelStatus.ACTIVE.value
 ) -> list[dict]:
-    home_bet_exists = core_selectors.filter_home_bet(home_bet_id=home_bet_id).exists()
+    home_bet_exists = core_selectors.filter_home_bet(
+        home_bet_id=home_bet_id
+    ).exists()
     if not home_bet_exists:
         raise ValidationError(f"home bet {home_bet_id} does not exists")
     models = selectors.filter_model_home_bet_by_home_bet_id(
@@ -412,10 +420,10 @@ def get_active_bots(
                 bot_type=bot.bot_type,
                 risk_factor=bot.risk_factor,
                 min_multiplier_to_bet=bot.min_multiplier_to_bet,
-                min_multiplier_to_recover_losses=bot.min_multiplier_to_recover_losses,
+                min_multiplier_to_recover_losses=bot.min_multiplier_to_recover_losses,  # noqa
                 min_probability_to_bet=bot.min_probability_to_bet,
-                max_recovery_percentage_on_max_bet=bot.max_recovery_percentage_on_max_bet,
-                min_category_percentage_to_bet=bot.min_category_percentage_to_bet,
+                max_recovery_percentage_on_max_bet=bot.max_recovery_percentage_on_max_bet,  # noqa
+                min_category_percentage_to_bet=bot.min_category_percentage_to_bet,  # noqa
                 min_average_model_prediction=bot.min_average_model_prediction,
                 stop_loss_percentage=bot.stop_loss_percentage,
                 take_profit_percentage=bot.take_profit_percentage,
@@ -450,7 +458,9 @@ def evaluate_model(
     print("---------------------------------------------------------")
     print(f"******** evaluating model {model_home_bet_id} ************")
     print("---------------------------------------------------------")
-    count_multipliers = count_multipliers or NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL
+    count_multipliers = (
+        count_multipliers or NUMBER_OF_MULTIPLIERS_TO_EVALUATE_MODEL
+    )
     if today_multipliers:
         multipliers = core_selectors.get_today_multipliers(
             home_bet_id=model_home_bet.home_bet_id,
@@ -489,13 +499,15 @@ def get_position_values(
     *, home_bet_id: int, multipliers: Optional[list[int]] = None
 ) -> dict[str, any]:
     """
-    Returns the number of positions that each value has in the home bet
+    Returns the number of positions that each
+        value has in the home bet
     dict(
         all_time=dict(
             count=number of positions,
             multipliers=dict(
                 multiplier: dict(
-                    count: max number of times that the multiplier has been in that position,
+                    count: max number of times that
+                        the multiplier has been in that position,
                     positions: dict(
                         position: count
                     )
@@ -506,7 +518,8 @@ def get_position_values(
             count=number of positions,
             multipliers=dict(
                 multiplier: dict(
-                    count: max number of times that the multiplier has been in that position,
+                    count: max number of times that the
+                        multiplier has been in that position,
                     positions: dict(
                         position: count
                     )
@@ -541,17 +554,25 @@ def get_position_values(
 
     values = multipliers or [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 50, 100]
     # values = multipliers or [2]
-    all_multipliers = core_selectors.get_last_multipliers(home_bet_id=home_bet_id)
-    today_multipliers = core_selectors.get_today_multipliers(home_bet_id=home_bet_id)
+    all_multipliers = core_selectors.get_last_multipliers(
+        home_bet_id=home_bet_id
+    )
+    today_multipliers = core_selectors.get_today_multipliers(
+        home_bet_id=home_bet_id
+    )
     if not all_multipliers:
-        raise ValidationError(f"home bet {home_bet_id} does not have multipliers")
+        raise ValidationError(
+            f"home bet {home_bet_id} does not have multipliers"
+        )
     data = dict(
         all_time=dict(),
     )
     if today_multipliers:
         data["today"] = dict()
     for i in range(len(values)):
-        data["all_time"][values[i]] = count_positions(all_multipliers, values[i])
+        data["all_time"][values[i]] = count_positions(
+            all_multipliers, values[i]
+        )
         if not today_multipliers:
             continue
         data["today"][values[i]] = count_positions(

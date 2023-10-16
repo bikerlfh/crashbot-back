@@ -1,11 +1,12 @@
 # Standard Library
-import os
 import logging
+import os
 from decimal import Decimal
 from typing import Optional, Tuple
 
 # Libraries
 import numpy as np
+import tensorflow as tf
 from keras import losses
 from keras.layers import LSTM, Dense, Dropout
 from keras.models import Sequential, load_model
@@ -21,8 +22,6 @@ from apps.prediction.models.constants import (
     EPOCHS_SEQUENTIAL,
     EPOCHS_SEQUENTIAL_LSTM,
 )
-
-import tensorflow as tf
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +42,9 @@ class SequentialModel(AbstractBaseModel):
         seq_len: Optional[int] = DEFAULT_SEQ_LEN,
     ):
         self._epochs = 2500
-        super(SequentialModel, self).__init__(model_type=model_type, seq_len=seq_len)
+        super(SequentialModel, self).__init__(
+            model_type=model_type, seq_len=seq_len
+        )
 
     def _compile_model(self) -> Sequential:
         model = Sequential()
@@ -81,7 +82,9 @@ class SequentialModel(AbstractBaseModel):
         model = self._compile_model()
         model.fit(X_train, y_train, epochs=self._epochs, batch_size=16)
         lost = model.evaluate(X_test, y_test)
-        name, model_path = self._generate_model_path_to_save(home_bet_id=home_bet_id)
+        name, model_path = self._generate_model_path_to_save(
+            home_bet_id=home_bet_id
+        )
         model.save(model_path)
         metrics = dict(
             lost=lost,
@@ -98,7 +101,9 @@ class SequentialModel(AbstractBaseModel):
         self.model = load_model(model_path)
 
     def predict(self, *, data: list[int]) -> PredictionData:
-        data_ = tf.convert_to_tensor(np.array([data[-self.seq_len:]]), dtype=tf.int64)
+        data_ = tf.convert_to_tensor(
+            np.array([data[-self.seq_len :]]), dtype=tf.int64  # noqa
+        )
         next_num = self.model.predict(data_)[0][0]
         prediction = round(next_num, 2)
         # TODO: refactor if the categories change. this is only for 1 and 2

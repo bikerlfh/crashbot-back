@@ -42,11 +42,15 @@ def get_home_bet(
 def get_home_bet_multipliers(
     *, home_bet_id: int, count: Optional[int] = 10
 ) -> list[Decimal]:
-    multipliers = selectors.get_last_multipliers(home_bet_id=home_bet_id, count=count)
+    multipliers = selectors.get_last_multipliers(
+        home_bet_id=home_bet_id, count=count
+    )
     return multipliers
 
 
-def save_multipliers(*, home_bet_id: int, multipliers: list[Decimal]) -> list[Decimal]:
+def save_multipliers(
+    *, home_bet_id: int, multipliers: list[Decimal]
+) -> list[Decimal]:
     home_bet = selectors.filter_home_bet(home_bet_id=home_bet_id).first()
     if not home_bet:
         raise ValidationError("Home bet does not exists")
@@ -77,7 +81,9 @@ def save_multipliers(*, home_bet_id: int, multipliers: list[Decimal]) -> list[De
     return multipliers
 
 
-def export_multipliers_to_csv(*, is_production_data: Optional[bool] = True) -> str:
+def export_multipliers_to_csv(
+    *, is_production_data: Optional[bool] = True
+) -> str:
     # Standard Library
     import csv
 
@@ -151,8 +157,13 @@ def load_data_from_csv(*, file_path: str) -> None:
                 )
             )
     batch_size = 100
-    batches = [data[i : i + batch_size] for i in range(0, len(data), batch_size)]
+    batches = [
+        data[i : i + batch_size]  # noqa
+        for i in range(0, len(data), batch_size)  # noqa
+    ]
     for batch in batches:
-        HomeBetMultiplier.objects.bulk_create(batch, batch_size, ignore_conflicts=True)
+        HomeBetMultiplier.objects.bulk_create(
+            batch, batch_size, ignore_conflicts=True
+        )
         # from apps.django_projects.core.services import load_data_from_csv
         # load_data_from_csv(file_path='data/prod_multiplier_data_05062023.csv')

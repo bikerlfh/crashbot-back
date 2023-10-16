@@ -6,9 +6,10 @@
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
-            "condition_on": "every_loss",
+            "condition_on": "every_win",
             "condition_on_value": 1,
-            "condition_action": "reset_bet_amount",
+            "condition_on_value_2": null,
+            "condition_action": "reset_multiplier",
             "action_value": 0,
             "others": null
         }
@@ -20,10 +21,11 @@
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
-            "condition_on": "every_loss",
+            "condition_on": "every_win",
             "condition_on_value": 1,
-            "condition_action": "update_multiplier",
-            "action_value": 2.0,
+            "condition_on_value_2": null,
+            "condition_action": "reset_bet_amount",
+            "action_value": 0,
             "others": null
         }
     },
@@ -34,10 +36,11 @@
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
-            "condition_on": "streak_losses",
-            "condition_on_value": 4,
-            "condition_action": "update_multiplier",
-            "action_value": 2.3,
+            "condition_on": "every_loss",
+            "condition_on_value": 1,
+            "condition_on_value_2": null,
+            "condition_action": "reset_bet_amount",
+            "action_value": 0,
             "others": null
         }
     },
@@ -48,10 +51,11 @@
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
-            "condition_on": "streak_losses",
-            "condition_on_value": 5,
+            "condition_on": "every_loss",
+            "condition_on_value": 1,
+            "condition_on_value_2": null,
             "condition_action": "update_multiplier",
-            "action_value": 2.5,
+            "action_value": 1.50,
             "others": null
         }
     },
@@ -63,9 +67,10 @@
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
             "condition_on": "streak_losses",
-            "condition_on_value": 8,
+            "condition_on_value": 2.0,
+            "condition_on_value_2": null,
             "condition_action": "update_multiplier",
-            "action_value": 3.0,
+            "action_value": 1.65,
             "others": null
         }
     },
@@ -76,10 +81,11 @@
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
-            "condition_on": "every_win",
-            "condition_on_value": 1,
-            "condition_action": "reset_multiplier",
-            "action_value": 0,
+            "condition_on": "streak_losses",
+            "condition_on_value": 3.0,
+            "condition_on_value_2": null,
+            "condition_action": "update_multiplier",
+            "action_value": 1.75,
             "others": null
         }
     },
@@ -90,10 +96,86 @@
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
             "bot_id": 1,
+            "condition_on": "streak_losses",
+            "condition_on_value": 4.0,
+            "condition_on_value_2": null,
+            "condition_action": "update_multiplier",
+            "action_value": 1.95,
+            "others": null
+        }
+    },
+    {
+        "model": "predictions.BotCondition",
+        "pk": "8",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "condition_on": "streak_losses",
+            "condition_on_value": 5.0,
+            "condition_on_value_2": null,
+            "condition_action": "update_multiplier",
+            "action_value": 2.0,
+            "others": null
+        }
+    },
+    {
+        "model": "predictions.BotCondition",
+        "pk": "9",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "condition_on": "streak_losses",
+            "condition_on_value": 6.0,
+            "condition_on_value_2": null,
+            "condition_action": "update_multiplier",
+            "action_value": 2.3,
+            "others": null
+        }
+    },
+    {
+        "model": "predictions.BotCondition",
+        "pk": "10",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "condition_on": "streak_losses",
+            "condition_on_value": 7.0,
+            "condition_on_value_2": null,
+            "condition_action": "update_multiplier",
+            "action_value": 2.8,
+            "others": null
+        }
+    },
+    {
+        "model": "predictions.BotCondition",
+        "pk": "11",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
             "condition_on": "streak_wins",
-            "condition_on_value": 5,
+            "condition_on_value": 5.0,
+            "condition_on_value_2": null,
             "condition_action": "increase_bet_amount",
             "action_value": 0.33,
+            "others": null
+        }
+    },
+    {
+        "model": "predictions.BotCondition",
+        "pk": "12",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 1,
+            "condition_on": "streak_n_multiplier_less_than",
+            "condition_on_value": 19.0,
+            "condition_on_value_2": 10.0,
+            "condition_action": "update_multiplier",
+            "action_value": 10.0,
             "others": null
         }
     }

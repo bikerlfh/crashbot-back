@@ -5,9 +5,9 @@ from django.db import models
 from apps.django_projects.core.models import HomeBet
 from apps.django_projects.predictions.constants import (
     BotType,
-    ModelStatus,
-    ConditionON,
     ConditionAction,
+    ConditionON,
+    ModelStatus,
 )
 from apps.prediction.constants import Category, ModelType
 from apps.utils.django.models import BaseModel
@@ -19,11 +19,13 @@ class ModelHomeBet(BaseModel):
         HomeBet, on_delete=models.PROTECT, related_name="models"
     )
     name = models.CharField(max_length=50, unique=True)
-    model_type = models.CharField(max_length=25, choices=enum_to_choices(ModelType))
+    model_type = models.CharField(
+        max_length=25, choices=enum_to_choices(ModelType)
+    )
     status = models.CharField(
         max_length=10,
         choices=enum_to_choices(ModelStatus),
-        default=ModelStatus.ACTIVE.value
+        default=ModelStatus.ACTIVE.value,
     )
     seq_len = models.SmallIntegerField(default=10)
     average_predictions = models.FloatField(default=0)
@@ -43,7 +45,9 @@ class ModelCategoryResult(BaseModel):
     model_home_bet = models.ForeignKey(
         ModelHomeBet, on_delete=models.PROTECT, related_name="category_results"
     )
-    category = models.SmallIntegerField(choices=enum_to_choices(Category))  # 1, 2, 3
+    category = models.SmallIntegerField(
+        choices=enum_to_choices(Category)
+    )  # 1, 2, 3
     correct_predictions = models.IntegerField(default=0)
     incorrect_predictions = models.IntegerField(default=0)
     percentage_predictions = models.FloatField()
@@ -107,11 +111,14 @@ class BotCondition(BaseModel):
         Bot, on_delete=models.PROTECT, related_name="conditions"
     )
     condition_on = models.CharField(
-        max_length=20,
+        max_length=30,
         choices=enum_to_choices(ConditionON),
         default=ConditionON.EVERY_WIN.value,
     )
     condition_on_value = models.FloatField(default=0)
+    condition_on_value_2 = models.FloatField(
+        null=True, blank=True, default=None
+    )
     condition_action = models.CharField(
         max_length=25,
         choices=enum_to_choices(ConditionAction),
@@ -126,6 +133,5 @@ class BotCondition(BaseModel):
             "bot",
             "condition_on",
             "condition_on_value",
-            "condition_action"
+            "condition_action",
         )
-

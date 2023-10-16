@@ -47,7 +47,8 @@ def cache_on_request_data(cache_timeout=None):
                 )
             else:
                 response = Response(
-                    data=cache_response["data"], status=cache_response["status"]
+                    data=cache_response["data"],
+                    status=cache_response["status"],
                 )
             return response
 
