@@ -5,9 +5,6 @@ from typing import Optional, Tuple
 
 # Libraries
 import numpy as np
-from keras.layers import GRU, Dense
-from keras.models import Sequential, load_model
-from keras.utils import to_categorical
 from sklearn.metrics import (
     confusion_matrix,
     f1_score,
@@ -15,6 +12,9 @@ from sklearn.metrics import (
     recall_score,
 )
 from sklearn.model_selection import train_test_split
+from keras.layers import GRU, Dense  # noqa
+from keras.models import Sequential, load_model  # noqa
+from keras.utils import to_categorical  # noqa
 
 # Internal
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN

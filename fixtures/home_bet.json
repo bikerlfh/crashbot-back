@@ -50,5 +50,18 @@
             "max_bet": 500000,
             "currencies": [1]
         }
+    },
+    {
+        "model": "core.HomeBet",
+        "pk": "5",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "name": "1XBet",
+            "url": "https://1xbet.com/",
+            "min_bet": 500,
+            "max_bet": 500000,
+            "currencies": [1]
+        }
     }
 ]
