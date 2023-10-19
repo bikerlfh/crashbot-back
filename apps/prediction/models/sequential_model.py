@@ -6,12 +6,12 @@ from typing import Optional, Tuple
 
 # Libraries
 import numpy as np
-import tensorflow as tf
 from keras import losses
 from keras.layers import LSTM, Dense, Dropout
 from keras.models import Sequential, load_model
 from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
+import tensorflow as tf  # noqa
 
 # Internal
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
