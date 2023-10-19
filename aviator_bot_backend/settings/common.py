@@ -46,7 +46,10 @@ DOMAIN_NAME = getenv("DOMAIN_NAME", "localhost")
 # Application definition
 DEFAULT_APPS = [
     "daphne",
+    "admin_interface",
+    "colorfield",
     "django.contrib.admin",
+    "jsoneditor",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -67,6 +70,8 @@ LOCAL_APPS = [
     "apps.django_projects.bets",
     "apps.django_projects.predictions",
 ]
+
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

@@ -1,6 +1,9 @@
+from jsoneditor.forms import JSONEditor
+
 # Django
 from django.contrib import admin
 from django.forms import ChoiceField, ModelForm
+from django.db.models.fields.json import JSONField
 
 # Internal
 from apps.django_projects.predictions.constants import BotType
@@ -10,6 +13,28 @@ from apps.django_projects.predictions.models import (
     ModelHomeBet,
 )
 from apps.utils.tools import enum_to_choices
+
+
+DESCRIPTION_ACTIONS = """
+<br>This section contains the JSON information for "actions".
+Please review the provided documentation for detailed guidelines:
+fields_mapping is used to transform the variables received in an event
+for use on different tasks of the Credit Card Program. Therefore, you
+must specify the origin and destination values for each variable
+transformation. Follow this JSON structure:
+<pre>
+[
+    {
+        "condition_action": str,
+        "action_value": float
+    },
+    {
+        "condition_action": str,
+        "action_value": float
+    }
+]
+</pre><br>
+"""
 
 
 @admin.register(Bot)
@@ -28,14 +53,48 @@ class BotAdmin(admin.ModelAdmin):
 
 @admin.register(BotCondition)
 class BotConditionAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        JSONField: {"widget": JSONEditor},
+    }
     list_display = [
         "bot",
         "condition_on",
         "condition_on_value",
-        "condition_action",
-        "action_value",
+        # "condition_action",
+        # "action_value",
     ]
-    list_filter = ["bot", "condition_on", "condition_action"]
+    list_filter = ["bot", "condition_on"]
+    # fields = [
+    #     "bot",
+    #     "condition_on",
+    #     "condition_on_value",
+    #     "condition_on_value_2",
+    #     "others",
+    #     "actions",
+    # ]
+    # raw_id_fields = ["bot"]
+    fieldsets = (
+        (
+            "REQUIRED INFORMATION",
+            {
+                "fields": (
+                    "bot",
+                    "condition_on",
+                    "condition_on_value",
+                    "condition_on_value_2",
+                    # "others",
+                ),
+            },
+        ),
+        (
+            "ACTIONS JSON",
+            {
+                "fields": ("actions",),
+                "classes": ("collapse",),
+                "description": DESCRIPTION_ACTIONS,
+            },
+        ),
+    )
 
 
 @admin.register(ModelHomeBet)

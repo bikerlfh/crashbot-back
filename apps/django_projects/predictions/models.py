@@ -119,12 +119,13 @@ class BotCondition(BaseModel):
     condition_on_value_2 = models.FloatField(
         null=True, blank=True, default=None
     )
-    condition_action = models.CharField(
-        max_length=25,
-        choices=enum_to_choices(ConditionAction),
-        default=ConditionAction.UPDATE_MULTIPLIER.value,
-    )
-    action_value = models.FloatField(default=0)
+    actions = models.JSONField(default={})
+    # condition_action = models.CharField(
+    #     max_length=25,
+    #     choices=enum_to_choices(ConditionAction),
+    #     default=ConditionAction.UPDATE_MULTIPLIER.value,
+    # )
+    # action_value = models.FloatField(default=0)
     others = models.JSONField(null=True, blank=True)
 
     class Meta:
@@ -133,5 +134,6 @@ class BotCondition(BaseModel):
             "bot",
             "condition_on",
             "condition_on_value",
-            "condition_action",
+            "condition_on_value_2",
+            # "actions",
         )

@@ -432,8 +432,8 @@ def get_active_bots(
                         id=condition.id,
                         condition_on=condition.condition_on,
                         condition_on_value=condition.condition_on_value,
-                        condition_action=condition.condition_action,
-                        action_value=condition.action_value,
+                        condition_on_value_2=condition.condition_on_value_2,
+                        actions=condition.actions,
                         others=condition.others,
                     )
                     for condition in conditions

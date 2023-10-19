@@ -150,8 +150,10 @@ class BotView(
                 id=serializers.IntegerField(),
                 condition_on=serializers.CharField(),
                 condition_on_value=serializers.FloatField(),
-                condition_action=serializers.CharField(),
-                action_value=serializers.FloatField(),
+                condition_on_value_2=serializers.FloatField(
+                    required=False, allow_null=True
+                ),
+                actions=serializers.JSONField(),
                 others=serializers.JSONField(required=False, allow_null=True),
             ),
             many=True,
