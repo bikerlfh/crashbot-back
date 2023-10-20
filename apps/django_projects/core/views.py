@@ -30,10 +30,10 @@ class HomeBetView(
         url = serializers.URLField()
         min_bet = serializers.DecimalField(max_digits=10, decimal_places=2)
         max_bet = serializers.DecimalField(max_digits=10, decimal_places=2)
-        count_multipliers = serializers.IntegerField(default=0)
-        currencies = serializers.ListSerializer(
-            child=serializers.CharField(max_length=3)
-        )
+        amount_multiple = serializers.FloatField()
+        # currencies = serializers.ListSerializer(
+        #    child=serializers.CharField(max_length=3)
+        # )
 
     @cache_on_request_data(cache_timeout=60 * 60 * 24 * 7)
     def get(self, request):

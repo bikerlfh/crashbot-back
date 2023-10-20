@@ -25,6 +25,7 @@ class CustomerDataView(APIErrorsMixin, APIView):
                 url=serializers.CharField(),
                 min_bet=serializers.FloatField(),
                 max_bet=serializers.FloatField(),
+                amount_multiple=serializers.FloatField(),
             ),
         )
         plan = inline_serializer(
@@ -83,3 +84,30 @@ class CustomerBalanceView(APIErrorsMixin, APIView):
         serializer.is_valid(raise_exception=True)
         services.update_customer_balance(**serializer.validated_data)
         return Response(status=status.HTTP_200_OK)
+
+
+class LiveCustomerView(APIErrorsMixin, APIView):
+    permission_classes = [IsAuthenticated]
+
+    class InputSerializer(serializers.Serializer):
+        home_bet_id = serializers.IntegerField()
+        closing_session = serializers.BooleanField(
+            required=False, default=False
+        )
+
+    class OutputSerializer(serializers.Serializer):
+        allowed_to_save_multiplier = serializers.BooleanField()
+
+    def post(self, request):
+        user = request.user
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = services.live_customer(
+            customer_id=user.customer.id,
+            **serializer.validated_data,
+        )
+        out_serializer = self.OutputSerializer(data=data)
+        out_serializer.is_valid(raise_exception=True)
+        return Response(
+            data=out_serializer.validated_data, status=status.HTTP_200_OK
+        )

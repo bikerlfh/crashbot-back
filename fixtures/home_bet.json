@@ -9,6 +9,7 @@
             "url": "https://www.spribe.co/games/aviator",
             "min_bet": 1,
             "max_bet": 100,
+            "amount_multiple": 1.0,
             "currencies": [1]
         }
     },
@@ -22,6 +23,7 @@
             "url": "https://betplay.com.co/slots",
             "min_bet": 100,
             "max_bet": 100000,
+            "amount_multiple": 100.0,
             "currencies": [1]
         }
     },
@@ -35,6 +37,7 @@
             "url": "https://1wsbbj.top/",
             "min_bet": 500,
             "max_bet": 500000,
+            "amount_multiple": 100.0,
             "currencies": [1]
         }
     },
@@ -48,6 +51,7 @@
             "url": "https://www.rivalo.com",
             "min_bet": 500,
             "max_bet": 500000,
+            "amount_multiple": 100.0,
             "currencies": [1]
         }
     },
@@ -61,6 +65,7 @@
             "url": "https://1xbet.com/",
             "min_bet": 500,
             "max_bet": 500000,
+            "amount_multiple": 100.0,
             "currencies": [1]
         }
     }
