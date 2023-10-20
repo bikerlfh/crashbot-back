@@ -22,6 +22,7 @@ class HomeBet(BaseModel):
     min_bet = models.DecimalField(max_digits=18, decimal_places=2)
     max_bet = models.DecimalField(max_digits=18, decimal_places=2)
     currencies = models.ManyToManyField(Currency)
+    amount_multiple = models.FloatField(default=100.0)
 
     def __str__(self):
         return self.name

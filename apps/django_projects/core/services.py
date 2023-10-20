@@ -32,7 +32,7 @@ def get_home_bet(
                 url=home_bet.url,
                 min_bet=home_bet.min_bet,
                 max_bet=home_bet.max_bet,
-                count_multipliers=home_bet.multipliers.count(),
+                amount_multiple=home_bet.amount_multiple,
                 currencies=list(currencies),
             )
         )

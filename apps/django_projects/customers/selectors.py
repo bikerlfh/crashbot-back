@@ -1,3 +1,4 @@
+from typing import Optional
 # Django
 from django.contrib.auth.models import User
 from django.db.models import QuerySet
@@ -7,6 +8,7 @@ from apps.django_projects.customers.models import (
     Customer,
     CustomerBalance,
     CustomerPlan,
+    CustomerSession
 )
 
 
@@ -37,3 +39,7 @@ def filter_balance(
 
 def filter_customer_plans(**kwargs) -> QuerySet[CustomerPlan]:
     return CustomerPlan.objects.filter(**kwargs)
+
+
+def filter_customer_session(**kwargs) -> QuerySet[CustomerSession]:
+    return CustomerSession.objects.filter(**kwargs)

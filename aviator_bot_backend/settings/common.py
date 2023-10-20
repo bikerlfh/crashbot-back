@@ -174,8 +174,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REDIS_HOSTNAME = getenv("REDIS_HOSTNAME", "redis")
 REDIS_PORT = int(getenv("REDIS_PORT", 6379))
 
-CELERY_BROKER_URL = f"redis://{REDIS_HOSTNAME}:{REDIS_PORT}"
-CELERY_RESULT_BACKEND = f"redis://{REDIS_HOSTNAME}:{REDIS_PORT}"
+CELERY_BROKER_URL = f"redis://{REDIS_HOSTNAME}:{REDIS_PORT}/0"
+CELERY_RESULT_BACKEND = f"redis://{REDIS_HOSTNAME}:{REDIS_PORT}/0"
 
 SCHEDULE_GENERATE_CATEGORY_RESULT = getenv(
     "SCHEDULE_GENERATE_CATEGORY_RESULT", "*/15"
@@ -202,7 +202,7 @@ CELERY_BEAT_SCHEDULE = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": f"redis://{REDIS_HOSTNAME}:{REDIS_PORT}",
+        "LOCATION": f"redis://{REDIS_HOSTNAME}:{REDIS_PORT}/1",
     }
 }
 
