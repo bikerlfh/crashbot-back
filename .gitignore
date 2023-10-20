@@ -3,6 +3,15 @@
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
+__pycache__/
+.envrc
+.moenv
+.mo_env_file
+.idea/
+.envfile
+*.py[cod]
+*$py.class
+
 # Node artifact files
 node_modules/
 dist/
@@ -10,6 +19,7 @@ storage/
 *.h5
 # Compiled Java class files
 *.class
+.envrc
 
 # Compiled Python bytecode
 *.py[cod]
