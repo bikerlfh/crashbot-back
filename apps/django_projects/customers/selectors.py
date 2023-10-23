@@ -1,4 +1,5 @@
 from typing import Optional
+
 # Django
 from django.contrib.auth.models import User
 from django.db.models import QuerySet
@@ -8,7 +9,7 @@ from apps.django_projects.customers.models import (
     Customer,
     CustomerBalance,
     CustomerPlan,
-    CustomerSession
+    CustomerSession,
 )
 
 

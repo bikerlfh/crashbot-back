@@ -12,6 +12,7 @@ from rest_framework.exceptions import ValidationError
 from apps.django_projects.core import selectors
 from apps.django_projects.core.models import HomeBetMultiplier
 from apps.django_projects.core.strategies import multiplier_save
+from cacheops import invalidate_model
 
 logger = logging.getLogger(__name__)
 
@@ -78,6 +79,7 @@ def save_multipliers(
             )
         )
     HomeBetMultiplier.objects.bulk_create(_list_multipliers)
+    invalidate_model(HomeBetMultiplier)
     return multipliers
 
 

@@ -119,7 +119,7 @@ class BotCondition(BaseModel):
     condition_on_value_2 = models.FloatField(
         null=True, blank=True, default=None
     )
-    actions = models.JSONField(default={})
+    actions = models.JSONField(default=dict)
     # condition_action = models.CharField(
     #     max_length=25,
     #     choices=enum_to_choices(ConditionAction),

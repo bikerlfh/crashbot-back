@@ -3,6 +3,7 @@ import uuid
 
 # Django
 from django.db import models
+from cacheops import invalidate_obj
 
 
 class BaseModel(models.Model):
@@ -36,6 +37,7 @@ class BaseModel(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
+        invalidate_obj(self)
         return super().save(*args, **kwargs)
 
     class Meta:

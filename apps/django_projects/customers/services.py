@@ -11,7 +11,11 @@ from rest_framework.exceptions import ValidationError
 # Internal
 from apps.django_projects.core import selectors as core_selectors
 from apps.django_projects.customers import selectors
-from apps.django_projects.customers.models import Customer, CustomerBalance, CustomerSession
+from apps.django_projects.customers.models import (
+    Customer,
+    CustomerBalance,
+    CustomerSession,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -180,9 +184,7 @@ def create_customer_session(
     home_bet_id: int,
 ) -> CustomerSession:
     session = CustomerSession.objects.create(
-        customer_id=customer_id,
-        home_bet_id=home_bet_id,
-        is_active=True
+        customer_id=customer_id, home_bet_id=home_bet_id, is_active=True
     )
     return session
 
@@ -194,9 +196,7 @@ def live_customer(
     closing_session: bool,
 ) -> dict[str, any]:
     session = selectors.filter_customer_session(
-        customer_id=customer_id,
-        home_bet_id=home_bet_id,
-        is_active=True
+        customer_id=customer_id, home_bet_id=home_bet_id, is_active=True
     ).first()
     if closing_session:
         if session:
@@ -209,14 +209,15 @@ def live_customer(
             home_bet_id=home_bet_id,
         )
     # get first session of home_bet_id
-    first_session = selectors.filter_customer_session(
-        home_bet_id=home_bet_id,
-        is_active=True
-    ).order_by("created_at").first()
-    allowed_to_save_multiplier = first_session == session
-    data = dict(
-        allowed_to_save_multiplier=allowed_to_save_multiplier
+    first_session = (
+        selectors.filter_customer_session(
+            home_bet_id=home_bet_id, is_active=True
+        )
+        .order_by("created_at")
+        .first()
     )
+    allowed_to_save_multiplier = first_session == session
+    data = dict(allowed_to_save_multiplier=allowed_to_save_multiplier)
     # update session
     session.updated_at = datetime.now()
     session.save()

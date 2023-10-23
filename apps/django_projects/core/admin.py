@@ -13,7 +13,7 @@ class CurrencyAdmin(admin.ModelAdmin):
 @admin.register(HomeBet)
 class HomeBetAdmin(admin.ModelAdmin):
     list_display = ["name", "url", "min_bet", "max_bet"]
-    fields = ["name", "url", "min_bet", "max_bet", "currencies"]
+    fields = ["name", "url", "min_bet", "max_bet", "amount_multiple", "currencies"]
 
 
 @admin.register(Plan)

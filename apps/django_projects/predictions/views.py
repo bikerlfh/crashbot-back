@@ -159,7 +159,7 @@ class BotView(
             many=True,
         )
 
-    @cache_on_request_data(cache_timeout=60 * 60 * 24 * 7)
+    # @cache_on_request_data(cache_timeout=60 * 60 * 24 * 7)
     def get(self, request):
         in_serializer = self.InputSerializer(data=request.GET)
         in_serializer.is_valid(raise_exception=True)

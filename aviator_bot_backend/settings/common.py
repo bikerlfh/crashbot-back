@@ -62,6 +62,7 @@ THIRD_PARTY_APPS = [
     "channels",
     "rest_framework",
     "rest_framework_simplejwt",
+    "cacheops",
 ]
 
 LOCAL_APPS = [
@@ -247,4 +248,15 @@ SIMPLE_JWT = {
     "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
+}
+
+CACHEOPS_REDIS = f"redis://{REDIS_HOSTNAME}:{REDIS_PORT}/1"
+
+CACHEOPS = {
+    "core.*": {"ops": "all", "timeout": 60 * 60 * 24},
+    "bets.*": {"ops": "all", "timeout": 60 * 60 * 24},
+    "customers.*": {"ops": "all", "timeout": 60 * 60 * 24},
+    "predictions.Bot": {"ops": "all", "timeout": 60 * 60 * 24},
+    "predictions.BotCondition": {"ops": "all", "timeout": 60 * 60 * 24},
+    # "events.*": {"ops": "all", "timeout": 60 * 60},
 }
