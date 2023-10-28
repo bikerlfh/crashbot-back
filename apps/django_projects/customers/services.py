@@ -100,7 +100,7 @@ def get_customer_data(*, user_id: int, app_hash_str: str) -> dict[str, any]:
     if not customer_plan:
         raise MOAPIException(ErrorCode.AUTH02)
     home_bets_qry = (
-        customer.balances.all()
+        customer.balances.filter(is_active=True)
         .annotate(name=F("home_bet__name"), url=F("home_bet__url"))
         .values(
             "home_bet_id",
