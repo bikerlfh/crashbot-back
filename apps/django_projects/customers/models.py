@@ -66,5 +66,4 @@ class CustomerSession(BaseModelUUID):
     is_active = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ("customer", "home_bet", "is_active")
         db_table = "customer_session"

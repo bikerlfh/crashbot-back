@@ -20,7 +20,7 @@ class CustomerAddForm(forms.ModelForm):
     username = forms.CharField(required=True)
     email = forms.EmailField(required=True)
     home_bets = forms.MultipleChoiceField(
-        choices=[(h.id, h.name) for h in HomeBet.objects.all()], required=True
+        # choices=[(h.id, h.name) for h in HomeBet.objects.all()], required=True
     )
     password = forms.CharField(widget=forms.PasswordInput, required=False)
     repeat_password = forms.CharField(

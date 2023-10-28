@@ -193,6 +193,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute=5, hour=5),
         "relative": True,
     },
+    "task_inactive_customer_sessions": {
+        "task": "apps.django_projects.customers.tasks.task_inactive_customer_sessions",
+        "schedule": crontab(minute="*/2"),
+        "relative": True,
+    },
     # "task_generate_models": {
     #    "task": "apps.django_projects.predictions.tasks.task_generate_models",
     #    "schedule": crontab(minute="*/8"),

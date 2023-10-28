@@ -248,3 +248,19 @@ def live_customer(
     session.updated_at = datetime.now()
     session.save()
     return data
+
+
+def inactive_customer_sessions() -> None:
+    """
+    inactive all sessions at a day after end_dt
+    this session does not have any effect on customer
+    is only to control the allowed customer to save multiplier
+    """
+    date_ = datetime.now() - timedelta(seconds=60)
+    sessions = selectors.filter_customer_session(
+        updated_at__lte=date_, is_active=True
+    )
+    if not sessions.exists():
+        logger.info("inactive_customer_sessions :: No sessions to inactive")
+        return
+    sessions.update(is_active=False)
