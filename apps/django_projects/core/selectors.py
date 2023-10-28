@@ -7,7 +7,7 @@ from typing import Optional
 from django.db.models import Q, QuerySet
 
 # Internal
-from apps.django_projects.core.models import HomeBet, HomeBetMultiplier
+from apps.django_projects.core.models import HomeBet, Multiplier, HomeBetGame
 
 
 def filter_home_bet(
@@ -19,7 +19,7 @@ def filter_home_bet(
     if home_bet_id:
         filter_.update(id=home_bet_id)
     return HomeBet.objects.filter(**filter_).prefetch_related(
-        "multipliers", "currencies"
+        "games",
     )
 
 
@@ -34,20 +34,20 @@ def filter_home_bet_in_play() -> QuerySet[HomeBet]:
 def filter_multipliers(
     *,
     filter_: Optional[dict] = None,
-) -> QuerySet[HomeBetMultiplier]:
+) -> QuerySet[Multiplier]:
     filter_ = filter_ or {}
-    return HomeBetMultiplier.objects.filter(**filter_)
+    return Multiplier.objects.filter(**filter_)
 
 
 def get_last_multipliers(
     *,
-    home_bet_id: int,
+    home_bet_game_id: int,
     count: Optional[int] = None,
     filter_: Optional[dict] = {},
 ) -> list[Decimal]:
-    filter_.update(home_bet_id=home_bet_id)
+    filter_.update(home_bet_game_id=home_bet_game_id)
     _multipliers = (
-        HomeBetMultiplier.objects.filter(**filter_)
+        Multiplier.objects.filter(**filter_)
         .values_list("multiplier", flat=True)
         .order_by("-id")[:count]
     )
@@ -56,14 +56,14 @@ def get_last_multipliers(
     return multipliers
 
 
-def get_today_multipliers(*, home_bet_id: int) -> list[Decimal]:
+def get_today_multipliers(*, home_bet_game_id: int) -> list[Decimal]:
     now = datetime.now().date()
     filter_ = dict(
-        home_bet_id=home_bet_id,
+        home_bet_game_id=home_bet_game_id,
         multiplier_dt__date=now,
     )
     _multipliers = (
-        HomeBetMultiplier.objects.filter(**filter_)
+        Multiplier.objects.filter(**filter_)
         .values_list("multiplier", flat=True)
         .order_by("-id")
     )
@@ -81,4 +81,13 @@ def count_home_bet_multipliers(
     if only_today:
         now = datetime.now().date()
         filter_.update(multiplier_dt__date=now)
-    return HomeBetMultiplier.objects.filter(**filter_).count()
+    return Multiplier.objects.filter(**filter_).count()
+
+
+def filter_home_bet_game_by_id(
+    *,
+    home_bet_game_id: int,
+) -> QuerySet[HomeBetGame]:
+    return HomeBetGame.objects.filter(id=home_bet_game_id).prefetch_related(
+        "multipliers",
+    )

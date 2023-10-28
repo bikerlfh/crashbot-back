@@ -224,7 +224,7 @@ class GetPositionValuesView(
     permission_classes = [IsAuthenticated]
 
     class InputSerializer(serializers.Serializer):
-        home_bet_id = serializers.IntegerField()
+        home_bet_game_id = serializers.IntegerField()
 
     @cache_on_request_data(cache_timeout=60 * 15)
     def get(self, request):

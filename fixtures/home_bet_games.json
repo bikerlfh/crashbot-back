@@ -1,0 +1,97 @@
+[
+    {
+        "model": "core.HomeBetGame",
+        "pk": "1",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "home_bet_id": 1,
+            "crash_game_id": 1,
+            "limits": {
+                "USD": {
+                    "min_bet": 1,
+                    "max_bet": 100,
+                    "amount_multiple": 1.0
+                }
+            }
+        }
+    },
+    {
+        "model": "core.HomeBetGame",
+        "pk": "2",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "home_bet_id": 2,
+            "crash_game_id": 1,
+            "limits": {
+                "COP": {
+                    "min_bet": 100,
+                    "max_bet": 100000,
+                    "amount_multiple": 100.0
+                }
+            }
+        }
+    },
+    {
+        "model": "core.HomeBetGame",
+        "pk": "3",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "home_bet_id": 3,
+            "crash_game_id": 1,
+            "limits": {
+                "COP": {
+                    "min_bet": 500,
+                    "max_bet": 500000,
+                    "amount_multiple": 100.0
+                },
+                "USD": {
+                    "min_bet": 1,
+                    "max_bet": 100,
+                    "amount_multiple": 1.0
+                }
+            }
+        }
+    },
+    {
+        "model": "core.HomeBetGame",
+        "pk": "4",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "home_bet_id": 4,
+            "crash_game_id": 1,
+            "limits": {
+                "COP": {
+                    "min_bet": 500,
+                    "max_bet": 500000,
+                    "amount_multiple": 100.0
+                }
+            }
+        }
+    },
+    {
+        "model": "core.HomeBetGame",
+        "pk": "5",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "home_bet_id": 5,
+            "crash_game_id": 1,
+            "limits": {
+                "COP": {
+                    "min_bet": 500,
+                    "max_bet": 500000,
+                    "amount_multiple": 100.0
+                },
+                "USD": {
+                    "min_bet": 1,
+                    "max_bet": 100,
+                    "amount_multiple": 1.0
+                }
+            }
+        }
+    }
+]

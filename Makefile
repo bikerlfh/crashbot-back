@@ -42,6 +42,9 @@ migrate: ## migrate
 load-fixtures: ## loaddata
 	docker compose run --rm --entrypoint=python worker manage.py loaddata fixtures/*.json
 
+clear-cache: ## loaddata
+	docker compose run --rm --entrypoint=python worker manage.py invalidate all
+
 create-model: ## create a sequential model
 	docker compose run --rm --entrypoint=python worker manage.py create_model ${home_bet_id} ${model_type} ${seq_len}
 

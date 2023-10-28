@@ -2,7 +2,7 @@
 from django.db import models
 
 # Internal
-from apps.django_projects.core.models import HomeBet
+from apps.django_projects.core.models import HomeBet, CrashGame
 from apps.django_projects.predictions.constants import (
     BotType,
     ConditionAction,
@@ -17,6 +17,9 @@ from apps.utils.tools import enum_to_choices
 class ModelHomeBet(BaseModel):
     home_bet = models.ForeignKey(
         HomeBet, on_delete=models.PROTECT, related_name="models"
+    )
+    crash_game = models.ForeignKey(
+        CrashGame, on_delete=models.PROTECT, related_name="models"
     )
     name = models.CharField(max_length=50, unique=True)
     model_type = models.CharField(
