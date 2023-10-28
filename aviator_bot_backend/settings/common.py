@@ -45,7 +45,7 @@ DOMAIN_NAME = getenv("DOMAIN_NAME", "localhost")
 
 # Application definition
 DEFAULT_APPS = [
-    "daphne",
+    # "daphne",
     "admin_interface",
     "colorfield",
     "django.contrib.admin",
@@ -59,7 +59,7 @@ DEFAULT_APPS = [
 
 THIRD_PARTY_APPS = [
     # 'corsheaders',
-    "channels",
+    # "channels",
     "rest_framework",
     "rest_framework_simplejwt",
     "cacheops",
