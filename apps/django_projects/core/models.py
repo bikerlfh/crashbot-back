@@ -2,7 +2,7 @@
 from django.db import models
 
 # Internal
-from apps.utils.django.models import BaseModel
+from apps.utils.django.models import BaseModel, BaseSimpleModel
 
 
 class Currency(BaseModel):
@@ -57,7 +57,7 @@ class HomeBetGame(BaseModel):
         )
 
 
-class Multiplier(BaseModel):
+class Multiplier(BaseSimpleModel):
     home_bet_game = models.ForeignKey(
         HomeBetGame, related_name="multipliers", on_delete=models.DO_NOTHING
     )

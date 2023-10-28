@@ -6,13 +6,12 @@ from django.db import models
 from cacheops import invalidate_obj
 
 
-class BaseModel(models.Model):
-    CASE_STYLE = "lower"
+class BaseSimpleModel(models.Model):
+    """
+    this model does not have created_at and updated_at
+    """
 
-    created_at = models.DateTimeField(
-        auto_now_add=True, verbose_name="created at"
-    )
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="updated at")
+    CASE_STYLE = "lower"
 
     def clean(self):
         fields_to_clean = getattr(self, "FIELDS_TO_CLEAN", None)
@@ -34,6 +33,21 @@ class BaseModel(models.Model):
                     cleaned_value = getattr(cleaned_value, self.CASE_STYLE)()
 
                 setattr(self, name, cleaned_value)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        invalidate_obj(self)
+        return super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+
+
+class BaseModel(BaseSimpleModel):
+    created_at = models.DateTimeField(
+        auto_now_add=True, verbose_name="created at"
+    )
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="updated at")
 
     def save(self, *args, **kwargs):
         self.full_clean()
