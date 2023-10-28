@@ -45,7 +45,7 @@ DOMAIN_NAME = getenv("DOMAIN_NAME", "localhost")
 
 # Application definition
 DEFAULT_APPS = [
-    "daphne",
+    # "daphne",
     "admin_interface",
     "colorfield",
     "django.contrib.admin",
@@ -59,7 +59,7 @@ DEFAULT_APPS = [
 
 THIRD_PARTY_APPS = [
     # 'corsheaders',
-    "channels",
+    # "channels",
     "rest_framework",
     "rest_framework_simplejwt",
     "cacheops",
@@ -191,6 +191,11 @@ CELERY_BEAT_SCHEDULE = {
     "task_inactive_customer_plans_at_end_dt": {
         "task": "apps.django_projects.customers.tasks.task_inactive_customer_plans_at_end_dt",
         "schedule": crontab(minute=5, hour=5),
+        "relative": True,
+    },
+    "task_inactive_customer_sessions": {
+        "task": "apps.django_projects.customers.tasks.task_inactive_customer_sessions",
+        "schedule": crontab(minute="*/2"),
         "relative": True,
     },
     # "task_generate_models": {

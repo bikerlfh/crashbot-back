@@ -6,24 +6,24 @@ from decimal import Decimal
 from rest_framework.exceptions import ValidationError
 
 # Internal
-from apps.django_projects.core.models import HomeBet
+from apps.django_projects.core.models import HomeBetGame
 
 
 class MultiplierSaveStrategy:
     def __init__(
         self,
         *,
-        home_bet: HomeBet,
+        home_bet_game: HomeBetGame,
         last_multipliers: list[Decimal],
         multipliers: list[Decimal]
     ):
-        self.home_bet = home_bet
+        self.home_bet_game = home_bet_game
         self.last_multipliers = last_multipliers
         self.multipliers = multipliers
 
     def is_valid(self):
-        if self.home_bet is None:
-            raise ValidationError("home bet does not exists")
+        if self.home_bet_game is None:
+            raise ValidationError("home bet game does not exists")
         if not self.multipliers:
             raise ValidationError("multipliers required")
 

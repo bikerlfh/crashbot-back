@@ -15,19 +15,11 @@ from apps.utils.rest.serializers import inline_serializer
 class CustomerDataView(APIErrorsMixin, APIView):
     permission_classes = [IsAuthenticated]
 
+    class InputGETSerializer(serializers.Serializer):
+        app_hash_str = serializers.CharField()
+
     class OutputGETSerializer(serializers.Serializer):
         customer_id = serializers.IntegerField()
-        home_bets = inline_serializer(
-            many=True,
-            fields=dict(
-                id=serializers.IntegerField(),
-                name=serializers.CharField(),
-                url=serializers.CharField(),
-                min_bet=serializers.FloatField(),
-                max_bet=serializers.FloatField(),
-                amount_multiple=serializers.FloatField(),
-            ),
-        )
         plan = inline_serializer(
             fields=dict(
                 name=serializers.CharField(),
@@ -35,6 +27,21 @@ class CustomerDataView(APIErrorsMixin, APIView):
                 start_dt=serializers.DateField(),
                 end_dt=serializers.DateField(),
                 is_active=serializers.BooleanField(),
+                crash_app=inline_serializer(
+                    fields=dict(
+                        version=serializers.CharField(),
+                        home_bet_game_id=serializers.IntegerField(),
+                        home_bets=inline_serializer(
+                            many=True,
+                            fields=dict(
+                                id=serializers.IntegerField(),
+                                name=serializers.CharField(),
+                                url=serializers.CharField(),
+                                limits=serializers.JSONField(),
+                            ),
+                        ),
+                    ),
+                ),
             ),
             required=False,
             allow_null=True,
@@ -43,7 +50,11 @@ class CustomerDataView(APIErrorsMixin, APIView):
     # @cache_on_request_data(cache_timeout=60 * 60 * 24)
     def get(self, request):
         user_id = request.user.id
-        data = services.get_customer_data(user_id=user_id)
+        serializer = self.InputGETSerializer(data=request.GET)
+        serializer.is_valid(raise_exception=True)
+        data = services.get_customer_data(
+            user_id=user_id, **serializer.validated_data
+        )
         out_serializer = self.OutputGETSerializer(data=data)
         out_serializer.is_valid(raise_exception=True)
         return Response(

@@ -6,6 +6,7 @@ from django import forms
 from django.contrib import admin
 
 # Internal
+from apps.utils.django.admin.models import ModelAdmin
 from apps.django_projects.core.models import HomeBet
 from apps.django_projects.customers import selectors, services
 from apps.django_projects.customers.models import (
@@ -112,7 +113,7 @@ class CustomerAddForm(forms.ModelForm):
         password = self.cleaned_data.pop("password")
         first_name = self.cleaned_data.pop("first_name", None)
         last_name = self.cleaned_data.pop("last_name", None)
-        if not self.instance:
+        if not self.instance.id:
             instance = services.create_customer(
                 username=username,
                 email=email,
@@ -134,7 +135,7 @@ class CustomerAddForm(forms.ModelForm):
 
 
 @admin.register(Customer)
-class CustomerAdmin(admin.ModelAdmin):
+class CustomerAdmin(ModelAdmin):
     form = CustomerAddForm
     list_display = ["username", "email", "phone_number", "home_bets"]
 
@@ -166,12 +167,12 @@ class CustomerAdmin(admin.ModelAdmin):
 
 
 @admin.register(CustomerBalance)
-class CustomerBalanceAdmin(admin.ModelAdmin):
+class CustomerBalanceAdmin(ModelAdmin):
     list_display = ["customer", "home_bet", "amount"]
 
 
 @admin.register(CustomerPlan)
-class CustomerPlanAdmin(admin.ModelAdmin):
+class CustomerPlanAdmin(ModelAdmin):
     class CustomerPlanForm(forms.ModelForm):
         class Meta:
             model = CustomerPlan

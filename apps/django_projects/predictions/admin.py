@@ -6,6 +6,7 @@ from django.forms import ChoiceField, ModelForm
 from django.db.models.fields.json import JSONField
 
 # Internal
+from apps.utils.django.admin.models import ModelAdmin
 from apps.django_projects.predictions.constants import BotType
 from apps.django_projects.predictions.models import (
     Bot,
@@ -18,10 +19,7 @@ from apps.utils.tools import enum_to_choices
 DESCRIPTION_ACTIONS = """
 <br>This section contains the JSON information for "actions".
 Please review the provided documentation for detailed guidelines:
-fields_mapping is used to transform the variables received in an event
-for use on different tasks of the Credit Card Program. Therefore, you
-must specify the origin and destination values for each variable
-transformation. Follow this JSON structure:
+Follow this JSON structure:
 <pre>
 [
     {
@@ -38,7 +36,7 @@ transformation. Follow this JSON structure:
 
 
 @admin.register(Bot)
-class BotAdmin(admin.ModelAdmin):
+class BotAdmin(ModelAdmin):
     class StrategyForm(ModelForm):
         bot_type = ChoiceField(choices=enum_to_choices(BotType))
 
@@ -52,7 +50,7 @@ class BotAdmin(admin.ModelAdmin):
 
 
 @admin.register(BotCondition)
-class BotConditionAdmin(admin.ModelAdmin):
+class BotConditionAdmin(ModelAdmin):
     formfield_overrides = {
         JSONField: {"widget": JSONEditor},
     }
@@ -98,7 +96,7 @@ class BotConditionAdmin(admin.ModelAdmin):
 
 
 @admin.register(ModelHomeBet)
-class ModelHomeBetAdmin(admin.ModelAdmin):
+class ModelHomeBetAdmin(ModelAdmin):
     list_display = [
         "home_bet",
         "model_type",

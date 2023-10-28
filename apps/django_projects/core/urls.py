@@ -16,7 +16,7 @@ urlpatterns: list[Any] = [
     ),
     path(
         "home-bet/multiplier/",
-        views.HomeBetMultiplierView.as_view(),
+        views.MultiplierView.as_view(),
         name="add-multipliers",
     ),
 ]

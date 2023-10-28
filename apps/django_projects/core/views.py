@@ -8,6 +8,8 @@ from rest_framework.views import APIView
 # Internal
 from apps.django_projects.core import services
 from apps.utils.django.mixin import APIErrorsMixin
+from apps.utils.rest.serializers import inline_serializer
+
 
 # from apps.utils.django.views.cache import cache_on_request_data
 
@@ -24,14 +26,22 @@ class HomeBetView(
 
     class InputSerializer(serializers.Serializer):
         home_bet_id = serializers.IntegerField(required=False)
+        game_name = serializers.CharField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField(required=False)
         name = serializers.CharField()
         url = serializers.URLField()
-        min_bet = serializers.DecimalField(max_digits=10, decimal_places=2)
-        max_bet = serializers.DecimalField(max_digits=10, decimal_places=2)
-        amount_multiple = serializers.FloatField()
+        games = inline_serializer(
+            fields=dict(
+                name=serializers.CharField(),
+                limits=serializers.JSONField(),
+            ),
+            many=True,
+        )
+        # min_bet = serializers.DecimalField(max_digits=10, decimal_places=2)
+        # max_bet = serializers.DecimalField(max_digits=10, decimal_places=2)
+        # amount_multiple = serializers.FloatField()
         # currencies = serializers.ListSerializer(
         #    child=serializers.CharField(max_length=3)
         # )
@@ -40,9 +50,7 @@ class HomeBetView(
     def get(self, request):
         in_serializer = self.InputSerializer(data=request.GET)
         in_serializer.is_valid(raise_exception=True)
-        data = services.get_home_bet(
-            home_bet_id=in_serializer.data.get("home_bet_id", None)
-        )
+        data = services.get_home_bet(**in_serializer.data)
         out_serializer = self.OutputSerializer(
             data=data, many=isinstance(data, list)
         )
@@ -50,18 +58,14 @@ class HomeBetView(
         return Response(data=out_serializer.validated_data)
 
 
-class HomeBetMultiplierView(
+class MultiplierView(
     APIErrorsMixin,
     APIView,
 ):
     permission_classes = [IsAuthenticated]
 
-    class InputGetSerializer(serializers.Serializer):
-        home_bet_id = serializers.IntegerField()
-        count = serializers.IntegerField(required=False)
-
     class InputPostSerializer(serializers.Serializer):
-        home_bet_id = serializers.IntegerField()
+        home_bet_game_id = serializers.IntegerField()
         multipliers = serializers.ListSerializer(
             child=serializers.DecimalField(max_digits=10, decimal_places=2)
         )
@@ -70,20 +74,6 @@ class HomeBetMultiplierView(
         multipliers = serializers.ListSerializer(
             child=serializers.FloatField()
         )
-
-    def get(self, request):
-        self.permission_classes = [IsAdminUser]
-        self.check_permissions(request)
-        in_serializer = self.InputGetSerializer(data=request.GET)
-        in_serializer.is_valid(raise_exception=True)
-        multipliers = services.get_home_bet_multipliers(
-            **in_serializer.validated_data
-        )
-        out_serializer = self.OutputSerializer(
-            data=dict(multipliers=multipliers)
-        )
-        out_serializer.is_valid(raise_exception=True)
-        return Response(data=out_serializer.data)
 
     def post(self, request):
         in_serializer = self.InputPostSerializer(data=request.data)

@@ -12,3 +12,9 @@ logger = get_task_logger(__name__)
 def task_inactive_customer_plans_at_end_dt():
     services.inactive_customer_plans_at_end_dt()
     logger.info("task_inactive_customer_plans_at_end_dt invoked")
+
+
+@shared_task
+def task_inactive_customer_sessions():
+    services.inactive_customer_sessions()
+    logger.info("task_inactive_customer_sessions invoked")

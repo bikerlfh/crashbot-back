@@ -11,7 +11,7 @@ from django.conf import settings
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 # Internal
-from apps.sockets.constants import APP_VERSION, BOT_CHANNEL_NAME, WSErrorCodes
+from apps.sockets.constants import BOT_CHANNEL_NAME, WSErrorCodes
 from apps.sockets.models import SocketMessage, UserConnection
 
 logger = logging.getLogger(__name__)
@@ -152,16 +152,16 @@ class BotConsumer(AsyncWebsocketConsumer):
             unique_id=unique_id, channel_name=self.channel_name
         )
         # TODO implement md5 hash to validate the app version
-        await self.channel_layer.send(
-            self.channel_name,
-            {
-                "type": "send_message",
-                "data": dict(
-                    func="validate_app_version",
-                    data=dict(app_version=APP_VERSION),
-                ),
-            },
-        )
+        # await self.channel_layer.send(
+        #     self.channel_name,
+        #     {
+        #         "type": "send_message",
+        #         "data": dict(
+        #             func="validate_app_version",
+        #             data=dict(app_version=APP_VERSION),
+        #         ),
+        #     },
+        # )
 
     async def disconnect(self, close_code):
         home_bet_id = self.scope.get("home_bet_id", None)

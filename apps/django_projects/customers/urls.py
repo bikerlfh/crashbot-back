@@ -9,7 +9,7 @@ from apps.django_projects.customers import views
 
 urlpatterns: list[Any] = [
     path("me/", views.CustomerDataView.as_view(), name="customer-data"),
-    path("me/live/", views.LiveCustomerView.as_view(), name="live-customer"),
+    path("live/", views.LiveCustomerView.as_view(), name="live-customer"),
     path(
         "balance/",
         views.CustomerBalanceView.as_view(),

@@ -496,7 +496,7 @@ def evaluate_model(
 
 
 def get_position_values(
-    *, home_bet_id: int, multipliers: Optional[list[int]] = None
+    *, home_bet_game_id: int, multipliers: Optional[list[int]] = None
 ) -> dict[str, any]:
     """
     Returns the number of positions that each
@@ -555,10 +555,10 @@ def get_position_values(
     values = multipliers or [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 50, 100]
     # values = multipliers or [2]
     all_multipliers = core_selectors.get_last_multipliers(
-        home_bet_id=home_bet_id
+        home_bet_game_id=home_bet_game_id
     )
     today_multipliers = core_selectors.get_today_multipliers(
-        home_bet_id=home_bet_id
+        home_bet_game_id=home_bet_game_id
     )
     if not all_multipliers:
         raise ValidationError(

@@ -4,9 +4,11 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 # Django
+from django.db.models import F
 from django.contrib.auth.models import User
 from django.db import transaction
 from rest_framework.exceptions import ValidationError
+from rest_framework.status import HTTP_401_UNAUTHORIZED
 
 # Internal
 from apps.django_projects.core import selectors as core_selectors
@@ -16,6 +18,7 @@ from apps.django_projects.customers.models import (
     CustomerBalance,
     CustomerSession,
 )
+from apps.utils.exceptions import MOAPIException, ErrorCode
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +86,7 @@ def update_customer(
     return customer
 
 
-def get_customer_data(*, user_id: int) -> dict[str, any]:
+def get_customer_data(*, user_id: int, app_hash_str: str) -> dict[str, any]:
     customer = (
         selectors.filter_customer(user_id=user_id)
         .prefetch_related("balances", "balances__home_bet", "plans")
@@ -92,28 +95,51 @@ def get_customer_data(*, user_id: int) -> dict[str, any]:
     if not customer:
         raise ValidationError("Customer does not exist")
     # TODO add more data if required
-    home_bets = []
-    for balance in customer.balances.all().order_by("home_bet__id"):
-        home_bet = balance.home_bet
-        home_bets.append(
-            dict(
-                id=home_bet.id,
-                name=home_bet.name,
-                url=home_bet.url,
-                min_bet=home_bet.min_bet,
-                max_bet=home_bet.max_bet,
-                amount_multiple=home_bet.amount_multiple,
-            )
-        )
-    data = dict(customer_id=customer.id, home_bets=home_bets)
+    data = dict(customer_id=customer.id)
     customer_plan = customer.plans.filter(is_active=True).first()
     if customer_plan:
+        home_bets_qry = (
+            customer.balances.all()
+            .annotate(name=F("home_bet__name"), url=F("home_bet__url"))
+            .values(
+                "home_bet_id",
+                "name",
+                "url",
+            )
+        )
+        plan = customer_plan.plan
+
+        crash_app = plan.crash_apps.filter(hash_str=app_hash_str).first()
+        if not crash_app:
+            raise MOAPIException(ErrorCode.AUTH02)
+        home_bets = []
+        for home_bet in home_bets_qry:
+            home_bet_id = home_bet["home_bet_id"]
+            limits = (
+                crash_app.home_bet_games.filter(home_bet__id=home_bet_id)
+                .values("limits")
+                .first()
+            )
+            home_bets.append(
+                dict(
+                    id=home_bet_id,
+                    name=home_bet["name"],
+                    url=home_bet["url"],
+                    limits=limits["limits"],
+                )
+            )
+        crash_app_data = dict(
+            version=crash_app.version,
+            home_bet_game_id=crash_app.home_bet_games.first().id,
+            home_bets=home_bets,
+        )
         plan_data = dict(
-            name=customer_plan.plan.name,
-            with_ai=customer_plan.plan.with_ai,
+            name=plan.name,
+            with_ai=plan.with_ai,
             start_dt=customer_plan.start_dt,
             end_dt=customer_plan.end_dt,
             is_active=customer_plan.is_active,
+            crash_app=crash_app_data,
         )
         data.update(plan=plan_data)
     return data
@@ -222,3 +248,19 @@ def live_customer(
     session.updated_at = datetime.now()
     session.save()
     return data
+
+
+def inactive_customer_sessions() -> None:
+    """
+    inactive all sessions at a day after end_dt
+    this session does not have any effect on customer
+    is only to control the allowed customer to save multiplier
+    """
+    date_ = datetime.now() - timedelta(seconds=60)
+    sessions = selectors.filter_customer_session(
+        updated_at__lte=date_, is_active=True
+    )
+    if not sessions.exists():
+        logger.info("inactive_customer_sessions :: No sessions to inactive")
+        return
+    sessions.update(is_active=False)

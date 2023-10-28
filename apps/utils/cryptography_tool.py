@@ -6,6 +6,7 @@ from django.conf import settings
 
 # Libraries
 from cryptography.fernet import Fernet
+import hashlib
 
 
 class FernetCrypto:
@@ -27,3 +28,13 @@ class FernetCrypto:
             return True
         except (Exception,):
             return False
+
+
+def md5(text: str) -> str:
+    try:
+        _md5 = hashlib.md5()
+        _md5.update(text.encode("utf-8"))
+        hash_md5 = _md5.hexdigest()
+        return hash_md5
+    except Exception as e:
+        return str(e)
