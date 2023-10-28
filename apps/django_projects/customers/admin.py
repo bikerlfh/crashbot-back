@@ -168,7 +168,9 @@ class CustomerAdmin(ModelAdmin):
 
 @admin.register(CustomerBalance)
 class CustomerBalanceAdmin(ModelAdmin):
-    list_display = ["customer", "home_bet", "amount"]
+    list_display = ["customer", "home_bet", "amount", "is_active"]
+    list_filter = ["home_bet"]
+    search_fields = ["customer__user__username", "customer__user__email"]
 
 
 @admin.register(CustomerPlan)
@@ -218,7 +220,8 @@ class CustomerPlanAdmin(ModelAdmin):
 
     form = CustomerPlanForm
     list_display = ["customer", "plan", "start_dt", "end_dt", "is_active"]
-    list_filter = ["is_active", "plan__name"]
+    list_filter = ["is_active", "plan"]
+    search_fields = ["customer__user__username", "customer__user__email"]
     fields = ["customer", "plan", "start_dt", "end_dt", "is_active"]
 
     def get_readonly_fields(self, request, obj=None):
