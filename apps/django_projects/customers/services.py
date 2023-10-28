@@ -97,51 +97,52 @@ def get_customer_data(*, user_id: int, app_hash_str: str) -> dict[str, any]:
     # TODO add more data if required
     data = dict(customer_id=customer.id)
     customer_plan = customer.plans.filter(is_active=True).first()
-    if customer_plan:
-        home_bets_qry = (
-            customer.balances.all()
-            .annotate(name=F("home_bet__name"), url=F("home_bet__url"))
-            .values(
-                "home_bet_id",
-                "name",
-                "url",
-            )
+    if not customer_plan:
+        raise MOAPIException(ErrorCode.AUTH02)
+    home_bets_qry = (
+        customer.balances.all()
+        .annotate(name=F("home_bet__name"), url=F("home_bet__url"))
+        .values(
+            "home_bet_id",
+            "name",
+            "url",
         )
-        plan = customer_plan.plan
+    )
+    plan = customer_plan.plan
 
-        crash_app = plan.crash_apps.filter(hash_str=app_hash_str).first()
-        if not crash_app:
-            raise MOAPIException(ErrorCode.AUTH02)
-        home_bets = []
-        for home_bet in home_bets_qry:
-            home_bet_id = home_bet["home_bet_id"]
-            limits = (
-                crash_app.home_bet_games.filter(home_bet__id=home_bet_id)
-                .values("limits")
-                .first()
-            )
-            home_bets.append(
-                dict(
-                    id=home_bet_id,
-                    name=home_bet["name"],
-                    url=home_bet["url"],
-                    limits=limits["limits"],
-                )
-            )
-        crash_app_data = dict(
-            version=crash_app.version,
-            home_bet_game_id=crash_app.home_bet_games.first().id,
-            home_bets=home_bets,
+    crash_app = plan.crash_apps.filter(hash_str=app_hash_str).first()
+    if not crash_app:
+        raise MOAPIException(ErrorCode.AUTH02)
+    home_bets = []
+    for home_bet in home_bets_qry:
+        home_bet_id = home_bet["home_bet_id"]
+        limits = (
+            crash_app.home_bet_games.filter(home_bet__id=home_bet_id)
+            .values("limits")
+            .first()
         )
-        plan_data = dict(
-            name=plan.name,
-            with_ai=plan.with_ai,
-            start_dt=customer_plan.start_dt,
-            end_dt=customer_plan.end_dt,
-            is_active=customer_plan.is_active,
-            crash_app=crash_app_data,
+        home_bets.append(
+            dict(
+                id=home_bet_id,
+                name=home_bet["name"],
+                url=home_bet["url"],
+                limits=limits["limits"],
+            )
         )
-        data.update(plan=plan_data)
+    crash_app_data = dict(
+        version=crash_app.version,
+        home_bet_game_id=crash_app.home_bet_games.first().id,
+        home_bets=home_bets,
+    )
+    plan_data = dict(
+        name=plan.name,
+        with_ai=plan.with_ai,
+        start_dt=customer_plan.start_dt,
+        end_dt=customer_plan.end_dt,
+        is_active=customer_plan.is_active,
+        crash_app=crash_app_data,
+    )
+    data.update(plan=plan_data)
     return data
 
 
