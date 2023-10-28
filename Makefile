@@ -67,7 +67,7 @@ shell: ## shell
 	docker compose run --rm --entrypoint=python worker manage.py shell_plus
 
 run-tests:  # run-tests
-	docker compose run --rm --entrypoint=pytest worker /tests/ $(ARGS)
+	docker compose run --rm --entrypoint=pytest worker tests/ $(ARGS)
 
 celery: ## run celery
 	docker compose run --rm --entrypoint=celery worker -A mo_manage.messaging.app worker -l info

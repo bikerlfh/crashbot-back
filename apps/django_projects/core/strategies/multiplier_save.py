@@ -1,51 +1,35 @@
-# Standard Library
-import functools
-from decimal import Decimal
-
-# Django
-from rest_framework.exceptions import ValidationError
-
-# Internal
-from apps.django_projects.core.models import HomeBetGame
+import copy
 
 
 class MultiplierSaveStrategy:
     def __init__(
         self,
         *,
-        home_bet_game: HomeBetGame,
-        last_multipliers: list[Decimal],
-        multipliers: list[Decimal]
+        last_multipliers: list[float],
+        multipliers: list[dict[str, any]]
     ):
-        self.home_bet_game = home_bet_game
+        """
+        MultiplierSaveStrategy
+        :param last_multipliers: list of float with the last multipliers
+        :param multipliers: list of dict with new multipliers dict(
+            multiplier=multiplier,
+            multiplier_dt=multiplier_dt
+        )
+        """
         self.last_multipliers = last_multipliers
         self.multipliers = multipliers
 
-    def is_valid(self):
-        if self.home_bet_game is None:
-            raise ValidationError("home bet game does not exists")
-        if not self.multipliers:
-            raise ValidationError("multipliers required")
-
-    def _compare_multipliers(
-        self, *, last_multipliers: list[Decimal], multipliers: list[Decimal]
-    ) -> bool:
-        return functools.reduce(
-            lambda x, y: x and y,
-            map(lambda p, q: p == q, last_multipliers, multipliers),
-            True,
-        )
-
-    def get_new_multipliers(self) -> list[Decimal]:
+    def get_new_multipliers(self) -> list[dict[str, any]]:
         if not self.last_multipliers:
             return self.multipliers
         a = self.last_multipliers
-        b = self.multipliers
+        b = copy.copy(self.multipliers)
         matches = []
         i = 0
         j = 0
         while i < len(a) and j < len(b):
-            if a[i] == b[j]:
+            multiplier_ = b[j].get("multiplier")
+            if a[i] == multiplier_:
                 matches.append(a[i])
                 i += 1
                 j += 1

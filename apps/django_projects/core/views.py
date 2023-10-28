@@ -66,9 +66,18 @@ class MultiplierView(
 
     class InputPostSerializer(serializers.Serializer):
         home_bet_game_id = serializers.IntegerField()
-        multipliers = serializers.ListSerializer(
-            child=serializers.DecimalField(max_digits=10, decimal_places=2)
+        multipliers_data = inline_serializer(
+            fields=dict(
+                multiplier=serializers.DecimalField(
+                    max_digits=10, decimal_places=2
+                ),
+                multiplier_dt=serializers.DateTimeField(),
+            ),
+            many=True,
         )
+        # serializers.ListSerializer(
+        #     child=serializers.DecimalField(max_digits=10, decimal_places=2)
+        # )
 
     class OutputSerializer(serializers.Serializer):
         multipliers = serializers.ListSerializer(

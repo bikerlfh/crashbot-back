@@ -245,7 +245,7 @@ def live_customer(
     allowed_to_save_multiplier = first_session == session
     data = dict(allowed_to_save_multiplier=allowed_to_save_multiplier)
     # update session
-    session.updated_at = datetime.now()
+    session.updated_at = datetime.utcnow()
     session.save()
     return data
 

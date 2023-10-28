@@ -55,39 +55,40 @@ def get_home_bet(
 
 
 def save_multipliers(
-    *, home_bet_game_id: int, multipliers: list[Decimal]
+    *, home_bet_game_id: int, multipliers_data: list[dict[str, Any]]
 ) -> list[Decimal]:
-    home_bet_game = selectors.filter_home_bet_game_by_id(
+    home_bet_game_exists = selectors.filter_home_bet_game_by_id(
         home_bet_game_id=home_bet_game_id
-    ).first()
-    if not home_bet_game:
+    ).exists()
+    if not home_bet_game_exists:
         raise ValidationError("Home bet game does not exists")
     last_multipliers = []
+    multipliers = [item["multiplier"] for item in multipliers_data]
     if len(multipliers) > 1:
         last_multipliers = selectors.get_last_multipliers(
             home_bet_game_id=home_bet_game_id, count=len(multipliers)
         )
     context = multiplier_save.MultiplierSaveStrategy(
-        home_bet_game=home_bet_game,
         last_multipliers=last_multipliers,
-        multipliers=multipliers,
+        multipliers=multipliers_data,
     )
-    multipliers = context.get_new_multipliers()
-    if not multipliers:
+    multipliers_ = context.get_new_multipliers()
+    if not multipliers_:
         raise ValidationError("multipliers repeated")
     now = datetime.now()
     _list_multipliers = []
-    for multiplier in multipliers:
+    for multiplier_data in multipliers_:
+        multiplier_dt = multiplier_data.get("multiplier_dt", now)
         _list_multipliers.append(
             Multiplier(
-                home_bet_game=home_bet_game,
-                multiplier=multiplier,
-                multiplier_dt=now,
+                home_bet_game_id=home_bet_game_id,
+                multiplier=multiplier_data["multiplier"],
+                multiplier_dt=multiplier_dt,
             )
         )
     Multiplier.objects.bulk_create(_list_multipliers)
     invalidate_model(Multiplier)
-    return multipliers
+    return [item.multiplier for item in _list_multipliers]
 
 
 def export_multipliers_to_csv(
