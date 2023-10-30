@@ -8,15 +8,15 @@
             "name": "BotAggressiveOfficial",
             "bot_type": "aggressive",
             "risk_factor": 0.1,
-            "min_multiplier_to_bet": 1.95,
-            "min_multiplier_to_recover_losses": 1.95,
+            "min_multiplier_to_bet": 2.0,
+            "min_multiplier_to_recover_losses": 2.0,
             "min_probability_to_bet": 0.50,
             "max_recovery_percentage_on_max_bet": 0.5,
-            "is_active": true,
             "min_category_percentage_to_bet": 0.5,
             "min_average_model_prediction": 0.5,
-            "stop_loss_percentage": 0.9,
-            "take_profit_percentage": 0.5
+            "stop_loss_percentage": 1.0,
+            "take_profit_percentage": 3.0,
+            "is_active": true
         }
     },
     {
@@ -31,12 +31,12 @@
             "min_multiplier_to_bet": 1.95,
             "min_multiplier_to_recover_losses": 1.95,
             "min_probability_to_bet": 0.69,
-            "max_recovery_percentage_on_max_bet": 0.5,
-            "is_active": true,
+            "max_recovery_percentage_on_max_bet": 0.3,
             "min_category_percentage_to_bet": 0.69,
             "min_average_model_prediction": 0.69,
-            "stop_loss_percentage": 0.2,
-            "take_profit_percentage": 0.5
+            "stop_loss_percentage": 0.8,
+            "take_profit_percentage": 1.0,
+            "is_active": true
         }
     },
     {
@@ -51,12 +51,12 @@
             "min_multiplier_to_bet": 1.95,
             "min_multiplier_to_recover_losses": 1.95,
             "min_probability_to_bet": 0.70,
-            "max_recovery_percentage_on_max_bet": 0.5,
-            "is_active": true,
+            "max_recovery_percentage_on_max_bet": 0.2,
             "min_category_percentage_to_bet": 0.85,
             "min_average_model_prediction": 0.85,
-            "stop_loss_percentage": 0.2,
-            "take_profit_percentage": 0.5
+            "stop_loss_percentage": 0.5,
+            "take_profit_percentage": 0.5,
+            "is_active": true
         }
     }
 ]

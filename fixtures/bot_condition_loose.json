@@ -1,7 +1,7 @@
 [
     {
         "model": "predictions.BotCondition",
-        "pk": "21",
+        "pk": "26",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
@@ -24,7 +24,7 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "22",
+        "pk": "27",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
@@ -43,7 +43,7 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "23",
+        "pk": "28",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
@@ -62,7 +62,7 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "24",
+        "pk": "29",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
@@ -81,7 +81,7 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "25",
+        "pk": "30",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
@@ -100,7 +100,7 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "26",
+        "pk": "31",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
@@ -119,13 +119,51 @@
     },
     {
         "model": "predictions.BotCondition",
-        "pk": "27",
+        "pk": "32",
         "fields": {
             "created_at": "2022-06-08 14:43",
             "updated_at": "2022-06-08 14:43",
             "bot_id": 3,
             "condition_on": "streak_n_multiplier_less_than",
-            "condition_on_value": 19.0,
+            "condition_on_value": 10.0,
+            "condition_on_value_2": 3.0,
+            "actions": [
+                {
+                    "condition_action": "update_multiplier",
+                    "action_value": 3.0
+                }
+            ],
+            "others": null
+        }
+    },
+    {
+        "model": "predictions.BotCondition",
+        "pk": "33",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 3,
+            "condition_on": "streak_n_multiplier_less_than",
+            "condition_on_value": 15.0,
+            "condition_on_value_2": 5.0,
+            "actions": [
+                {
+                    "condition_action": "update_multiplier",
+                    "action_value": 5.0
+                }
+            ],
+            "others": null
+        }
+    },
+    {
+        "model": "predictions.BotCondition",
+        "pk": "34",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "bot_id": 3,
+            "condition_on": "streak_n_multiplier_less_than",
+            "condition_on_value": 25.0,
             "condition_on_value_2": 10.0,
             "actions": [
                 {
