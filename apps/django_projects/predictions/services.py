@@ -418,6 +418,7 @@ def get_active_bots(
                 id=bot.id,
                 name=bot.name,
                 bot_type=bot.bot_type,
+                number_of_min_bets_allowed_in_bank=bot.number_of_min_bets_allowed_in_bank,  # noqa
                 risk_factor=bot.risk_factor,
                 min_multiplier_to_bet=bot.min_multiplier_to_bet,
                 min_multiplier_to_recover_losses=bot.min_multiplier_to_recover_losses,  # noqa

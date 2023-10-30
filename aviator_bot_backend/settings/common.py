@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 # Standard Library
 from datetime import timedelta
-from os import getenv
+from os import getenv, path
 from os.path import abspath, basename, dirname, join, normpath
 from pathlib import Path
 
@@ -91,7 +91,7 @@ ROOT_URLCONF = f"{SITE_NAME}.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": ["templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -163,6 +163,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
+
+
+STATICFILES_DIRS = [
+    "static",
+]
 
 STATIC_URL = "static/"
 

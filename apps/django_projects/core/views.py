@@ -9,9 +9,14 @@ from rest_framework.views import APIView
 from apps.django_projects.core import services
 from apps.utils.django.mixin import APIErrorsMixin
 from apps.utils.rest.serializers import inline_serializer
+from django.template import loader
+
+# from apps.utils.django.v18iews.cache import cache_on_request_data
 
 
-# from apps.utils.django.views.cache import cache_on_request_data
+def index(request):
+    template = loader.get_template("core/index.html")
+    return HttpResponse(template.render({}, request))
 
 
 def health_check(request):

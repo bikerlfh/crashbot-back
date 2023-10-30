@@ -136,6 +136,7 @@ class BotView(
         id = serializers.IntegerField()
         name = serializers.CharField()
         bot_type = serializers.CharField()
+        number_of_min_bets_allowed_in_bank = serializers.IntegerField()
         risk_factor = serializers.FloatField()
         min_multiplier_to_bet = serializers.FloatField()
         min_multiplier_to_recover_losses = serializers.FloatField()
