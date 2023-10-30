@@ -7,7 +7,7 @@
             "updated_at": "2022-06-08 14:43",
             "name": "BotAggressiveOfficial",
             "bot_type": "aggressive",
-            "number_of_min_bets_allowed_in_bank": 300,
+            "number_of_min_bets_allowed_in_bank": 400,
             "risk_factor": 0.1,
             "min_multiplier_to_bet": 2.0,
             "min_multiplier_to_recover_losses": 2.0,
