@@ -42,6 +42,9 @@ migrate: ## migrate
 load-fixtures: ## loaddata
 	docker compose run --rm --entrypoint=python worker manage.py loaddata fixtures/*.json
 
+load-bot-fixtures: ## loaddata
+	docker compose run --rm --entrypoint=python worker manage.py loaddata fixtures/bot*.json
+
 clear-cache: ## loaddata
 	docker compose run --rm --entrypoint=python worker manage.py invalidate all
 
