@@ -13,6 +13,7 @@ from apps.django_projects.customers.models import (
     Customer,
     CustomerBalance,
     CustomerPlan,
+    CustomerSession,
 )
 
 
@@ -226,3 +227,17 @@ class CustomerPlanAdmin(ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         return ["customer", "plan"] if obj else ["start_dt", "end_dt"]
+
+
+@admin.register(CustomerSession)
+class CustomerSessionAdmin(ModelAdmin):
+    list_display = ["customer", "home_bet", "updated_at", "is_active"]
+    list_filter = ["home_bet", "is_active"]
+    search_fields = ["customer__user__username", "customer__user__email"]
+    fields = ["customer", "home_bet", "is_active", "created_at", "updated_at"]
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request, obj=None):
+        return False

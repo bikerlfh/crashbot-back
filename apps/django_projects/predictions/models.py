@@ -74,8 +74,7 @@ class Bot(BaseModel):
         default=BotType.LOOSE.value,
     )
     number_of_min_bets_allowed_in_bank = models.IntegerField(
-        default=300,
-        help_text="Number of minimum bets allowed in bank"
+        default=300, help_text="Number of minimum bets allowed in bank"
     )
     is_active = models.BooleanField(default=True)
     risk_factor = models.FloatField(default=0.1)
