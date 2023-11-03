@@ -12,7 +12,7 @@
             "min_multiplier_to_bet": 2.0,
             "min_multiplier_to_recover_losses": 2.0,
             "min_probability_to_bet": 0.50,
-            "max_recovery_percentage_on_max_bet": 0.5,
+            "max_recovery_percentage_on_max_bet": 0.05,
             "min_category_percentage_to_bet": 0.5,
             "min_average_model_prediction": 0.5,
             "stop_loss_percentage": 1.0,
