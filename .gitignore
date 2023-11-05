@@ -19,7 +19,6 @@ storage/
 *.h5
 # Compiled Java class files
 *.class
-.envrc
 
 # Compiled Python bytecode
 *.py[cod]
@@ -70,3 +69,4 @@ celerybeat-schedule
 .elasticbeanstalk/
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+/.pytest_cache/
