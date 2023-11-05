@@ -4,9 +4,10 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 # Django
+from django.db import transaction
 from django.db.models import F
 from django.contrib.auth.models import User
-from django.db import transaction
+from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
 # Internal
@@ -249,7 +250,7 @@ def live_customer(
     allowed_to_save_multiplier = first_session == session
     data = dict(allowed_to_save_multiplier=allowed_to_save_multiplier)
     # update session
-    session.updated_at = datetime.utcnow()
+    session.updated_at = timezone.make_aware(datetime.utcnow())
     session.save()
     return data
 
