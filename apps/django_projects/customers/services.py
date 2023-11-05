@@ -8,7 +8,6 @@ from django.db.models import F
 from django.contrib.auth.models import User
 from django.db import transaction
 from rest_framework.exceptions import ValidationError
-from rest_framework.status import HTTP_401_UNAUTHORIZED
 
 # Internal
 from apps.django_projects.core import selectors as core_selectors
@@ -99,8 +98,17 @@ def get_customer_data(*, user_id: int, app_hash_str: str) -> dict[str, any]:
     customer_plan = customer.plans.filter(is_active=True).first()
     if not customer_plan:
         raise MOAPIException(ErrorCode.AUTH02)
+    plan = customer_plan.plan
+
+    crash_app = plan.crash_apps.filter(hash_str=app_hash_str).first()
+    if not crash_app:
+        raise MOAPIException(ErrorCode.AUTH02)
+
+    home_bet_ids = list(
+        crash_app.home_bet_games.all().values_list("home_bet_id", flat=True)
+    )
     home_bets_qry = (
-        customer.balances.filter(is_active=True)
+        customer.balances.filter(home_bet_id__in=home_bet_ids, is_active=True)
         .annotate(name=F("home_bet__name"), url=F("home_bet__url"))
         .values(
             "home_bet_id",
@@ -108,11 +116,6 @@ def get_customer_data(*, user_id: int, app_hash_str: str) -> dict[str, any]:
             "url",
         )
     )
-    plan = customer_plan.plan
-
-    crash_app = plan.crash_apps.filter(hash_str=app_hash_str).first()
-    if not crash_app:
-        raise MOAPIException(ErrorCode.AUTH02)
     home_bets = []
     for home_bet in home_bets_qry:
         home_bet_id = home_bet["home_bet_id"]
@@ -121,6 +124,10 @@ def get_customer_data(*, user_id: int, app_hash_str: str) -> dict[str, any]:
             .values("limits")
             .first()
         )
+        if not limits:
+            # if not limits the home bet is
+            # not available in crash_app
+            continue
         home_bets.append(
             dict(
                 id=home_bet_id,
