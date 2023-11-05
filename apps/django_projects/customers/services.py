@@ -124,10 +124,6 @@ def get_customer_data(*, user_id: int, app_hash_str: str) -> dict[str, any]:
             .values("limits")
             .first()
         )
-        if not limits:
-            # if not limits the home bet is
-            # not available in crash_app
-            continue
         home_bets.append(
             dict(
                 id=home_bet_id,
