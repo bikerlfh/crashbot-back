@@ -151,7 +151,9 @@ def get_customer_data(*, user_id: int, app_hash_str: str) -> dict[str, any]:
 
 
 def get_customer_balance_data(
-    *, customer_id: int, home_bet_id: int
+    *,
+    customer_id: int,
+    home_bet_id: int,
 ) -> dict[str, any]:
     balance = selectors.filter_balance(
         customer_id=customer_id, home_bet_id=home_bet_id
@@ -167,6 +169,7 @@ def update_customer_balance(
     customer_id: int,
     home_bet_id: int,
     amount: float,
+    currency: Optional[str] = None,
 ) -> CustomerBalance:
     balance = selectors.filter_balance(
         customer_id=customer_id, home_bet_id=home_bet_id
@@ -174,6 +177,8 @@ def update_customer_balance(
     if not balance:
         raise ValidationError("Balance does not exist")
     balance.amount = amount
+    if currency is not None:
+        balance.currency = currency
     balance.save()
     return balance
 
@@ -225,7 +230,15 @@ def live_customer(
     customer_id: int,
     home_bet_id: int,
     closing_session: bool,
+    amount: float,
+    currency: Optional[str] = None,
 ) -> dict[str, any]:
+    update_customer_balance(
+        customer_id=customer_id,
+        home_bet_id=home_bet_id,
+        amount=amount,
+        currency=currency,
+    )
     session = selectors.filter_customer_session(
         customer_id=customer_id, home_bet_id=home_bet_id, is_active=True
     ).first()

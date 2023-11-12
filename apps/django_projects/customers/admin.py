@@ -139,6 +139,7 @@ class CustomerAddForm(forms.ModelForm):
 class CustomerAdmin(ModelAdmin):
     form = CustomerAddForm
     list_display = ["username", "email", "phone_number", "home_bets"]
+    search_fields = ["user__username"]
 
     @admin.display(description="Email")
     def username(self, obj):
@@ -169,7 +170,7 @@ class CustomerAdmin(ModelAdmin):
 
 @admin.register(CustomerBalance)
 class CustomerBalanceAdmin(ModelAdmin):
-    list_display = ["customer", "home_bet", "amount", "is_active"]
+    list_display = ["customer", "home_bet", "amount", "currency", "is_active"]
     list_filter = ["home_bet"]
     search_fields = ["customer__user__username", "customer__user__email"]
 
@@ -224,8 +225,11 @@ class CustomerPlanAdmin(ModelAdmin):
     list_filter = ["is_active", "plan"]
     search_fields = ["customer__user__username", "customer__user__email"]
     fields = ["customer", "plan", "start_dt", "end_dt", "is_active"]
+    raw_id_fields = ["customer"]
 
     def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser and obj:
+            return []
         return ["customer", "plan"] if obj else ["start_dt", "end_dt"]
 
 

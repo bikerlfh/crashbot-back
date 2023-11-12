@@ -72,9 +72,11 @@ class CustomerBalanceView(APIErrorsMixin, APIView):
         amount = serializers.FloatField()
 
     class InputPATCHSerializer(serializers.Serializer):
-        customer_id = serializers.IntegerField()
         home_bet_id = serializers.IntegerField()
         amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+        currency = serializers.CharField(
+            max_length=5, allow_null=True, allow_blank=True
+        )
 
     def get(self, request):
         user = request.user
@@ -104,6 +106,10 @@ class LiveCustomerView(APIErrorsMixin, APIView):
         home_bet_id = serializers.IntegerField()
         closing_session = serializers.BooleanField(
             required=False, default=False
+        )
+        amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+        currency = serializers.CharField(
+            max_length=5, allow_null=True, allow_blank=True
         )
 
     class OutputSerializer(serializers.Serializer):

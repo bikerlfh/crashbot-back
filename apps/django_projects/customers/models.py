@@ -28,6 +28,9 @@ class CustomerBalance(BaseModel):
         HomeBet, on_delete=models.DO_NOTHING, related_name="balances"
     )
     amount = models.DecimalField(default=0, max_digits=18, decimal_places=2)
+    currency = models.CharField(
+        max_length=5, null=True, blank=True, default=None
+    )
     is_active = models.BooleanField(default=True)
 
     class Meta:
