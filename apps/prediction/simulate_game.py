@@ -41,12 +41,12 @@ def simulate_game(
     )
     if model_home_bet_id:
         filter_["id"] = model_home_bet_id
-    models = prediction_selectors.filter_model_home_bet(**filter_)
+    models = prediction_selectors.filter_model_home_bet_game(**filter_)
     if not models:
         print("Models not found")
         return
     for model in models:
-        model_ = CoreModel(model_home_bet=model)
+        model_ = CoreModel(model_home_bet_game=model)
         data = prediction_utils.transform_multipliers_to_data(
             multipliers=multipliers
         )

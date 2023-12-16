@@ -120,22 +120,32 @@ def get_customer_data(*, user_id: int, app_hash_str: str) -> dict[str, any]:
     home_bets = []
     for home_bet in home_bets_qry:
         home_bet_id = home_bet["home_bet_id"]
-        limits = (
-            crash_app.home_bet_games.filter(home_bet__id=home_bet_id)
-            .values("limits")
-            .first()
-        )
+        # limits = (
+        #     crash_app.home_bet_games.filter(home_bet__id=home_bet_id)
+        #     .values("limits")
+        #     .first()
+        # )
         home_bets.append(
             dict(
                 id=home_bet_id,
                 name=home_bet["name"],
                 url=home_bet["url"],
-                limits=limits["limits"],
+                # limits=limits["limits"],
+            )
+        )
+    home_bet_games = []
+    for game in crash_app.home_bet_games.all():
+        home_bet_games.append(
+            dict(
+                id=game.id,
+                home_bet_id=game.home_bet_id,
+                crash_game=game.crash_game.name,
+                limits=game.limits,
             )
         )
     crash_app_data = dict(
         version=crash_app.version,
-        home_bet_game_id=crash_app.home_bet_games.first().id,
+        home_bet_games=home_bet_games,
         home_bets=home_bets,
     )
     plan_data = dict(

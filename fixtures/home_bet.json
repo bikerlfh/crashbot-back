@@ -48,5 +48,25 @@
             "name": "1XBet",
             "url": "https://1xbet.com/"
         }
+    },
+    {
+        "model": "core.HomeBet",
+        "pk": "6",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "name": "DemoToTheMoon",
+            "url": "https://agtsoftware.com/games/agt/tothemoon"
+        }
+    },
+    {
+        "model": "core.HomeBet",
+        "pk": "7",
+        "fields": {
+            "created_at": "2022-06-08 14:43",
+            "updated_at": "2022-06-08 14:43",
+            "name": "Ecuabet",
+            "url": "https://ecuabet.com/"
+        }
     }
 ]

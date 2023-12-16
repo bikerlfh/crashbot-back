@@ -21,10 +21,11 @@ class ConditionON(str, Enum):
     STREAK_WINS = "streak_wins"
     STREAK_LOSSES = "streak_losses"
     STREAK_N_MULTIPLIER_LESS_THAN = "streak_n_multiplier_less_than"
-    STREAK_N_MULTIPLIER_GREATER_THAN = "streak_multiplier_greater_than"
+    STREAK_N_MULTIPLIER_GREATER_THAN = "streak_n_multiplier_greater_than"
     # values are percentage
     PROFIT_GREATER_THAN = "profit_greater_than"
     PROFIT_LESS_THAN = "profit_less_than"
+    # MAXIMUM_RECOVERY_REACHED_N_TIMES = "maximum_recovery_reached_n_times"
 
 
 class ConditionAction(str, Enum):
@@ -38,6 +39,8 @@ class ConditionAction(str, Enum):
     # values are boolean
     IGNORE_MODEL = "ignore_model"
     MAKE_BET = "make_bet"
+    FORGET_LOSSES = "forget_losses"
+    RECOVERY_LOSSES = "recovery_losses"
 
 
 DEFAULT_SEQ_LEN = int(getenv("DEFAULT_SEQ_LEN", 18))

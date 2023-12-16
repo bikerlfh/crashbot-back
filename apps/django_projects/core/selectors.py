@@ -23,9 +23,9 @@ def filter_home_bet(
     )
 
 
-def filter_home_bet_in_play() -> QuerySet[HomeBet]:
+def filter_home_bet_game_in_play() -> QuerySet[HomeBetGame]:
     now = datetime.now() - timedelta(minutes=10)
-    return HomeBet.objects.filter(
+    return HomeBetGame.objects.filter(
         Q(models__isnull=True) | Q(multipliers__multiplier_dt__gte=now),
         multipliers__isnull=False,
     ).distinct("id")

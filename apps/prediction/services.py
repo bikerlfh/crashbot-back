@@ -6,7 +6,7 @@ from typing import Optional, Tuple
 
 # Internal
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
-from apps.django_projects.predictions.models import ModelHomeBet
+from apps.django_projects.predictions.models import ModelHomeBetGame
 from apps.prediction.constants import MODELS_PATH, S3_BUCKET_MODELS, ModelType
 from apps.prediction.models.base import AverageInfo, PredictionData
 from apps.prediction.models.main import CoreModel
@@ -84,7 +84,7 @@ def create_model(
 
 
 def predict(
-    *, model_home_bet: ModelHomeBet, multipliers: list[Decimal]
+    *, model_home_bet: ModelHomeBetGame, multipliers: list[Decimal]
 ) -> PredictionData:
     """
     Predicts the next multiplier
@@ -92,14 +92,14 @@ def predict(
     @param multipliers: The multipliers to predict the next multiplier
     @return: The next multiplier
     """
-    model = CoreModel(model_home_bet=model_home_bet)
+    model = CoreModel(model_home_bet_game=model_home_bet)
     prediction_data = model.predict(multipliers=multipliers)
     return prediction_data
 
 
 def evaluate_model_home_bet(
     *,
-    model_home_bet: ModelHomeBet,
+    model_home_bet: ModelHomeBetGame,
     multipliers: list[Decimal],
     probability_to_eval: Optional[float] = None,
 ) -> AverageInfo:
@@ -110,7 +110,7 @@ def evaluate_model_home_bet(
     @param probability_to_eval: The probability to evaluate the model home bet
     @return: The average info
     """
-    model = CoreModel(model_home_bet=model_home_bet)
+    model = CoreModel(model_home_bet_game=model_home_bet)
     average_info = model.evaluate(
         multipliers=multipliers, probability_to_eval=probability_to_eval
     )
