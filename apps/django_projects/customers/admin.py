@@ -141,7 +141,7 @@ class CustomerAdmin(ModelAdmin):
     list_display = ["username", "email", "phone_number", "home_bets"]
     search_fields = ["user__username"]
 
-    @admin.display(description="Email")
+    @admin.display(description="Username")
     def username(self, obj):
         return obj.user.username
 

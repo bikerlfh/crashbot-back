@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 
 # Internal
 from apps.django_projects.predictions.constants import DEFAULT_SEQ_LEN
-from apps.django_projects.predictions.models import ModelHomeBet
+from apps.django_projects.predictions.models import ModelHomeBetGame
 from apps.prediction import utils
 from apps.prediction.constants import ModelType
 from apps.prediction.models.base import (
@@ -28,24 +28,26 @@ class CoreModel:
     def __init__(
         self,
         *,
-        model_home_bet: Optional[ModelHomeBet] = None,
+        model_home_bet_game: Optional[ModelHomeBetGame] = None,
         model_type: Optional[ModelType] = None,
         seq_len: Optional[int] = DEFAULT_SEQ_LEN,
     ):
-        if model_home_bet is None and model_type is None:
+        if model_home_bet_game is None and model_type is None:
             raise ValueError("model_home_bet or model_type must be provided")
-        self.model_home_bet = model_home_bet
+        self.model_home_bet_game = model_home_bet_game
         self.model_type = (
-            ModelType(self.model_home_bet.model_type)
-            if self.model_home_bet
+            ModelType(self.model_home_bet_game.model_type)
+            if self.model_home_bet_game
             else model_type
         )
         self.seq_len = (
-            self.model_home_bet.seq_len if self.model_home_bet else seq_len
+            self.model_home_bet_game.seq_len
+            if self.model_home_bet_game
+            else seq_len
         )
         self.model = self.__get_model(seq_len=self.seq_len)
-        if self.model_home_bet:
-            self.model.load_model(name=self.model_home_bet.name)
+        if self.model_home_bet_game:
+            self.model.load_model(name=self.model_home_bet_game.name)
 
     def __get_model(self, *, seq_len: int) -> AbstractBaseModel:
         match self.model_type:
@@ -101,7 +103,7 @@ class CoreModel:
         @return: The average info
         """
         assert (
-            self.model_home_bet is not None
+            self.model_home_bet_game is not None
         ), "model_home_bet must be provided"
         return self.model.evaluate(
             multipliers=multipliers, probability_to_eval=probability_to_eval
@@ -114,7 +116,7 @@ class CoreModel:
         @return: The next multiplier
         """
         assert (
-            self.model_home_bet is not None
+            self.model_home_bet_game is not None
         ), "model_home_bet must be provided"
         data = utils.transform_multipliers_to_data(multipliers=multipliers)
         return self.model.predict(data=data)

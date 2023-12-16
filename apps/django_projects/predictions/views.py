@@ -21,7 +21,7 @@ class PredictionView(
     permission_classes = [IsAuthenticated, CanUserUseAI]
 
     class InputSerializer(serializers.Serializer):
-        home_bet_id = serializers.IntegerField()
+        home_bet_game_id = serializers.IntegerField()
         multipliers = serializers.ListSerializer(
             child=serializers.DecimalField(max_digits=10, decimal_places=2),
             required=False,
@@ -64,21 +64,21 @@ class PredictionView(
         return Response(data=out_serializer.validated_data)
 
 
-class ModelHomeBetView(
+class ModelHomeBetGameView(
     APIErrorsMixin,
     APIView,
 ):
     permission_classes = [IsAuthenticated, IsAdminUser]
 
     class InputSerializer(serializers.Serializer):
-        home_bet_id = serializers.IntegerField()
+        home_bet_game_id = serializers.IntegerField()
         status = serializers.ChoiceField(
             choices=enum_to_choices(ModelStatus), required=False
         )
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
-        home_bet_id = serializers.IntegerField()
+        home_bet_game_id = serializers.IntegerField()
         model_type = serializers.CharField()
         status = serializers.CharField()
         seq_len = serializers.IntegerField()
@@ -174,10 +174,10 @@ class EvaluateModelView(
     APIErrorsMixin,
     APIView,
 ):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
     class InputSerializer(serializers.Serializer):
-        model_home_bet_id = serializers.IntegerField()
+        model_home_bet_game_id = serializers.IntegerField()
         count_multipliers = serializers.IntegerField(
             required=False, allow_null=True
         )

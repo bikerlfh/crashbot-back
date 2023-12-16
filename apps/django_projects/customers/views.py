@@ -30,14 +30,21 @@ class CustomerDataView(APIErrorsMixin, APIView):
                 crash_app=inline_serializer(
                     fields=dict(
                         version=serializers.CharField(),
-                        home_bet_game_id=serializers.IntegerField(),
+                        home_bet_games=inline_serializer(
+                            many=True,
+                            fields=dict(
+                                id=serializers.IntegerField(),
+                                home_bet_id=serializers.IntegerField(),
+                                crash_game=serializers.CharField(),
+                                limits=serializers.JSONField(),
+                            ),
+                        ),
                         home_bets=inline_serializer(
                             many=True,
                             fields=dict(
                                 id=serializers.IntegerField(),
                                 name=serializers.CharField(),
                                 url=serializers.CharField(),
-                                limits=serializers.JSONField(),
                             ),
                         ),
                     ),

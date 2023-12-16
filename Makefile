@@ -49,7 +49,7 @@ clear-cache: ## loaddata
 	docker compose run --rm --entrypoint=python worker manage.py invalidate all
 
 create-model: ## create a sequential model
-	docker compose run --rm --entrypoint=python worker manage.py create_model ${home_bet_id} ${model_type} ${seq_len}
+	docker compose run --rm --entrypoint=python worker manage.py create_model ${home_bet_game_id} ${model_type} ${seq_len}
 
 generate-category-result: ## generate category result for all models
 	docker compose run --rm --entrypoint=python worker manage.py generate_category_results

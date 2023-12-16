@@ -20,4 +20,4 @@ def task_generate_models():
     create models for all home bets
     """
     logger.info("task_generate_models invoked")
-    services.generate_model_for_in_play_home_bet()
+    services.generate_model_for_in_play_home_bet_game()

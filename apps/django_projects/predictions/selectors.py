@@ -9,20 +9,20 @@ from apps.django_projects.predictions.constants import (
     NUMBER_OF_MODELS_TO_PREDICT,
     ModelStatus,
 )
-from apps.django_projects.predictions.models import Bot, ModelHomeBet
+from apps.django_projects.predictions.models import Bot, ModelHomeBetGame
 
 
-def filter_model_home_bet(**kwargs) -> QuerySet[ModelHomeBet]:
-    return ModelHomeBet.objects.filter(**kwargs).prefetch_related(
-        "category_results"
+def filter_model_home_bet_game(**kwargs) -> QuerySet[ModelHomeBetGame]:
+    return ModelHomeBetGame.objects.filter(**kwargs).prefetch_related(
+        "details"
     )
 
 
-def filter_models_to_generate_category_result() -> QuerySet[ModelHomeBet]:
+def filter_models_to_generate_category_result() -> QuerySet[ModelHomeBetGame]:
     return (
-        ModelHomeBet.objects.filter(
+        ModelHomeBetGame.objects.filter(
             status=ModelStatus.ACTIVE.value,
-            home_bet__multipliers__multiplier_dt__gt=F("result_date"),
+            home_bet_game__multipliers__multiplier_dt__gt=F("result_date"),
         )
         .order_by("id")
         .distinct("id")
@@ -30,34 +30,36 @@ def filter_models_to_generate_category_result() -> QuerySet[ModelHomeBet]:
 
 
 def filter_model_home_bet_by_id(
-    *, model_home_bet_id: int
-) -> QuerySet[ModelHomeBet]:
-    return filter_model_home_bet(id=model_home_bet_id)
+    *, model_home_bet_game_id: int
+) -> QuerySet[ModelHomeBetGame]:
+    return filter_model_home_bet_game(id=model_home_bet_game_id)
 
 
-def filter_model_home_bet_by_home_bet_id(
-    *, home_bet_id: int, status: Optional[str] = None
-) -> QuerySet[ModelHomeBet]:
-    filter_ = dict(home_bet_id=home_bet_id)
+def filter_model_home_bet_game_by_home_bet_game_id(
+    *, home_bet_game_id: int, status: Optional[str] = None
+) -> QuerySet[ModelHomeBetGame]:
+    filter_ = dict(home_bet_game_id=home_bet_game_id)
     if status is not None:
         filter_.update(status=status)
-    return filter_model_home_bet(**filter_)
+    return filter_model_home_bet_game(**filter_)
 
 
 def get_bets_models_by_average_predictions(
     *,
-    home_bet_id: int,
+    home_bet_game_id: int,
     number_of_models: Optional[int] = None,
     model_home_bet_id: Optional[int] = None
-) -> QuerySet[ModelHomeBet]:
+) -> QuerySet[ModelHomeBetGame]:
     number_of_models = number_of_models or NUMBER_OF_MODELS_TO_PREDICT
-    filter_ = dict(home_bet_id=home_bet_id, status=ModelStatus.ACTIVE.value)
+    filter_ = dict(
+        home_bet_game_id=home_bet_game_id, status=ModelStatus.ACTIVE.value
+    )
     if model_home_bet_id is not None:
         filter_.update(id=model_home_bet_id)
         filter_.pop("status")
     models = (
-        ModelHomeBet.objects.filter(**filter_)
-        .prefetch_related("category_results")
+        ModelHomeBetGame.objects.filter(**filter_)
+        .prefetch_related("details")
         .order_by("-average_predictions")[:number_of_models]
     )
     return models

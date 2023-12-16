@@ -2,10 +2,9 @@
 from django.db import models
 
 # Internal
-from apps.django_projects.core.models import HomeBet, CrashGame
+from apps.django_projects.core.models import HomeBetGame
 from apps.django_projects.predictions.constants import (
     BotType,
-    ConditionAction,
     ConditionON,
     ModelStatus,
 )
@@ -14,12 +13,9 @@ from apps.utils.django.models import BaseModel
 from apps.utils.tools import enum_to_choices
 
 
-class ModelHomeBet(BaseModel):
-    home_bet = models.ForeignKey(
-        HomeBet, on_delete=models.PROTECT, related_name="models"
-    )
-    crash_game = models.ForeignKey(
-        CrashGame, on_delete=models.PROTECT, related_name="models"
+class ModelHomeBetGame(BaseModel):
+    home_bet_game = models.ForeignKey(
+        HomeBetGame, on_delete=models.PROTECT, related_name="models"
     )
     name = models.CharField(max_length=50, unique=True)
     model_type = models.CharField(
@@ -40,13 +36,13 @@ class ModelHomeBet(BaseModel):
         return self.name
 
     class Meta:
-        db_table = "model_homebet"
-        unique_together = ("home_bet", "model_type")
+        db_table = "model_home_bet_game"
+        unique_together = ("home_bet_game", "model_type")
 
 
-class ModelCategoryResult(BaseModel):
-    model_home_bet = models.ForeignKey(
-        ModelHomeBet, on_delete=models.PROTECT, related_name="category_results"
+class ModelDetail(BaseModel):
+    model_home_bet_game = models.ForeignKey(
+        ModelHomeBetGame, on_delete=models.PROTECT, related_name="details"
     )
     category = models.SmallIntegerField(
         choices=enum_to_choices(Category)
@@ -60,7 +56,7 @@ class ModelCategoryResult(BaseModel):
     other_info = models.JSONField(null=True, blank=True)
 
     class Meta:
-        db_table = "model_category_result"
+        db_table = "model_detail"
 
     @property
     def total_predictions(self) -> int:
@@ -77,12 +73,17 @@ class Bot(BaseModel):
         default=300, help_text="Number of minimum bets allowed in bank"
     )
     is_active = models.BooleanField(default=True)
+    only_bullish_games = models.BooleanField(default=False)
+    make_second_bet = models.BooleanField(default=True)
     risk_factor = models.FloatField(default=0.1)
     min_multiplier_to_bet = models.FloatField(
         default=1.5, help_text="Minimum multiplier to bet"
     )
     min_multiplier_to_recover_losses = models.FloatField(
         default=2.0, help_text="Minimum multiplier to recover losses"
+    )
+    max_second_multiplier = models.FloatField(
+        help_text="Maximum second multiplier", default=0.0
     )
     min_probability_to_bet = models.FloatField(
         default=0.65, help_text="Minimum probability to bet"
@@ -117,7 +118,7 @@ class BotCondition(BaseModel):
         Bot, on_delete=models.PROTECT, related_name="conditions"
     )
     condition_on = models.CharField(
-        max_length=30,
+        max_length=64,
         choices=enum_to_choices(ConditionON),
         default=ConditionON.EVERY_WIN.value,
     )

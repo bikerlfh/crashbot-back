@@ -11,7 +11,7 @@ from apps.django_projects.predictions.constants import BotType
 from apps.django_projects.predictions.models import (
     Bot,
     BotCondition,
-    ModelHomeBet,
+    ModelHomeBetGame,
 )
 from apps.utils.tools import enum_to_choices
 
@@ -95,19 +95,19 @@ class BotConditionAdmin(ModelAdmin):
     )
 
 
-@admin.register(ModelHomeBet)
-class ModelHomeBetAdmin(ModelAdmin):
+@admin.register(ModelHomeBetGame)
+class ModelHomeBetGameAdmin(ModelAdmin):
     list_display = [
-        "home_bet",
+        "home_bet_game",
         "model_type",
         "status",
         "average_predictions",
         "result_date",
     ]
-    list_filter = ["home_bet", "model_type", "status"]
+    list_filter = ["home_bet_game", "model_type", "status"]
     readonly_fields = [
         "name",
-        "home_bet",
+        "home_bet_game",
         "model_type",
         "seq_len",
         "average_predictions",
