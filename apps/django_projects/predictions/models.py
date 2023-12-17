@@ -65,6 +65,7 @@ class ModelDetail(BaseModel):
 
 class Bot(BaseModel):
     name = models.CharField(max_length=50, unique=True)
+    description = models.TextField(default="", blank=True, null=True)
     bot_type = models.CharField(
         max_length=15,
         default=BotType.LOOSE.value,
