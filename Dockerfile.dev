@@ -1,4 +1,4 @@
-FROM python:3.11-slim-buster as intermediate
+FROM python:3.11-slim-bookworm as intermediate
 
 # FROM python:3.11-slim-buster
 
@@ -14,12 +14,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl-dev \
     libffi-dev \
     libcurl4-openssl-dev \
-    netcat \
+    netcat-openbsd \
 && rm -rf /var/lib/apt/lists/*
+
+ENV VIRTUAL_ENV=/usr/app/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+RUN pip install uv
 
 COPY requirements /tmp/requirements
 
-RUN pip install -Ur /tmp/requirements/development.txt
+RUN uv pip install -Ur /tmp/requirements/development.txt
 
 ENV APP_HOME=/app
 
