@@ -11,6 +11,7 @@ __pycache__/
 .envfile
 *.py[cod]
 *$py.class
+.python-version
 
 # Node artifact files
 node_modules/
@@ -70,3 +71,7 @@ celerybeat-schedule
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 /.pytest_cache/
+session.session
+*.session
+.env
+.env.*
